@@ -22,3 +22,17 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+*/*/*/.DS_Store
+*/*/*/*/.DS_Store
+*/*/*/*/*/.DS_Store
+
+
+.xcworkspace
+.xcuserdatad
+magnode/build/iOS/magnode/magnode.xcodeproj/project.xcworkspace
+magnode/build/iOS/magnode/magnode.xcodeproj/xcuserdata/cz.xcuserdatad
