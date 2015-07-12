@@ -26,7 +26,7 @@ int mn_socket_udp(struct net_sockaddr *addr, struct mn_socket *sfd)
         sfd->sfd = socket(AF_INET, SOCK_DGRAM, 0);
         
         struct sockaddr_in *udpaddr =(struct sockaddr_in*) &sfd->dest_addr;
-        inet_aton(addr->host, &udpaddr->sin_addr);
+        int rst = inet_aton(addr->host, &udpaddr->sin_addr);
         udpaddr->sin_family = AF_INET;
         udpaddr->sin_port = htons(addr->port);
         

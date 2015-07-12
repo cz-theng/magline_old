@@ -17,6 +17,8 @@
 #include "mn_poll.h"
 
 
+
+
 int parse_url(const char *url,struct net_sockaddr *addr)
 {
     assert(url);
@@ -113,12 +115,6 @@ ssize_t mn_recv(struct mn_socket *sfd,void *buf,size_t len,uint64_t timeout)
     ret = mn_poll(sfd->sfd, MN_POLL_OUT,timeout);
     
     if (ret < 0) {
-        if (ret == -1) {
-            // time out
-            return -2;
-        } else {
-            mn_log("poll error !");
-        }
         return ret;
     }
     
@@ -127,7 +123,6 @@ ssize_t mn_recv(struct mn_socket *sfd,void *buf,size_t len,uint64_t timeout)
     } else if (NET_UDP == sfd->proto) {
         rst = mn_socket_recvfrom(sfd,buf,len,0);
     } else {
-        mn_log("Unknown proto!\n");
         rst = 0;
     }
     

@@ -10,13 +10,13 @@
 		216CC3771B52A5D800EFD63A /* magnode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 216CC3761B52A5D800EFD63A /* magnode.h */; };
 		216CC3791B52A5D800EFD63A /* magnode.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3781B52A5D800EFD63A /* magnode.m */; };
 		216CC37F1B52A5D800EFD63A /* libmagnode.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 216CC3731B52A5D800EFD63A /* libmagnode.a */; };
-		216CC3B71B52A71800EFD63A /* mn_log.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3A91B52A71800EFD63A /* mn_log.c */; };
 		216CC3B81B52A71800EFD63A /* mn_net.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3AB1B52A71800EFD63A /* mn_net.c */; };
 		216CC3B91B52A71800EFD63A /* mn_os.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3AD1B52A71800EFD63A /* mn_os.c */; };
 		216CC3BA1B52A71800EFD63A /* mn_poll.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3AF1B52A71800EFD63A /* mn_poll.c */; };
 		216CC3BB1B52A71800EFD63A /* mn_socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3B11B52A71800EFD63A /* mn_socket.c */; };
 		216CC3BC1B52A71800EFD63A /* mn_socket_tcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3B31B52A71800EFD63A /* mn_socket_tcp.c */; };
 		216CC3BD1B52A71800EFD63A /* mn_socket_udp.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3B51B52A71800EFD63A /* mn_socket_udp.c */; };
+		216CC3FD1B52C51F00EFD63A /* mn_log.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3FB1B52C51F00EFD63A /* mn_log.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +49,6 @@
 		216CC37E1B52A5D800EFD63A /* magnodeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = magnodeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		216CC3841B52A5D800EFD63A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		216CC3A81B52A71800EFD63A /* gen_source.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = gen_source.sh; sourceTree = "<group>"; };
-		216CC3A91B52A71800EFD63A /* mn_log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_log.c; sourceTree = "<group>"; };
-		216CC3AA1B52A71800EFD63A /* mn_log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_log.h; sourceTree = "<group>"; };
 		216CC3AB1B52A71800EFD63A /* mn_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_net.c; sourceTree = "<group>"; };
 		216CC3AC1B52A71800EFD63A /* mn_net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_net.h; sourceTree = "<group>"; };
 		216CC3AD1B52A71800EFD63A /* mn_os.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_os.c; sourceTree = "<group>"; };
@@ -63,6 +61,8 @@
 		216CC3B41B52A71800EFD63A /* mn_socket_tcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket_tcp.h; sourceTree = "<group>"; };
 		216CC3B51B52A71800EFD63A /* mn_socket_udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket_udp.c; sourceTree = "<group>"; };
 		216CC3B61B52A71800EFD63A /* mn_socket_udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket_udp.h; sourceTree = "<group>"; };
+		216CC3FB1B52C51F00EFD63A /* mn_log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_log.c; sourceTree = "<group>"; };
+		216CC3FC1B52C51F00EFD63A /* mn_log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_log.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +140,7 @@
 		216CC3A61B52A71800EFD63A /* src */ = {
 			isa = PBXGroup;
 			children = (
+				216CC3FA1B52C51F00EFD63A /* utils */,
 				216CC3A71B52A71800EFD63A /* net */,
 			);
 			name = src;
@@ -150,8 +151,6 @@
 			isa = PBXGroup;
 			children = (
 				216CC3A81B52A71800EFD63A /* gen_source.sh */,
-				216CC3A91B52A71800EFD63A /* mn_log.c */,
-				216CC3AA1B52A71800EFD63A /* mn_log.h */,
 				216CC3AB1B52A71800EFD63A /* mn_net.c */,
 				216CC3AC1B52A71800EFD63A /* mn_net.h */,
 				216CC3AD1B52A71800EFD63A /* mn_os.c */,
@@ -166,6 +165,15 @@
 				216CC3B61B52A71800EFD63A /* mn_socket_udp.h */,
 			);
 			path = net;
+			sourceTree = "<group>";
+		};
+		216CC3FA1B52C51F00EFD63A /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				216CC3FB1B52C51F00EFD63A /* mn_log.c */,
+				216CC3FC1B52C51F00EFD63A /* mn_log.h */,
+			);
+			path = utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -261,8 +269,8 @@
 				216CC3BC1B52A71800EFD63A /* mn_socket_tcp.c in Sources */,
 				216CC3BD1B52A71800EFD63A /* mn_socket_udp.c in Sources */,
 				216CC3B91B52A71800EFD63A /* mn_os.c in Sources */,
+				216CC3FD1B52C51F00EFD63A /* mn_log.c in Sources */,
 				216CC3791B52A5D800EFD63A /* magnode.m in Sources */,
-				216CC3B71B52A71800EFD63A /* mn_log.c in Sources */,
 				216CC3B81B52A71800EFD63A /* mn_net.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -434,6 +442,7 @@
 				216CC3891B52A5D800EFD63A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		216CC38A1B52A5D800EFD63A /* Build configuration list for PBXNativeTarget "magnodeTests" */ = {
 			isa = XCConfigurationList;
@@ -442,6 +451,7 @@
 				216CC38C1B52A5D800EFD63A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
