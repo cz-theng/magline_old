@@ -7,7 +7,7 @@
 //
 
 #include "mn_socket_udp.h"
-#include "mn_log.h"
+
 
 #include <stdio.h>
 

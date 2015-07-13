@@ -19,7 +19,7 @@
 
 
 
-int parse_url(const char *url,struct net_sockaddr *addr)
+int parse_url(const char *url,struct mn_sockaddr *addr)
 {
     assert(url);
     assert(addr);
@@ -66,7 +66,7 @@ int mn_close(struct mn_socket *sfd)
 int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
 {
 
-    struct net_sockaddr addr;
+    struct mn_sockaddr addr;
     // parse url
     int rst  = parse_url(url,&addr);
     if (rst <0) {

@@ -11,9 +11,9 @@
 
 #include "mn_net.h"
 
-int mn_socket_udp(struct net_sockaddr *addr, struct mn_socket *sfd);
+int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd);
 
-int mn_socket_tcp(struct net_sockaddr *addr, struct mn_socket *sfd);
+int mn_socket_tcp(struct mn_sockaddr *addr, struct mn_socket *sfd);
 
 int mn_socket_close(struct mn_socket *sfd);
 

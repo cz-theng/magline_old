@@ -15,9 +15,7 @@
 #include <stdlib.h>
 #include <sys/fcntl.h>
 
-
-
-int mn_socket_udp(struct net_sockaddr *addr, struct mn_socket *sfd)
+int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 {
     if (NET_UDP != addr->proto) {
         return MN_EPROTO;
@@ -27,6 +25,8 @@ int mn_socket_udp(struct net_sockaddr *addr, struct mn_socket *sfd)
         
         struct sockaddr_in *udpaddr =(struct sockaddr_in*) &sfd->dest_addr;
         int rst = inet_aton(addr->host, &udpaddr->sin_addr);
+        // TODO: adjust rst;
+    
         udpaddr->sin_family = AF_INET;
         udpaddr->sin_port = htons(addr->port);
         
@@ -35,7 +35,7 @@ int mn_socket_udp(struct net_sockaddr *addr, struct mn_socket *sfd)
     }
 }
 
-int mn_socket_tcp(struct net_sockaddr *addr, struct mn_socket *sfd)
+int mn_socket_tcp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 {
     return -1;
 }
