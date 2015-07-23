@@ -25,9 +25,7 @@
 
 #ifdef __cplusplus
 
-namespace MagNode
-{    
-    extern "C" {
+extern "C" {
 #endif
 
     #define HOST_LEN 16
@@ -72,7 +70,7 @@ namespace MagNode
         socklen_t addrlen;
     };
     
-    struct net_sockaddr
+    struct mn_sockaddr
     {
         enum net_proto proto;
         char host[HOST_LEN];
@@ -89,8 +87,6 @@ namespace MagNode
 
     ssize_t mn_recv(struct mn_socket *sfd,void *buf,size_t len,uint64_t timeout);
 #ifdef __cplusplus
-    }
-
 }
 #endif
 
