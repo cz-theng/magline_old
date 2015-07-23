@@ -43,6 +43,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2166B7AB1B60767700B1FE15 /* magnode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode.h; sourceTree = "<group>"; };
+		2166B7AC1B60768E00B1FE15 /* magnode_errcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_errcode.h; sourceTree = "<group>"; };
 		216CC3731B52A5D800EFD63A /* libmagnode.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmagnode.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		216CC3761B52A5D800EFD63A /* magnode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = magnode.h; sourceTree = "<group>"; };
 		216CC3781B52A5D800EFD63A /* magnode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = magnode.m; sourceTree = "<group>"; };
@@ -132,6 +134,8 @@
 		216CC3A51B52A71800EFD63A /* include */ = {
 			isa = PBXGroup;
 			children = (
+				2166B7AB1B60767700B1FE15 /* magnode.h */,
+				2166B7AC1B60768E00B1FE15 /* magnode_errcode.h */,
 			);
 			name = include;
 			path = ../../../include;
