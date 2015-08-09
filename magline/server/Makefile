@@ -1,4 +1,4 @@
-TARGET := magline
+TARGET := maglined
 
 SRC_FILES := $(shell find .. -name "*.go" )
 SRC_FILES += main.go
@@ -11,7 +11,7 @@ all : $(TARGET)
 
 $(TARGET): $(SRC_FILES)
 	@echo "src :"$(SRC_FILES)
-	go build  -v 
+	go build  -v -o $(TARGET)
 
 fmt : $(SRC_FILES)
 	go fmt 

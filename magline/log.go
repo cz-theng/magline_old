@@ -14,7 +14,6 @@ func init() {
 		fmt.Errorf("Create Logger Error\n")
 		return 
 	}
-	fmt.Println("Create Logger Success")
 	Logger.SetMaxFileSize(1024*1024*100) //100MB
 	Logger.SetLevel(log.LDEBUG)
 }
