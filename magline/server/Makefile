@@ -1,7 +1,7 @@
 TARGET := magline
 
-SRC_FILES := $(shell find server -name "*.go" )
-SRC_FILES += magline.go
+SRC_FILES := $(shell find .. -name "*.go" )
+SRC_FILES += main.go
 
 .DEFAULT:all
 
@@ -11,7 +11,7 @@ all : $(TARGET)
 
 $(TARGET): $(SRC_FILES)
 	@echo "src :"$(SRC_FILES)
-	go build  -v
+	go build  -v 
 
 fmt : $(SRC_FILES)
 	go fmt 
@@ -22,3 +22,4 @@ fmt : $(SRC_FILES)
 clean:
 	go clean
 	-rm -rf $(TARGET)
+	-rm -rf log
