@@ -6,6 +6,10 @@ import(
 	"os"
 )
 
+type ConfigJsonWrapper struct {
+	OuterAddr string
+}
+
 func LoadConfig(filePath string ) (err error) {
 	fp,err := os.Open(filePath)
 	if err != nil {
@@ -14,12 +18,14 @@ func LoadConfig(filePath string ) (err error) {
 	}
 	defer fp.Close()
 	
+
+	var config ConfigJsonWrapper
 	decoder := json.NewDecoder(fp)
-	if err= decoder.Decode(&magline.Config); err != nil {
+	if err= decoder.Decode(&config); err != nil {
 		magline.Logger.Error("Decode Config Error:%s",err.Error())
 		return
 	}
-
+	magline.Config.OuterAddr = config.OuterAddr
 	magline.Logger.Debug("Load Config file %s Success",filePath)
 	err = nil
 	return
