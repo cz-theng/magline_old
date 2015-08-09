@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"flag"
 	
-	"github.com/cz-it/magline/magline/server"
-	"github.com/cz-it/magline/magline"
+	"github.com/cz-it/magline/maglined/server"
+	"github.com/cz-it/magline/maglined"
 	"github.com/cz-it/golangutils/daemon"
 )
 
 func main() {
 	if Flag.Version {
-		fmt.Println("Cur Version:%s",magline.Version())
+		fmt.Println("Cur Version:%s",maglined.Version())
 		return
 	}
 
@@ -31,7 +31,7 @@ func main() {
 		daemon.Boot("/tmp/magline.lock","/tmp/magline.pid")
 	}
 	
-	svr := &server.Server{Addr:magline.Config.OuterAddr}
+	svr := &server.Server{Addr:maglined.Config.OuterAddr}
 	svr.ListenAndServe()
 	
 	println("[Testing]:End")

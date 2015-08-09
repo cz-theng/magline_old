@@ -1,4 +1,4 @@
-package magline
+package maglined
 /**
 * doc for magline
 */
