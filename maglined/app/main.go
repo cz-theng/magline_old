@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"flag"
-	
-	"github.com/cz-it/magline/maglined/server"
+
+	"github.com/cz-it/golangutils/daemon"	
 	"github.com/cz-it/magline/maglined"
-	"github.com/cz-it/golangutils/daemon"
+	"github.com/cz-it/magline/maglined/magline"
 )
 
 func main() {
@@ -31,9 +31,7 @@ func main() {
 		daemon.Boot("/tmp/magline.lock","/tmp/magline.pid")
 	}
 	
-	svr := &server.Server{Addr:maglined.Config.OuterAddr}
-	svr.ListenAndServe()
-	
+	magline.Start()
 	println("[Testing]:End")
 }
 
