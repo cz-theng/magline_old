@@ -1,0 +1,4 @@
+package maglined
+/**
+* Basic response
+*/

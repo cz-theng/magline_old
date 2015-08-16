@@ -6,12 +6,12 @@ package magline
 
 import (
 
+	"github.com/cz-it/magline/maglined"
 	"github.com/cz-it/magline/maglined/server"
-	"github.com/cz-it/magline/maglined/config"
 )
 
 func Start() {
-	svr := server.Server{Addr:config.OuterAddr}
+	svr := server.Server{Addr:maglined.config.OuterAddr}
 	svr.ListenAndServe()
 }
 
