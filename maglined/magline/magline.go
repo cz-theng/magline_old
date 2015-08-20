@@ -7,12 +7,15 @@ package magline
 import (
 
 	"github.com/cz-it/magline/maglined"
-	"github.com/cz-it/magline/maglined/server"
 )
 
 func Start() {
-	svr := server.Server{Addr:maglined.config.OuterAddr}
-	svr.ListenAndServe()
+	svr := Server{Addr:maglined.Config.OuterAddr}
+	svr.Init(maglined.Config.MaxConns)
+	err :=svr.ListenAndServe()
+	if err != nil {
+		maglined.Logger.Error("Start Magline Server error with s",err.Error())
+	}
 }
 
 

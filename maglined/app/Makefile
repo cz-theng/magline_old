@@ -1,6 +1,6 @@
 TARGET := maglined
 
-SRC_FILES := $(shell find .. ../agent ../proto ../server -name "*.go" )
+SRC_FILES := $(shell find .. ../agent ../proto ../magline ../magknot -name "*.go" )
 SRC_FILES += main.go flag.go config.go
 
 .DEFAULT:all

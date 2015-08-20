@@ -10,6 +10,7 @@ var Config ConfigInfo
 
 type ConfigInfo struct {
 	OuterAddr string
+	MaxConns  int
 }
 
 
