@@ -15,8 +15,6 @@ func main() {
 		return
 	}
 
-	println("[Testing]:Main....")
-	
 	if Flag.Config == "" {
 		flag.Usage()
 		return

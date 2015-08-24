@@ -4,8 +4,8 @@ package maglined
 */
 
 type Requester interface {
-	CMD (uint8)()
-	Data([]byte)()
+	CMD (uint8)
+	Data([]byte)
 }
 
 type Request struct {

@@ -54,6 +54,7 @@ func (cp *ConnPool) Alloc() (conn Connectioner, err error) {
 	top := cp.idleConns.Front()
 	if index,ok := cp.idleConns.Remove(top).(int); ok {
 		conn = cp.ConnArray[index]
+		//conn.Init()
 	} else {
 		err = EREMOVE_TYPE
 	}
