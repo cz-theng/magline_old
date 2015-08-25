@@ -25,7 +25,7 @@ func (conn *Connection)Serve() {
 			maglined.Logger.Error("Connection Read Request Error !")
 			break
 		}
-		
+		println(req)
 	}
 }
 
