@@ -1,4 +1,4 @@
-package magline
+package maglined
 /**
 * Server.
 */
@@ -6,8 +6,6 @@ package magline
 import (
 	"net"
 	"time"
-
-	"github.com/cz-it/magline/maglined"
 )
 
 type Server struct {
@@ -22,25 +20,25 @@ type Server struct {
 	/**
      * Coonection pool for client
     */
-	ConnPool *maglined.ConnPool
+	ConnPool *ConnPool
 }
 
 func (svr *Server) Init (maxConns int) (err error) {
 	svr.ConnPool, err = NewMLConnPool(maxConns)
 	if err != nil {
-		maglined.Logger.Error("New Magline Connection Pool Error!")
+		Logger.Error("New Magline Connection Pool Error!")
 		return 
 	}
 	return 
 }
 
 func (svr *Server) ListenAndServe() error {
-	maglined.Logger.Debug("ListenAndServe with addr %s",svr.Addr)
-	addr, err := maglined.ParseAddr(svr.Addr)
+	Logger.Debug("ListenAndServe with addr %s",svr.Addr)
+	addr, err := ParseAddr(svr.Addr)
 	if err != nil {
 		return err
 	}
-	maglined.Logger.Debug("net is %s and ipport %s",addr.Network,addr.IPPort)
+	Logger.Debug("net is %s and ipport %s",addr.Network,addr.IPPort)
 	if addr.Network == "tcp" {
 		ln, err := net.Listen("tcp", addr.IPPort)
 		if err != nil {
@@ -53,11 +51,10 @@ func (svr *Server) ListenAndServe() error {
 }
 
 func (svr *Server) newConn(rwc *net.TCPConn) (conn *Connection, err error) {
-	c, err := svr.ConnPool.Alloc()
+	conn, err = svr.ConnPool.Alloc()
 	if err != nil {
 		return
 	}
-	conn = c.(*Connection)
 	conn.RWC = rwc
 
 	return 
@@ -85,7 +82,7 @@ func (svr *Server) ListenAndServeTCP(l *net.TCPListener, kpal bool) error {
 				if max := 1 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
-				maglined.Logger.Error("[TCP]: Accept error: %v; retrying in %v", e, tempDelay)
+				Logger.Error("[TCP]: Accept error: %v; retrying in %v", e, tempDelay)
 				time.Sleep(tempDelay)
 				continue
 			}

@@ -1,7 +1,9 @@
 package maglined
 /**
-* Conn Pool
+* Connector Magnager for client
 */
+
+
 import (
 	"container/list"
 	"errors"
@@ -9,22 +11,16 @@ import (
 )
 
 var (
-	EREMOVE_TYPE = errors.New("list.Remov with Error Type!")
+	ENewConn = errors.New("New Connection Error!")
 )
-
-type ConnPooler interface {
-	Recycle (conn Connectioner) (bool)
-	Alloc() (conn Connectioner )
-	Init(dataSplit []Connectioner)(bool)
-}
 
 type ConnPool struct {
 	mtx sync.Mutex
 	idleConns list.List
-	ConnArray []Connectioner
+	ConnArray []*Connection
 }
 
-func (cp *ConnPool) Init(dataSplit []Connectioner) (error) {
+func (cp *ConnPool) Init(dataSplit []*Connection) (error) {
 	cp.mtx.Lock()
 	defer cp.mtx.Unlock()
 	cp.idleConns.Init()
@@ -35,16 +31,16 @@ func (cp *ConnPool) Init(dataSplit []Connectioner) (error) {
 	return nil
 }
 
-func (cp *ConnPool) Recycle(conn Connectioner) (error) {
+func (cp *ConnPool) Recycle(conn *Connection) (error) {
 	cp.mtx.Lock()
 	defer cp.mtx.Unlock()
-	id := conn.ID()
+	id := conn.ID
 	cp.idleConns.PushBack(id)
 	//conn.Uninit()
 	return nil
 }
 
-func (cp *ConnPool) Alloc() (conn Connectioner, err error) {
+func (cp *ConnPool) Alloc() (conn *Connection, err error) {
 	if cp.idleConns.Len() < 1 {
 		//TODO: Log here
 		return conn, nil
@@ -54,12 +50,34 @@ func (cp *ConnPool) Alloc() (conn Connectioner, err error) {
 	top := cp.idleConns.Front()
 	if index,ok := cp.idleConns.Remove(top).(int); ok {
 		conn = cp.ConnArray[index]
-		//conn.Init()
 	} else {
 		err = EREMOVE_TYPE
 	}
 	return 
 }
+
+func NewMLConnPool(size int)(mlConnPool *ConnPool, err error) {
+	defer func (){
+		err = ENewConn
+	}()
+
+	conns := make([]*Connection,size)
+	mlConnPool = new(ConnPool)
+	for i:=0; i<size; i++ {
+		conn := &Connection{}
+		conn.ReadBuf = make([]byte, 1024)
+		conns[i] = conn
+	}
+	mlConnPool.Init(conns[:])
+	return 
+}
+
+
+
+
+
+
+
 
 
 

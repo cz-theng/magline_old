@@ -6,7 +6,6 @@ import (
 
 	"github.com/cz-it/golangutils/daemon"	
 	"github.com/cz-it/magline/maglined"
-	"github.com/cz-it/magline/maglined/magline"
 )
 
 func main() {
@@ -29,7 +28,7 @@ func main() {
 		daemon.Boot("/tmp/magline.lock","/tmp/magline.pid")
 	}
 	
-	magline.Start()
+	maglined.Start()
 	println("[Testing]:End")
 }
 

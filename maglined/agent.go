@@ -1,4 +1,4 @@
-package agent
+package maglined
 /**
 * Agent.
 */
@@ -16,6 +16,11 @@ func (ag *Agent) Index() (int) {
 	return ag.index
 }
 
+
+func (ag *Agent) DealRequest(req *Request)(err error) {
+	Logger.Info("Deal a Client Request!")
+	return nil
+}
 
 
 

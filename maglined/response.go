@@ -1,12 +1,21 @@
 package maglined
 /**
-* Basic response
+* response for client
 */
 
-type Responser interface{
-	
+import (
+)
+
+
+type Response  struct {
+	CMD uint16
+	AgentID uint32
+	Body []byte
 }
 
-type Respons struct {
-
+func (rsp *Response) Init() {
+	rsp.CMD = uint16(0)
+	rsp.AgentID = uint32(0)
+	rsp.Body=rsp.Body[:0]
 }
+

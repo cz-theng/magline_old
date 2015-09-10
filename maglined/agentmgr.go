@@ -1,4 +1,4 @@
-package agent
+package maglined
 /**
 * Agent manager 
 */
@@ -12,6 +12,8 @@ import (
 var (
 	ENewAgent = errors.New("New a Agent Error!")
 	EREMOVE_TYPE = errors.New("Remove from List Error!")
+	EINDEX = errors.New("A Invalied Agent Index!")
+	EIDLE_AGENT = errors.New("It is a Idle Agent!")
 )
 
 type AgentMgr struct {
@@ -22,7 +24,7 @@ type AgentMgr struct {
 
 var agentMgr *AgentMgr
 
-func InitAgentMgr(size int) (err error){
+func InitAgentMgr(size int) (err error) {
 	agentMgr = new(AgentMgr)
 	defer func (){
 		err = ENewAgent
@@ -36,6 +38,26 @@ func InitAgentMgr(size int) (err error){
 	return 
 }
 
+
+func Find(idx int) (agent *Agent, err error) {
+	if idx >=0 && idx < len(agentMgr.AgentArray) {
+		return agentMgr.AgentArray[idx],nil
+	} else {
+		return nil,EINDEX
+	}
+}
+
+func DealNewAgent(conn *Connection, req *Request) (err error) {
+	Logger.Info("Deal a New Agent")
+	agt, err := agentMgr.Alloc()
+	rsp := &Response{
+		CMD : CMD_MN_CONN_RSP,
+		AgentID :uint32(agt.ID()),
+		Body : nil,
+	}
+	conn.SendResponse(rsp)
+	return nil
+}
 
 func (am *AgentMgr) Init(dataSplit []*Agent) (error) {
 	am.mtx.Lock()

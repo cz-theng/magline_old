@@ -1,13 +1,14 @@
 package maglined
 /**
-* Base Request 
+* Request for client
 */
 
-type Requester interface {
-	CMD (uint8)
-	Data([]byte)
-}
+import (
+)
 
 type Request struct {
-
+	CMD uint16
+	AgentID uint32
+	Body []byte
 }
+
