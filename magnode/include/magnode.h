@@ -10,8 +10,33 @@
 #define magnode_magnode_h
 
 #include <stdint.h>
+/*
+#include <string>
 
 #include "magnode_errcode.h"
+
+namespace magline {
+
+    class MagNode {
+        
+        MagNode *Create();
+        
+        bool Destory(MagNode *node);
+
+        virtual Connect(const std::string url,uint64_t timeout) = 0;
+        
+        virtual Reconnect(uint64_t timeout) = 0;
+        
+        virtual Send(const void *buf, size_t length) = 0;
+        
+        virtual Recv(void *buf, size_t length) = 0;
+        
+        virtual Close() = 0;
+        
+    };
+
+} // namespace magline
+*/
 
 #ifdef __cplusplus
 extern "C" {
