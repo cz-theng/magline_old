@@ -67,6 +67,9 @@ extern "C" {
     #ifndef MN_EPOLL
     #define MN_EPOLL        -(MN_HAUSNUMERO + 7)
     #endif
+    #ifndef MN_ENULL
+    #define MN_ENULL        -(MN_HAUSNUMERO + 8)
+    #endif
     
     
     enum net_proto
@@ -78,8 +81,8 @@ extern "C" {
     
     enum net_bufsize
     {
-        NET_RECV_BUF_SIZE = 2*1024*1024,
-        NET_SEND_BUF_SIZE = 2*1024*1024,
+        NET_RECV_BUF_SIZE = 1*1024*1024,
+        NET_SEND_BUF_SIZE = 1*1024*1024,
     };
     
     struct mn_socket

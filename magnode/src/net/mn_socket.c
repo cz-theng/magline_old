@@ -27,10 +27,9 @@ int inet_aton(const char* cp, struct in_addr* inp)
 {
 	unsigned long ulAddr;
 
-	ulAddr	=	inet_addr(cp);
+	ulAddr = inet_addr(cp);
 
-	if (INADDR_NONE == ulAddr)
-	{
+	if (INADDR_NONE == ulAddr) {
 		inp->S_un.S_addr	=	ulAddr;
 		return 0;
 	}
@@ -69,7 +68,7 @@ static int ip_or_domain(const char *host)
 static int host2in(const char *host, struct in_addr *addr)
 {
     if (! host || !addr ){
-        return -1;
+        return MN_ENULL;
     }
     int isIP  = ip_or_domain(host);
     if (0==isIP) {
@@ -90,7 +89,7 @@ static int host2in(const char *host, struct in_addr *addr)
 int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 {
 	if (NULL == addr || NULL == sfd)
-		return -1;
+		return MN_ENULL;
     if (NET_UDP != addr->proto) {
         return MN_EPROTO;
     } else {
@@ -114,7 +113,26 @@ int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 
 int mn_socket_tcp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 {
-    return -1;
+    if (NULL == addr || NULL == sfd)
+        return MN_ENULL;
+    if (NET_TCP != addr->proto) {
+        return MN_EPROTO;
+    } else {
+        sfd->proto = addr->proto;
+        sfd->sfd = socket(AF_INET, SOCK_STREAM, 0);
+        
+        struct sockaddr_in *tcpaddr =(struct sockaddr_in*) &sfd->dest_addr;
+        int rst = host2in(addr->host, &tcpaddr->sin_addr);
+        if (0 != rst) {
+            return -1;
+        }
+        
+        tcpaddr->sin_family = AF_INET;
+        tcpaddr->sin_port = htons(addr->port);
+        
+        sfd->addrlen = sizeof(struct sockaddr_in);
+        return 0;
+    }
 }
 
 int mn_socket_close(struct mn_socket *sfd)
