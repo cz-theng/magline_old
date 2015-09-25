@@ -8,9 +8,14 @@
 #include <stdlib.h>
 
 #include "mn_net.h"
+#include "mn_log.h"
 #include "mn_socket_udp.h"
 #include "mn_socket_tcp.h"
 #include "mn_poll.h"
+
+#if defined MN_APPLE  || defined MN_ANDROID
+#include <sys/time.h>
+#endif
 
 static int parse_url(const char *url,struct mn_sockaddr *addr)
 {
@@ -62,6 +67,98 @@ static int parse_url(const char *url,struct mn_sockaddr *addr)
     return 0;
 }
 
+long timeval_cmp (const struct timeval *tv1, const struct timeval *tv2)
+{
+    if (NULL == tv1 || NULL == tv2) {
+        return -2;
+    }
+    return (tv1->tv_sec == tv2->tv_sec) ? (tv1->tv_usec - tv2->tv_usec) : (tv1->tv_sec - tv2->tv_sec);
+}
+
+long timeval_min_usec(const struct timeval *tv1, const struct timeval *tv2) {
+    if (NULL == tv1 || NULL == tv2) {
+        return 0;
+    }
+    return (tv1->tv_sec*1000 + tv1->tv_usec/1000)-(tv2->tv_sec*1000 + tv2->tv_usec/1000);
+}
+
+
+static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
+{
+    if(NULL == socket || socket->sfd<3 ||  timeout ==0) {
+        return MN_EARG;
+    }
+    
+    struct timeval bt;
+    gettimeofday(&bt, NULL);
+    int err;
+    err = connect(socket->sfd, &socket->dest_addr, socket->addrlen);
+    
+    if (0 == err) {
+        return 0;
+    }
+
+    if (errno == EINPROGRESS){
+        // select here
+        fd_set rfds,wfds;
+        struct timeval tv;
+        int isConn = 0;
+        while (!isConn){
+            
+            FD_ZERO(&rfds);
+            FD_ZERO(&wfds);
+            FD_SET(socket->sfd,&rfds);
+            FD_SET(socket->sfd,&wfds);
+            
+            tv.tv_sec  = timeout/1000;
+            tv.tv_usec = (timeout%1000) * 1000;
+            
+            int rst = select (socket->sfd+1, &rfds, &wfds, NULL, &tv);
+            struct timeval st;
+            gettimeofday(&st, NULL);
+            if (timeval_min_usec(&st, &bt) > timeout) {
+                return MN_ETIMEOUT;
+            }
+            if (rst<0){
+                //select error
+                LOG_E("select error \n");
+                return MN_ECONN;
+            } else if (rst == 0) {
+                // Timeout :haven't done connection
+                continue;
+            } else {
+                if (FD_ISSET(socket->sfd, &wfds) && !(FD_ISSET(socket->sfd, &rfds))) {
+                    // can write but not readable;ok connected
+                    isConn = 1;
+                    continue;
+                } else if (FD_ISSET(socket->sfd, &wfds) && FD_ISSET(socket->sfd, &rfds)) {
+                    int err = connect(socket->sfd, &socket->dest_addr, socket->addrlen);
+                    if (err) {
+                        if (errno == EISCONN) {
+                            // connected
+                            isConn = 1;
+                            continue;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        isConn = 1;
+                        continue;
+                    }
+                } else {
+                    // unknow fd status
+                    continue;
+                }
+            }
+            
+        }  //end of while
+    } else {
+        LOG_E("errno is %d",errno);
+        return MN_ECONN;
+    } // May have other errno s;
+
+    return 0;
+}
 
 int mn_listen(char *url)
 {
@@ -81,7 +178,6 @@ int mn_close(struct mn_socket *sfd)
 
 int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
 {
-
     struct mn_sockaddr addr;
     if (NULL == url || NULL == sfd) {
 		return MN_ENULL;
@@ -113,7 +209,10 @@ int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
     
     // do connect for tcp
     if (NET_TCP == addr.proto) {
-    
+        int ret = connect_timeout(sfd, 5000);
+        if (ret) {
+            return ret;
+        }
     }
     
     return 0;

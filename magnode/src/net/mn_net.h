@@ -70,6 +70,12 @@ extern "C" {
     #ifndef MN_ENULL
     #define MN_ENULL        -(MN_HAUSNUMERO + 8)
     #endif
+    #ifndef MN_ECONN
+    #define MN_ECONN        -(MN_HAUSNUMERO + 9)
+    #endif
+    #ifndef MN_EARG
+    #define MN_EARG         -(MN_HAUSNUMERO + 10)
+    #endif
     
     
     enum net_proto
