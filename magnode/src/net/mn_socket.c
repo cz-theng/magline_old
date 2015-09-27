@@ -3,6 +3,13 @@
  * Licence MIT
  */
 
+#include <ctype.h>
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <errno.h>
+
 #include "mn_socket.h"
 
 #if defined  MN_APPLE || defined MN_ANDROID
@@ -40,12 +47,8 @@ int inet_aton(const char* cp, struct in_addr* inp)
 }
 #endif
 
-#include <ctype.h>
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <errno.h>
+
+
 
 
 static int ip_or_domain(const char *host)
@@ -147,6 +150,7 @@ int mn_socket_close(struct mn_socket *sfd)
         return 0;
     }
     close(sfd->sfd);
+    return 0;
 #endif
     return 0;
 }

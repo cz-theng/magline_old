@@ -76,6 +76,12 @@ extern "C" {
     #ifndef MN_EARG
     #define MN_EARG         -(MN_HAUSNUMERO + 10)
     #endif
+    #ifndef MN_ESENDTO
+    #define MN_ESENDTO      -(MN_HAUSNUMERO + 11)
+    #endif
+    #ifndef MN_ERECV
+    #define MN_ERECV        -(MN_HAUSNUMERO + 12)
+    #endif
     
     
     enum net_proto
@@ -112,16 +118,11 @@ extern "C" {
 
     int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout);
 
-    ssize_t mn_send(struct mn_socket *sfd,const void *buf,size_t len,uint64_t timeout);
+    int mn_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout);
 
-    ssize_t mn_recv(struct mn_socket *sfd,void *buf,size_t len,uint64_t timeout);
+    int mn_recv(struct mn_socket *sfd,void *buf,size_t *len,uint64_t timeout);
     
-    
-#ifdef MN_ANDROID
-    uint64_t htonll(uint64_t val);
-    uint64_t ntohll(uint64_t val);
-#endif
-        
+            
 #ifdef __cplusplus
 }
 #endif
