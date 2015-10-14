@@ -7,6 +7,8 @@ import (
 	"errors"
 	"sync"
 	"container/list"
+
+	"github.com/cz-it/magline/maglined/proto"
 )
 
 var (
@@ -51,7 +53,7 @@ func DealNewAgent(conn *Connection, req *Request) (err error) {
 	Logger.Info("Deal a New Agent")
 	agt, err := agentMgr.Alloc()
 	rsp := &Response{
-		CMD : CMD_MN_CONN_RSP,
+		CMD : proto.CMD_MN_CONN_RSP,
 		AgentID :uint32(agt.ID()),
 		Body : nil,
 	}

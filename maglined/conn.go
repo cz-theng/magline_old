@@ -31,7 +31,7 @@ func (conn *Connection) RecvRequest() (*Request, error) {
 
 func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	conn.protoData.Init()
-	conn.protoData.CMD = CMD_MN_CONN_RSP
+	conn.protoData.CMD = proto.CMD_MN_CONN_RSP
 	conn.protoData.AgentID = rsp.AgentID
 	err = conn.protoData.Pack(conn.RWC)
 	return 
@@ -51,7 +51,7 @@ func (conn *Connection)Serve() {
 			break
 		}
 		cmd := req.CMD
-		if cmd == CMD_MN_CONN_REQ {
+		if cmd == proto.CMD_MN_CONN_REQ {
 			DealNewAgent(conn, req)
 			continue
 		} 

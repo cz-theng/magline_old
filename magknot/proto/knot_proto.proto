@@ -1,0 +1,7 @@
+namespace magline {
+	namespace magknot{
+		message KnotConn{
+
+		}
+	}
+}
