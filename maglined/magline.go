@@ -2,27 +2,17 @@ package maglined
 
 /**
 * Magline
-*/
+ */
 
-import (
-)
+import ()
 
 func Start() {
 	InitAgentMgr(Config.MaxConns)
 
-	svr := Server{Addr:Config.OuterAddr}
+	svr := Server{Addr: Config.OuterAddr}
 	svr.Init(Config.MaxConns)
-	err :=svr.ListenAndServe()
+	err := svr.ListenAndServe()
 	if err != nil {
-		Logger.Error("Start Magline Server error with s",err.Error())
+		Logger.Error("Start Magline Server error with s", err.Error())
 	}
 }
-
-
-
-
-
-
-
-
-
