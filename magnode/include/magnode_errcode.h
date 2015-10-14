@@ -14,7 +14,7 @@ extern  "C" {
 #endif
     
     enum mn_errno {
-    
+        a = 1,
     };
     
 #ifdef __cplusplus
