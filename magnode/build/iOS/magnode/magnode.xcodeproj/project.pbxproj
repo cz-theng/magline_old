@@ -10,13 +10,14 @@
 		216CC3771B52A5D800EFD63A /* magnode.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 216CC3761B52A5D800EFD63A /* magnode.h */; };
 		216CC3791B52A5D800EFD63A /* magnode.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3781B52A5D800EFD63A /* magnode.m */; };
 		216CC37F1B52A5D800EFD63A /* libmagnode.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 216CC3731B52A5D800EFD63A /* libmagnode.a */; };
-		216CC3B81B52A71800EFD63A /* mn_net.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3AB1B52A71800EFD63A /* mn_net.c */; };
-		216CC3B91B52A71800EFD63A /* mn_os.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3AD1B52A71800EFD63A /* mn_os.c */; };
-		216CC3BA1B52A71800EFD63A /* mn_poll.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3AF1B52A71800EFD63A /* mn_poll.c */; };
-		216CC3BB1B52A71800EFD63A /* mn_socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3B11B52A71800EFD63A /* mn_socket.c */; };
-		216CC3BC1B52A71800EFD63A /* mn_socket_tcp.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3B31B52A71800EFD63A /* mn_socket_tcp.c */; };
-		216CC3BD1B52A71800EFD63A /* mn_socket_udp.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3B51B52A71800EFD63A /* mn_socket_udp.c */; };
-		216CC3FD1B52C51F00EFD63A /* mn_log.c in Sources */ = {isa = PBXBuildFile; fileRef = 216CC3FB1B52C51F00EFD63A /* mn_log.c */; };
+		F0E45B3B1BB284B300C50E18 /* magnode.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B3A1BB284B300C50E18 /* magnode.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B3D1BB284DF00C50E18 /* magnode_errcode.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B3C1BB284DF00C50E18 /* magnode_errcode.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B4A1BB2CF2E00C50E18 /* mn_net.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B3E1BB2CF2E00C50E18 /* mn_net.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B4B1BB2CF2E00C50E18 /* mn_os.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B401BB2CF2E00C50E18 /* mn_os.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B4C1BB2CF2E00C50E18 /* mn_poll.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B421BB2CF2E00C50E18 /* mn_poll.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B4D1BB2CF2E00C50E18 /* mn_socket_tcp.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B441BB2CF2E00C50E18 /* mn_socket_tcp.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B4E1BB2CF2E00C50E18 /* mn_socket_udp.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B461BB2CF2E00C50E18 /* mn_socket_udp.c */; settings = {ASSET_TAGS = (); }; };
+		F0E45B4F1BB2CF2E00C50E18 /* mn_socket.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B481BB2CF2E00C50E18 /* mn_socket.c */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,21 +51,20 @@
 		216CC3781B52A5D800EFD63A /* magnode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = magnode.m; sourceTree = "<group>"; };
 		216CC37E1B52A5D800EFD63A /* magnodeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = magnodeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		216CC3841B52A5D800EFD63A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		216CC3A81B52A71800EFD63A /* gen_source.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = gen_source.sh; sourceTree = "<group>"; };
-		216CC3AB1B52A71800EFD63A /* mn_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_net.c; sourceTree = "<group>"; };
-		216CC3AC1B52A71800EFD63A /* mn_net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_net.h; sourceTree = "<group>"; };
-		216CC3AD1B52A71800EFD63A /* mn_os.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_os.c; sourceTree = "<group>"; };
-		216CC3AE1B52A71800EFD63A /* mn_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_os.h; sourceTree = "<group>"; };
-		216CC3AF1B52A71800EFD63A /* mn_poll.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_poll.c; sourceTree = "<group>"; };
-		216CC3B01B52A71800EFD63A /* mn_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_poll.h; sourceTree = "<group>"; };
-		216CC3B11B52A71800EFD63A /* mn_socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket.c; sourceTree = "<group>"; };
-		216CC3B21B52A71800EFD63A /* mn_socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket.h; sourceTree = "<group>"; };
-		216CC3B31B52A71800EFD63A /* mn_socket_tcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket_tcp.c; sourceTree = "<group>"; };
-		216CC3B41B52A71800EFD63A /* mn_socket_tcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket_tcp.h; sourceTree = "<group>"; };
-		216CC3B51B52A71800EFD63A /* mn_socket_udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket_udp.c; sourceTree = "<group>"; };
-		216CC3B61B52A71800EFD63A /* mn_socket_udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket_udp.h; sourceTree = "<group>"; };
-		216CC3FB1B52C51F00EFD63A /* mn_log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_log.c; sourceTree = "<group>"; };
-		216CC3FC1B52C51F00EFD63A /* mn_log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_log.h; sourceTree = "<group>"; };
+		F0E45B3A1BB284B300C50E18 /* magnode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = magnode.c; sourceTree = "<group>"; };
+		F0E45B3C1BB284DF00C50E18 /* magnode_errcode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = magnode_errcode.c; sourceTree = "<group>"; };
+		F0E45B3E1BB2CF2E00C50E18 /* mn_net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_net.c; sourceTree = "<group>"; };
+		F0E45B3F1BB2CF2E00C50E18 /* mn_net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_net.h; sourceTree = "<group>"; };
+		F0E45B401BB2CF2E00C50E18 /* mn_os.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_os.c; sourceTree = "<group>"; };
+		F0E45B411BB2CF2E00C50E18 /* mn_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_os.h; sourceTree = "<group>"; };
+		F0E45B421BB2CF2E00C50E18 /* mn_poll.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_poll.c; sourceTree = "<group>"; };
+		F0E45B431BB2CF2E00C50E18 /* mn_poll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_poll.h; sourceTree = "<group>"; };
+		F0E45B441BB2CF2E00C50E18 /* mn_socket_tcp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket_tcp.c; sourceTree = "<group>"; };
+		F0E45B451BB2CF2E00C50E18 /* mn_socket_tcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket_tcp.h; sourceTree = "<group>"; };
+		F0E45B461BB2CF2E00C50E18 /* mn_socket_udp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket_udp.c; sourceTree = "<group>"; };
+		F0E45B471BB2CF2E00C50E18 /* mn_socket_udp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket_udp.h; sourceTree = "<group>"; };
+		F0E45B481BB2CF2E00C50E18 /* mn_socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mn_socket.c; sourceTree = "<group>"; };
+		F0E45B491BB2CF2E00C50E18 /* mn_socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mn_socket.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,8 +89,8 @@
 		216CC36A1B52A5D800EFD63A = {
 			isa = PBXGroup;
 			children = (
+				F0E45B371BB2834800C50E18 /* src */,
 				216CC3A51B52A71800EFD63A /* include */,
-				216CC3A61B52A71800EFD63A /* src */,
 				216CC3751B52A5D800EFD63A /* magnode */,
 				216CC3821B52A5D800EFD63A /* magnodeTests */,
 				216CC3741B52A5D800EFD63A /* Products */,
@@ -141,41 +141,40 @@
 			path = ../../../include;
 			sourceTree = "<group>";
 		};
-		216CC3A61B52A71800EFD63A /* src */ = {
+		F0E45B371BB2834800C50E18 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				216CC3FA1B52C51F00EFD63A /* utils */,
-				216CC3A71B52A71800EFD63A /* net */,
+				F0E45B381BB2836800C50E18 /* net */,
+				F0E45B391BB2836800C50E18 /* utils */,
+				F0E45B3A1BB284B300C50E18 /* magnode.c */,
+				F0E45B3C1BB284DF00C50E18 /* magnode_errcode.c */,
 			);
 			name = src;
 			path = ../../../src;
 			sourceTree = "<group>";
 		};
-		216CC3A71B52A71800EFD63A /* net */ = {
+		F0E45B381BB2836800C50E18 /* net */ = {
 			isa = PBXGroup;
 			children = (
-				216CC3A81B52A71800EFD63A /* gen_source.sh */,
-				216CC3AB1B52A71800EFD63A /* mn_net.c */,
-				216CC3AC1B52A71800EFD63A /* mn_net.h */,
-				216CC3AD1B52A71800EFD63A /* mn_os.c */,
-				216CC3AE1B52A71800EFD63A /* mn_os.h */,
-				216CC3AF1B52A71800EFD63A /* mn_poll.c */,
-				216CC3B01B52A71800EFD63A /* mn_poll.h */,
-				216CC3B11B52A71800EFD63A /* mn_socket.c */,
-				216CC3B21B52A71800EFD63A /* mn_socket.h */,
-				216CC3B31B52A71800EFD63A /* mn_socket_tcp.c */,
-				216CC3B41B52A71800EFD63A /* mn_socket_tcp.h */,
-				216CC3B51B52A71800EFD63A /* mn_socket_udp.c */,
-				216CC3B61B52A71800EFD63A /* mn_socket_udp.h */,
+				F0E45B3E1BB2CF2E00C50E18 /* mn_net.c */,
+				F0E45B3F1BB2CF2E00C50E18 /* mn_net.h */,
+				F0E45B401BB2CF2E00C50E18 /* mn_os.c */,
+				F0E45B411BB2CF2E00C50E18 /* mn_os.h */,
+				F0E45B421BB2CF2E00C50E18 /* mn_poll.c */,
+				F0E45B431BB2CF2E00C50E18 /* mn_poll.h */,
+				F0E45B441BB2CF2E00C50E18 /* mn_socket_tcp.c */,
+				F0E45B451BB2CF2E00C50E18 /* mn_socket_tcp.h */,
+				F0E45B461BB2CF2E00C50E18 /* mn_socket_udp.c */,
+				F0E45B471BB2CF2E00C50E18 /* mn_socket_udp.h */,
+				F0E45B481BB2CF2E00C50E18 /* mn_socket.c */,
+				F0E45B491BB2CF2E00C50E18 /* mn_socket.h */,
 			);
 			path = net;
 			sourceTree = "<group>";
 		};
-		216CC3FA1B52C51F00EFD63A /* utils */ = {
+		F0E45B391BB2836800C50E18 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				216CC3FB1B52C51F00EFD63A /* mn_log.c */,
-				216CC3FC1B52C51F00EFD63A /* mn_log.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -224,7 +223,7 @@
 		216CC36B1B52A5D800EFD63A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0640;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "proj-m";
 				TargetAttributes = {
 					216CC3721B52A5D800EFD63A = {
@@ -268,14 +267,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				216CC3BA1B52A71800EFD63A /* mn_poll.c in Sources */,
-				216CC3BB1B52A71800EFD63A /* mn_socket.c in Sources */,
-				216CC3BC1B52A71800EFD63A /* mn_socket_tcp.c in Sources */,
-				216CC3BD1B52A71800EFD63A /* mn_socket_udp.c in Sources */,
-				216CC3B91B52A71800EFD63A /* mn_os.c in Sources */,
-				216CC3FD1B52C51F00EFD63A /* mn_log.c in Sources */,
+				F0E45B4B1BB2CF2E00C50E18 /* mn_os.c in Sources */,
 				216CC3791B52A5D800EFD63A /* magnode.m in Sources */,
-				216CC3B81B52A71800EFD63A /* mn_net.c in Sources */,
+				F0E45B4D1BB2CF2E00C50E18 /* mn_socket_tcp.c in Sources */,
+				F0E45B4E1BB2CF2E00C50E18 /* mn_socket_udp.c in Sources */,
+				F0E45B4F1BB2CF2E00C50E18 /* mn_socket.c in Sources */,
+				F0E45B3B1BB284B300C50E18 /* magnode.c in Sources */,
+				F0E45B4A1BB2CF2E00C50E18 /* mn_net.c in Sources */,
+				F0E45B3D1BB284DF00C50E18 /* magnode_errcode.c in Sources */,
+				F0E45B4C1BB2CF2E00C50E18 /* mn_poll.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +317,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -409,6 +410,7 @@
 				);
 				INFOPLIST_FILE = magnodeTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.proj-m.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -423,6 +425,7 @@
 				);
 				INFOPLIST_FILE = magnodeTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.proj-m.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
