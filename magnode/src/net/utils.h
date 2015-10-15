@@ -6,7 +6,7 @@
 #ifndef MAGNODE_NET_MN_UTILS_H_
 #define MAGNODE_NET_MN_UTILS_H_
 
-#include "mn_os.h"
+#include "os.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
 #include <sys/time.h>

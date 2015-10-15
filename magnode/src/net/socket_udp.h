@@ -6,7 +6,7 @@
 #ifndef MAGNODE_NET_MN_SOCKET_UDP_H_
 #define MAGNODE_NET_MN_SOCKET_UDP_H_
 
-#include "mn_socket.h"
+#include "socket.h"
 
 
 ssize_t mn_socket_sendto(struct mn_socket *fd, const void *buf, size_t len, int flags, uint64_t timeout);

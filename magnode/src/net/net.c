@@ -7,12 +7,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "mn_net.h"
-#include "mn_log.h"
-#include "mn_socket_udp.h"
-#include "mn_socket_tcp.h"
-#include "mn_poll.h"
-#include "mn_utils.h"
+#include "net.h"
+#include "log.h"
+#include "socket_udp.h"
+#include "socket_tcp.h"
+#include "poll.h"
+#include "utils.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
 #include <sys/time.h>

@@ -3,8 +3,8 @@
  * Licence MIT
  */
 
-#include "mn_poll.h"
-#include "mn_net.h"
+#include "poll.h"
+#include "net.h"
 
 
 int mn_poll(int fd, int type, uint64_t timeout)

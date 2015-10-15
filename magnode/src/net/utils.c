@@ -3,7 +3,7 @@
  * Licence MIT
  */
 
-#include "mn_utils.h"
+#include "utils.h"
 
 #ifdef MN_ANDROID
 uint64_t htonll(uint64_t val) {

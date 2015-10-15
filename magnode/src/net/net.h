@@ -6,7 +6,8 @@
 #ifndef MAGNODE_NET_MN_NET_H_
 #define MAGNODE_NET_MN_NET_H_
 
-#include "mn_os.h"
+#include "magnode.h"
+#include "os.h"
 
 #if defined MN_APPLE || defined MN_ANDROID
 #include <sys/select.h>

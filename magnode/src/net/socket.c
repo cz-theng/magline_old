@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "mn_socket.h"
+#include "socket.h"
 
 #if defined  MN_APPLE || defined MN_ANDROID
 #include <sys/socket.h>

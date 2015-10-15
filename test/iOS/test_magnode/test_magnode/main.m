@@ -16,7 +16,7 @@ void _main()
     mn_node node;
     int ret = mn_connect("tcp://127.0.0.1:8088", &node, 5000);
     if (ret != 0){
-        LOG_E("connect error with ret %d",(int)ret);
+        printf("connect error with ret %d",(int)ret);
     }
     
     printf("Connect Success!");

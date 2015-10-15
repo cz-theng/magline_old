@@ -6,7 +6,7 @@
 #ifndef MAGNODE_NET_MN_SOCKET_H_
 #define MAGNODE_NET_MN_SOCKET_H_
 
-#include "mn_net.h"
+#include "net.h"
 
 int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd);
 

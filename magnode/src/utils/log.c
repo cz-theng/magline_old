@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#include "mn_log.h"
-#include "mn_os.h"
+#include "log.h"
+#include "os.h"
 
 
 #include <stdarg.h>

@@ -7,8 +7,8 @@
 #define MAGNODE_NET_MN_SOCKET_TCP_H_
 
 
-#include "mn_socket.h"
-#include "mn_socket_tcp.h"
+#include "socket.h"
+#include "socket_tcp.h"
 
 
 int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags, uint64_t timeout);
