@@ -148,12 +148,12 @@ static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
 }
 
 
-int mn_listen(char *url)
+int mn_net_listen(char *url)
 {
     return 0;
 }
 
-int mn_close(struct mn_socket *sfd)
+int mn_net_close(struct mn_socket *sfd)
 {
     if (NULL == sfd) {
         return MN_EARG;
@@ -165,7 +165,7 @@ int mn_close(struct mn_socket *sfd)
     return rst;
 }
 
-int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
+int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
 {
     struct mn_sockaddr addr;
     if (NULL == url || NULL == sfd) {
@@ -207,7 +207,7 @@ int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
     return 0;
 }
 
-int mn_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout)
+int mn_net_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout)
 {
     int rst;
 	
@@ -232,7 +232,7 @@ int mn_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout)
     return rst;
 }
 
-int mn_recv(struct mn_socket *sfd,void *buf,size_t *len,uint64_t timeout)
+int mn_net_recv(struct mn_socket *sfd,void *buf,size_t *len,uint64_t timeout)
 {
     int rst;
     if (NULL == sfd || NULL == buf || NULL == len) {

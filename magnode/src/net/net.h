@@ -96,7 +96,7 @@ extern "C" {
         NET_RECV_BUF_SIZE = 1*1024*1024,
         NET_SEND_BUF_SIZE = 1*1024*1024,
     };
-    
+/*
     struct mn_socket
     {
         int sfd;
@@ -104,7 +104,7 @@ extern "C" {
         struct sockaddr dest_addr;
         socklen_t addrlen;
     };
-    
+*/
     struct mn_sockaddr
     {
         enum net_proto proto;
@@ -112,15 +112,15 @@ extern "C" {
         uint16_t port;
     };
 
-    int mn_listen(char *url);
+    int mn_net_listen(char *url);
 
-    int mn_close(struct mn_socket *sfd);
+    int mn_net_close(struct mn_socket *sfd);
 
-    int mn_connect(const char *url,struct mn_socket *sfd, uint64_t timeout);
+    int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout);
 
-    int mn_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout);
+    int mn_net_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout);
 
-    int mn_recv(struct mn_socket *sfd,void *buf,size_t *len,uint64_t timeout);
+    int mn_net_recv(struct mn_socket *sfd,void *buf,size_t *len,uint64_t timeout);
     
             
 #ifdef __cplusplus
