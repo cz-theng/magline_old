@@ -45,7 +45,7 @@ extern "C" {
 
     #define MAX_HOST_LEN 256
         
-    #define MN_HAUSNUMERO 520727134
+    #define MN_HAUSNUMERO 1000
     
     #ifndef MN_ETIMEOUT
     #define MN_ETIMEOUT     -(MN_HAUSNUMERO + 1)

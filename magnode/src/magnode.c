@@ -12,32 +12,50 @@
 
 int mn_init(mn_node *node)
 {
-    return -1;
+    if (NULL == node){
+        return EARG;
+    }
+    return 0;
 }
 
 int mn_deinit(mn_node *node)
 {
-    return -1;
+    if (NULL == node){
+        return EARG;
+    }
+    return 0;
 }
 
 int mn_connect(mn_node *node,const char *url, uint64_t timeout)
 {
-    return -1;
+    if (NULL == node || NULL==url ){
+        return EARG;
+    }
+    return 0;
 }
 
 int mn_reconnect(mn_node *node, uint64_t timeout)
 {
-    return -1;
+    if (NULL == node){
+        return EARG;
+    }
+    return 0;
 }
 
 int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
 {
-    return -1;
+    if (NULL == node || NULL == buf ){
+        return EARG;
+    }
+    return 0;
 }
 
-int mn_recv(mn_node *node,void *buf,size_t *length,uint64_t timeout)
+int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
 {
-    return -1;
+    if (NULL == node || NULL == buf){
+        return EARG;
+    }
+    return 0;
 }
 
 int mn_close(mn_node *node)

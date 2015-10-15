@@ -13,8 +13,10 @@
 extern  "C" {
 #endif
     
+#define MN_ERRNO_BASE 10000
+    
     enum mn_errno {
-        a = 1,
+        EARG = -(MN_ERRNO_BASE +1),
     };
     
 #ifdef __cplusplus
