@@ -68,6 +68,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F08EE4301BCFE4CE00797F43 /* proto */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = proto;
+			sourceTree = "<group>";
+		};
 		F0E45B6A1BB2E04800C50E18 = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +114,7 @@
 		F0E45B801BB2E06300C50E18 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				F08EE4301BCFE4CE00797F43 /* proto */,
 				F0E45B811BB2E06300C50E18 /* magnode.c */,
 				F0E45B821BB2E06300C50E18 /* magnode_errcode.c */,
 				F0E45B831BB2E06300C50E18 /* net */,

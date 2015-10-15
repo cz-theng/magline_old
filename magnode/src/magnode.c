@@ -60,5 +60,8 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
 
 int mn_close(mn_node *node)
 {
-    return -1;
+    if (NULL == node){
+        return EARG;
+    }
+    return 0;
 }
