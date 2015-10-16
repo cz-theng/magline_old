@@ -22,6 +22,11 @@ extern  "C" {
         MN_EBODYLEN     = -(MN_ERRNO_BASE + 4),
         MN_EHEAD        = -(MN_ERRNO_BASE + 5),
         MN_ECMD         = -(MN_ERRNO_BASE + 6),
+        MN_EALLOC       = -(MN_ERRNO_BASE + 7),
+        MN_ESEND        = -(MN_ERRNO_BASE + 8),
+        MN_ERECV        = -(MN_ERRNO_BASE + 9),
+        MN_EPARSE       = -(MN_ERRNO_BASE + 10),
+        MN_EUNPARSE     = -(MN_ERRNO_BASE + 11),
     };
     
 #ifdef __cplusplus

@@ -14,13 +14,13 @@
 
 
 
-int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *buf, size_t buflen)
+int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *buf, size_t *buflen)
 {
     size_t idx = 0;
-    if (NULL == head || NULL == buf) {
+    if (NULL == head || NULL == buf || NULL == buflen) {
         return MN_EARG;
     }
-    if (buflen < (sizeof(mn_nodemsg_head)+body_len)) {
+    if (*buflen < (sizeof(mn_nodemsg_head)+body_len)) {
         return  MN_EBODYLEN;
     }
 
@@ -38,7 +38,7 @@ int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *bu
     idx += 4;
 
     memcpy((void *)((char *)buf+idx), body, body_len);
-
+    buflen = body_len + sizeof(mn_nodemsg_head);
     return 0;
 }
 
@@ -48,6 +48,8 @@ int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void
     if (NULL == head || NULL == buf) {
         return MN_EARG;
     }
+    MN_NODEMSG_HEAD_INIT(head, MN_CMD_UNKNOWN, 0);
+    
     head->magic =*(uint8_t *)((char *)buf+idx);
     idx++;
     head->version =*(uint8_t *)((char *)buf+idx);
