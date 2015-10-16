@@ -71,7 +71,7 @@ static int ip_or_domain(const char *host)
 static int host2in(const char *host, struct in_addr *addr)
 {
     if (! host || !addr ){
-        return MN_ENULL;
+        return MN__ENULL;
     }
     int isIP  = ip_or_domain(host);
     if (0==isIP) {
@@ -92,9 +92,9 @@ static int host2in(const char *host, struct in_addr *addr)
 int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 {
 	if (NULL == addr || NULL == sfd)
-		return MN_ENULL;
+		return MN__ENULL;
     if (NET_UDP != addr->proto) {
-        return MN_EPROTO;
+        return MN__EPROTO;
     } else {
         sfd->proto = addr->proto;
         sfd->sfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -117,9 +117,9 @@ int mn_socket_udp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 int mn_socket_tcp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 {
     if (NULL == addr || NULL == sfd)
-        return MN_ENULL;
+        return MN__ENULL;
     if (NET_TCP != addr->proto) {
-        return MN_EPROTO;
+        return MN__EPROTO;
     } else {
         sfd->proto = addr->proto;
         sfd->sfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -141,7 +141,7 @@ int mn_socket_tcp(struct mn_sockaddr *addr, struct mn_socket *sfd)
 int mn_socket_close(struct mn_socket *sfd)
 {
     if (!sfd) {
-        return MN_ENULLARG;
+        return MN__ENULLARG;
     }
 #if defined MN_WIN
 	return closesocket(sfd->sfd);

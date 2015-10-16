@@ -14,7 +14,7 @@
 int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags, uint64_t timeout)
 {
     if (NULL == fd || buf == fd || NULL==len) {
-        return MN_EARG;
+        return MN__EARG;
     }
     size_t task;
     const char *guard;
@@ -32,7 +32,7 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
                 return 0;
             } else {
                 *len = 0;
-                return MN_ESEND;
+                return MN__ESEND;
             }
         }
         
@@ -44,7 +44,7 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
             } else {
                 *len = (*len) - task;
             }
-            return MN_ETIMEOUT;
+            return MN__ETIMEOUT;
         }
         if (rst > 0) {
             task -= rst;
@@ -59,7 +59,7 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
             } else {
                 *len = (*len) - task;
                 // other errors
-                return MN_ESEND;
+                return MN__ESEND;
             }
         }
     }
@@ -70,7 +70,7 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
 int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint64_t timeout)
 {
     if (NULL == fd || NULL == buf || NULL == len) {
-        return MN_EARG;
+        return MN__EARG;
     }
     
     size_t task;
@@ -89,7 +89,7 @@ int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint
                 return 0;
             } else {
                 *len = 0;
-                return MN_ERECV;
+                return MN__ERECV;
             }
         }
         
@@ -101,7 +101,7 @@ int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint
             } else {
                 *len = (*len) - task;
             }
-            return MN_ETIMEOUT;
+            return MN__ETIMEOUT;
         }
         if (rst > 0) {
             guard += rst;
@@ -116,7 +116,7 @@ int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint
             } else {
                 // other errors
                 *len = (*len) - task;
-                return MN_ESEND;
+                return MN__ESEND;
             }
         }
     }

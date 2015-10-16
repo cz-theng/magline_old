@@ -47,41 +47,41 @@ extern "C" {
         
     #define MN_HAUSNUMERO 1000
     
-    #ifndef MN_ETIMEOUT
-    #define MN_ETIMEOUT     -(MN_HAUSNUMERO + 1)
+    #ifndef MN__ETIMEOUT
+    #define MN__ETIMEOUT     -(MN_HAUSNUMERO + 1)
     #endif
-    #ifndef MN_EPROTO
-    #define MN_EPROTO       -(MN_HAUSNUMERO + 2)
+    #ifndef MN__EPROTO
+    #define MN__EPROTO       -(MN_HAUSNUMERO + 2)
     #endif
-    #ifndef MN_ESEND
-    #define MN_ESEND        -(MN_HAUSNUMERO + 3)
+    #ifndef MN__ESEND
+    #define MN__ESEND        -(MN_HAUSNUMERO + 3)
     #endif
-    #ifndef MN_ERECVFROM
-    #define MN_ERECVFROM    -(MN_HAUSNUMERO + 4)
+    #ifndef MN__ERECVFROM
+    #define MN__ERECVFROM    -(MN_HAUSNUMERO + 4)
     #endif
-    #ifndef MN_ENULLARG
-    #define MN_ENULLARG     -(MN_HAUSNUMERO + 5)
+    #ifndef MN__ENULLARG
+    #define MN__ENULLARG     -(MN_HAUSNUMERO + 5)
     #endif
-    #ifndef MN_EURL
-    #define MN_EURL         -(MN_HAUSNUMERO + 6)
+    #ifndef MN__EURL
+    #define MN__EURL         -(MN_HAUSNUMERO + 6)
     #endif
-    #ifndef MN_EPOLL
-    #define MN_EPOLL        -(MN_HAUSNUMERO + 7)
+    #ifndef MN__EPOLL
+    #define MN__EPOLL        -(MN_HAUSNUMERO + 7)
     #endif
-    #ifndef MN_ENULL
-    #define MN_ENULL        -(MN_HAUSNUMERO + 8)
+    #ifndef MN__ENULL
+    #define MN__ENULL        -(MN_HAUSNUMERO + 8)
     #endif
-    #ifndef MN_ECONN
-    #define MN_ECONN        -(MN_HAUSNUMERO + 9)
+    #ifndef MN__ECONN
+    #define MN__ECONN        -(MN_HAUSNUMERO + 9)
     #endif
-    #ifndef MN_EARG
-    #define MN_EARG         -(MN_HAUSNUMERO + 10)
+    #ifndef MN__EARG
+    #define MN__EARG         -(MN_HAUSNUMERO + 10)
     #endif
-    #ifndef MN_ESENDTO
-    #define MN_ESENDTO      -(MN_HAUSNUMERO + 11)
+    #ifndef MN__ESENDTO
+    #define MN__ESENDTO      -(MN_HAUSNUMERO + 11)
     #endif
-    #ifndef MN_ERECV
-    #define MN_ERECV        -(MN_HAUSNUMERO + 12)
+    #ifndef MN__ERECV
+    #define MN__ERECV        -(MN_HAUSNUMERO + 12)
     #endif
     
     

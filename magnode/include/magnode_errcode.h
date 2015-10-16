@@ -16,7 +16,9 @@ extern  "C" {
 #define MN_ERRNO_BASE 10000
     
     enum mn_errno {
-        EARG = -(MN_ERRNO_BASE +1),
+        MN_EARG     = -(MN_ERRNO_BASE +1),
+        MN_ETIMEOUT = -(MN_ERRNO_BASE + 2),
+        MN_ECONN    = -(MN_ERRNO_BASE + 3),
     };
     
 #ifdef __cplusplus

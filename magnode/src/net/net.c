@@ -24,7 +24,7 @@ int parse_url(const char *url,struct mn_sockaddr *addr)
     char *colon = NULL;
     if (NULL == url || NULL == addr)
     {
-        return MN_EARG;
+        return MN__EARG;
     }
     memset(addr->host,'\0',MAX_HOST_LEN);
     addr->port = 0;
@@ -34,12 +34,12 @@ int parse_url(const char *url,struct mn_sockaddr *addr)
         addr->proto = NET_UDP;
         colon =  strchr(url+6,':');
         if (!colon) {
-            return MN_EURL;
+            return MN__EURL;
         }
         
         ssize_t ip_len = colon - url-6 ;
         if (ip_len <= 0 || (6+ip_len) >= strlen(url)) {
-            return MN_EURL;
+            return MN__EURL;
         }
         memcpy(addr->host,url+6,ip_len);
         
@@ -47,23 +47,23 @@ int parse_url(const char *url,struct mn_sockaddr *addr)
         addr->proto = NET_TCP;
         colon =  strchr(url+6,':');
         if (!colon) {
-            return MN_EURL;
+            return MN__EURL;
         }
         
         ssize_t ip_len = colon - url-6 ;
         if (ip_len <= 0 || (6+ip_len) >= strlen(url)) {
-            return MN_EURL;
+            return MN__EURL;
         }
         memcpy(addr->host,url+6,ip_len);
         
     } else {
         addr->proto = NET_UNKNOWN;
-        return MN_EURL;
+        return MN__EURL;
     }
     
     int port = atoi(colon+1);
     if (port<=0 || port >65536) {
-        return MN_EURL;
+        return MN__EURL;
     }
     addr->port = port;
     return 0;
@@ -73,7 +73,7 @@ int parse_url(const char *url,struct mn_sockaddr *addr)
 static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
 {
     if(NULL == socket || socket->sfd<3 ||  timeout ==0) {
-        return MN_EARG;
+        return MN__EARG;
     }
     
     struct timeval bt;
@@ -104,12 +104,12 @@ static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
             struct timeval st;
             gettimeofday(&st, NULL);
             if (timeval_min_usec(&st, &bt) > timeout) {
-                return MN_ETIMEOUT;
+                return MN__ETIMEOUT;
             }
             if (rst<0){
                 //select error
                 LOG_E("select error \n");
-                return MN_ECONN;
+                return MN__ECONN;
             } else if (rst == 0) {
                 // Timeout :haven't done connection
                 continue;
@@ -141,7 +141,7 @@ static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
         }  //end of while
     } else {
         LOG_E("errno is %d",errno);
-        return MN_ECONN;
+        return MN__ECONN;
     } // May have other errno s;
     
     return 0;
@@ -156,7 +156,7 @@ int mn_net_listen(char *url)
 int mn_net_close(struct mn_socket *sfd)
 {
     if (NULL == sfd) {
-        return MN_EARG;
+        return MN__EARG;
     }
     
     int rst;
@@ -169,7 +169,7 @@ int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
 {
     struct mn_sockaddr addr;
     if (NULL == url || NULL == sfd) {
-		return MN_ENULL;
+		return MN__ENULL;
     }
     // parse url
     int rst  = parse_url(url,&addr);
@@ -182,7 +182,7 @@ int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
     } else if (NET_TCP == addr.proto) {
         rst = mn_socket_tcp(&addr, sfd);
     } else {
-        rst =  MN_EPROTO;
+        rst =  MN__EPROTO;
     }
     
     if (0 != rst) {
@@ -212,7 +212,7 @@ int mn_net_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeo
     int rst;
 	
     if (NULL == sfd || NULL == buf || NULL == len) {
-		return MN_EARG;
+		return MN__EARG;
     }
 	
     if (NET_TCP ==  sfd->proto) {
@@ -226,7 +226,7 @@ int mn_net_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeo
             rst = (int)ret;
         }
     } else {
-        rst = MN_EPROTO;
+        rst = MN__EPROTO;
     }
     
     return rst;
@@ -236,7 +236,7 @@ int mn_net_recv(struct mn_socket *sfd,void *buf,size_t *len,uint64_t timeout)
 {
     int rst;
     if (NULL == sfd || NULL == buf || NULL == len) {
-		return MN_EARG;
+		return MN__EARG;
     }
     
     if (NET_TCP == sfd->proto) {

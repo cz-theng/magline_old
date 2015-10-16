@@ -12,12 +12,12 @@ ssize_t mn_socket_sendto(struct mn_socket *fd, const void *buf, size_t len, int 
 {
     ssize_t rst = 0;
     if (NULL == fd || NULL == buf) {
-        return MN_EARG;
+        return MN__EARG;
     }
 
     rst = sendto(fd->sfd,(const char *) buf, len, flags, &fd->dest_addr, fd->addrlen);
     if (rst < 0) {
-        return  MN_ESEND;
+        return  MN__ESEND;
     } else {
         return rst;
     }
@@ -27,14 +27,14 @@ ssize_t mn_socket_recvfrom(struct mn_socket *fd, void *buf, size_t len, int flag
 {
     ssize_t rst = 0;
     if (NULL == fd || NULL == buf) {
-        return MN_EARG;
+        return MN__EARG;
     }
 
     rst = recvfrom(fd->sfd,(char *) buf, len, flags,  NULL, NULL);
     if (rst >= 0) {
         return rst;
     } else {
-        return MN_ERECVFROM;
+        return MN__ERECVFROM;
     }
         
 }

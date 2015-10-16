@@ -25,18 +25,18 @@ int mn_poll(int fd, int type, uint64_t timeout)
     }
     
     if( rst<0 ) {
-        return MN_EPOLL;
+        return MN__EPOLL;
     }
     
     if (0 == rst) {
-        return MN_ETIMEOUT;
+        return MN__ETIMEOUT;
     }
     
     if (FD_ISSET(fd, &fds)) {
         return 0;
     }
     
-    return MN_EPOLL;
+    return MN__EPOLL;
 }
 
 
