@@ -11,6 +11,7 @@
 #include "magnode_errcode.h"
 #include "net.h"
 #include "utils.h"
+#include "proto.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
 #include <sys/time.h>
