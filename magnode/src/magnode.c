@@ -140,7 +140,7 @@ int mn_deinit(mn_node *node)
         FREE(node->recvbuf);
         node->recvbuflen = 0;
     }
-    
+    node->agent_id = 0;
     return 0;
 }
 
@@ -290,11 +290,27 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
 
 int mn_close(mn_node *node)
 {
+    mn_nodemsg_head head;
+    int rst;
     if (NULL == node){
         LOG_E("mn_close: node is NULL");
         return MN_EARG;
     }
     LOG_I("mn_close(node %p)", node);
+    
+    
+    MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_CLOSE, node->agent_id);
+    
+    rst = parse2mem(&head, NULL, 0, node->sendbuf, &node->sendbuflen);
+    if (rst != 0) {
+        return MN_EPARSE;
+    }
+    
+    rst = mn_net_send(&node->socket, node->sendbuf, &node->sendbuflen, MN_MAX_TIMEOUT);
+    if (rst != 0 ) {
+        return MN_ESEND;
+    }
+    mn_net_close(&node->socket);
     
     return 0;
 }
