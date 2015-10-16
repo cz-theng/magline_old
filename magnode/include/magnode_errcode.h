@@ -16,10 +16,12 @@ extern  "C" {
 #define MN_ERRNO_BASE 10000
     
     enum mn_errno {
-        MN_EARG         = -(MN_ERRNO_BASE +1),
+        MN_EARG         = -(MN_ERRNO_BASE + 1),
         MN_ETIMEOUT     = -(MN_ERRNO_BASE + 2),
         MN_ECONN        = -(MN_ERRNO_BASE + 3),
-        MN_EBODYLEN      = -(MN_ERRNO_BASE + 4),
+        MN_EBODYLEN     = -(MN_ERRNO_BASE + 4),
+        MN_EHEAD        = -(MN_ERRNO_BASE + 5),
+        MN_ECMD         = -(MN_ERRNO_BASE + 6),
     };
     
 #ifdef __cplusplus

@@ -12,44 +12,53 @@
 #include <stdio.h>
 #include <stdint.h>
 
-const uint8_t MAGIC = 0x7f;
-const uint8_t VERSION = 0x01;
+enum {
+    MN_MAX_MSG_LEN = 1024,
+    
+    MN_MAGIC = 0x7f,
+    MN_VERSION = 0x01,
+};
 
-enum CMD {
-    CMD_REQ_CONN = 0x0001,
-    CMD_RSP_CONN = 0x0002,
+enum MN_CMD {
+    MN_CMD_REQ_CONN = 0x0001,
+    MN_CMD_RSP_CONN = 0x0002,
     
-    CMD_REQ_SEND = 0x0003,
-    CMD_RSP_SEND = 0x0004,
+    MN_CMD_REQ_SEND = 0x0003,
+    MN_CMD_RSP_SEND = 0x0004,
 
-    CMD_REQ_RECV = 0x0005,
-    CMD_RSP_RECV = 0x0006,
+    MN_CMD_REQ_RECV = 0x0005,
+    MN_CMD_RSP_RECV = 0x0006,
     
-    CMD_REQ_CLOSE = 0x0007,
-    CMD_RSP_CLOSE = 0x0008,
+    MN_CMD_REQ_CLOSE = 0x0007,
+    MN_CMD_RSP_CLOSE = 0x0008,
     
-    CMD_REQ_RECONN = 0x0009,
-    CMD_RSPREQCONN = 0x000a,
+    MN_CMD_REQ_RECONN = 0x0009,
+    MN_CMD_RSPREQCONN = 0x000a,
 
 };
 
-typedef struct nodemsg_head_t {
+typedef struct mn_nodemsg_head_t {
     uint8_t magic;
     uint8_t version;
     uint16_t cmd;
     uint64_t seq;
     uint64_t agent_id;
     uint64_t length;
-} nodemsg_head;
+} mn_nodemsg_head;
 
-int parse2mem(nodemsg_head *head, const void *body, size_t body_len, void *buf, size_t buflen);
+#undef MN_NODEMSG_HEAD_INIT
+#define MN_NODEMSG_HEAD_INIT(head, CMD, id) do { (head)->magic = MN_MAGIC; \
+                                        (head)->version = MN_VERSION; \
+                                        (head)->cmd = (CMD); \
+                                        (head)->seq = tick_seq(); \
+                                        (head)->agent_id = (id); \
+                                        (head)->length = 0; }while(0)
 
-int parse_from_mem(nodemsg_head *head, const void *body, void *buf, size_t *buflen);
+int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *buf, size_t buflen);
 
-uint64_t tick_seq()
-{
-    static uint64_t seq = 0;
-    return seq++;
-}
+int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void *buf);
 
+uint64_t tick_seq();
+
+int is_invalied_head(mn_nodemsg_head *head);
 #endif /* proto_h */
