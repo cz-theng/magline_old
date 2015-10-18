@@ -1,6 +1,23 @@
 package proto
 
 const (
-	CMD_MN_CONN_REQ = uint16(1)
-	CMD_MN_CONN_RSP = uint16(2)
+	MN_MAGIC   = 0x7f
+	MN_VERSION = 0x01
+
+	MN_CMD_UNKNOWN = uint16(0x0000)
+
+	MN_CMD_REQ_CONN = uint16(0x0001)
+	MN_CMD_RSP_CONN = uint16(0x0002)
+
+	MN_CMD_REQ_SEND = uint16(0x0003)
+	MN_CMD_RSP_SEND = uint16(0x0004)
+
+	MN_CMD_REQ_RECV = uint16(0x0005)
+	MN_CMD_RSP_RECV = uint16(0x0006)
+
+	MN_CMD_REQ_CLOSE = uint16(0x0007)
+	MN_CMD_RSP_CLOSE = uint16(0x0008)
+
+	MN_CMD_REQ_RECONN = uint16(0x0009)
+	MN_CMD_RSPREQCONN = uint16(0x000a)
 )

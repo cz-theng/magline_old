@@ -1,48 +1,50 @@
 package maglined
+
 /**
 * Connection for client
-*/
+ */
 import (
+	"container/list"
 	"net"
 
 	"github.com/cz-it/magline/maglined/proto"
 )
 
 type Connection struct {
-	RWC *net.TCPConn
-	ReadBuf []byte
-	ID int
+	RWC       *net.TCPConn
+	ReadBuf   []byte
+	ID        int
 	protoData *proto.NodeProto
+	Elem      *list.Element
 }
 
 func (conn *Connection) RecvRequest() (*Request, error) {
 	conn.protoData.Init()
 	err := conn.protoData.Unpack(conn.RWC)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	req := &Request{
-		CMD:conn.protoData.CMD,
-		AgentID:conn.protoData.AgentID,
-		Body:conn.protoData.Body(),
+		CMD:     conn.protoData.CMD,
+		AgentID: conn.protoData.AgentID,
+		Body:    conn.protoData.Body(),
 	}
 	return req, nil
 }
 
 func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	conn.protoData.Init()
-	conn.protoData.CMD = proto.CMD_MN_CONN_RSP
+	conn.protoData.CMD = proto.MN_CMD_RSP_CONN
 	conn.protoData.AgentID = rsp.AgentID
 	err = conn.protoData.Pack(conn.RWC)
-	return 
+	return
 }
 
-func (conn *Connection) Close() (error ) {
+func (conn *Connection) Close() error {
 	return nil
 }
 
-func (conn *Connection)Serve() {
-	
+func (conn *Connection) Serve() {
 	for {
 		// deal timeout
 		req, err := conn.RecvRequest()
@@ -51,12 +53,12 @@ func (conn *Connection)Serve() {
 			break
 		}
 		cmd := req.CMD
-		if cmd == proto.CMD_MN_CONN_REQ {
+		if cmd == proto.MN_CMD_REQ_CONN {
 			DealNewAgent(conn, req)
 			continue
-		} 
-		ag,err := Find(int(req.AgentID))
-		if err != nil  {
+		}
+		ag, err := Find(int(req.AgentID))
+		if err != nil {
 			if ag == nil {
 				// timeout or something
 			}
@@ -66,25 +68,3 @@ func (conn *Connection)Serve() {
 		ag.DealRequest(req)
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
