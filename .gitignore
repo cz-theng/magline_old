@@ -40,3 +40,6 @@ magnode/build/iOS/magnode/magnode.xcodeproj/project.xcworkspace
 
 test/iOS/test_magnode/test_magnode.xcodeproj/project.xcworkspace/
 test/iOS/test_magnode/test_magnode.xcodeproj/xcuserdata/
+
+maglined/app/log
+maglined/app/maglined
