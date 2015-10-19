@@ -7,8 +7,6 @@ package maglined
 import ()
 
 func Start() {
-	InitAgentMgr(Config.MaxConns)
-
 	svr := Server{Addr: Config.OuterAddr}
 	svr.Init(Config.MaxConns)
 	err := svr.ListenAndServe()

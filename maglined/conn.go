@@ -16,6 +16,8 @@ type Connection struct {
 	ID        int
 	protoData *proto.NodeProto
 	Elem      *list.Element
+	AgentID   uint32
+	Server    *Server
 }
 
 func (conn *Connection) RecvRequest() (*Request, error) {
@@ -57,7 +59,7 @@ func (conn *Connection) Serve() {
 			DealNewAgent(conn, req)
 			continue
 		}
-		ag, err := Find(int(req.AgentID))
+		ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
 		if err != nil {
 			if ag == nil {
 				// timeout or something

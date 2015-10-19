@@ -22,6 +22,11 @@ type Server struct {
 	 * Coonection pool for client
 	 */
 	ConnPool *ConnPool
+
+	/**
+	* Agent Manger
+	 */
+	AgentMgr *AgentMgr
 }
 
 func (svr *Server) Init(maxConns int) (err error) {
@@ -30,6 +35,13 @@ func (svr *Server) Init(maxConns int) (err error) {
 		Logger.Error("New Magline Connection Pool Error!")
 		return
 	}
+
+	svr.AgentMgr, err = NewAgentMgr(maxConns)
+	if err != nil {
+		Logger.Error("New Agent Manager Error!")
+		return
+	}
+
 	return
 }
 

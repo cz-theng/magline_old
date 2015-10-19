@@ -5,8 +5,8 @@ package maglined
  */
 
 import (
-	"container/list"
 	"errors"
+	"math"
 	"sync"
 
 	"github.com/cz-it/magline/maglined/proto"
@@ -17,36 +17,33 @@ var (
 	EREMOVE_TYPE = errors.New("Remove from List Error!")
 	EINDEX       = errors.New("A Invalied Agent Index!")
 	EIDLE_AGENT  = errors.New("It is a Idle Agent!")
+	ENOAGENT     = errors.New("Don't Have Such a Agent")
 )
 
 type AgentMgr struct {
-	mtx        sync.Mutex
-	idleConns  list.List
-	AgentArray []*Agent
+	mtx     sync.Mutex
+	agents  map[uint32]*Agent
+	idGuard uint32
+}
+
+func NewAgentMgr(maxAgents int) (agentMgr *AgentMgr, err error) {
+	agentMgr = new(AgentMgr)
+	err = agentMgr.Init(maxAgents)
+	defer func() {
+		err = ENewAgent
+	}()
+	return
 }
 
 var agentMgr *AgentMgr
 
-func InitAgentMgr(size int) (err error) {
-	agentMgr = new(AgentMgr)
-	defer func() {
-		err = ENewAgent
-	}()
-
-	agents := make([]*Agent, size)
-	for i := 0; i < size; i++ {
-		agents[i] = &Agent{}
+func (am *AgentMgr) FindAgent(id uint32) (agent *Agent, err error) {
+	if a, ok := am.agents[id]; ok {
+		err = nil
+		agent = a
 	}
-	agentMgr.Init(agents[:])
+	err = ENOAGENT
 	return
-}
-
-func Find(idx int) (agent *Agent, err error) {
-	if idx >= 0 && idx < len(agentMgr.AgentArray) {
-		return agentMgr.AgentArray[idx], nil
-	} else {
-		return nil, EINDEX
-	}
 }
 
 func DealNewAgent(conn *Connection, req *Request) (err error) {
@@ -61,36 +58,23 @@ func DealNewAgent(conn *Connection, req *Request) (err error) {
 	return nil
 }
 
-func (am *AgentMgr) Init(dataSplit []*Agent) error {
+func (am *AgentMgr) Init(maxAgents int) error {
 	am.mtx.Lock()
 	defer am.mtx.Unlock()
-	am.idleConns.Init()
-	for i := 0; i < len(dataSplit); i++ {
-		am.idleConns.PushBack(i)
-	}
-	am.AgentArray = dataSplit
-	return nil
-}
-
-func (am *AgentMgr) Recycle(agent *Agent) error {
-	am.mtx.Lock()
-	defer am.mtx.Unlock()
-	id := agent.Index()
-	am.idleConns.PushBack(id)
+	am.idGuard = uint32(math.Exp2(20)) | 512<<21
 	return nil
 }
 
 func (am *AgentMgr) Alloc() (agent *Agent, err error) {
-	if am.idleConns.Len() < 1 {
-		return agent, nil
-	}
 	am.mtx.Lock()
 	defer am.mtx.Unlock()
-	top := am.idleConns.Front()
-	if index, ok := am.idleConns.Remove(top).(int); ok {
-		agent = am.AgentArray[index]
-	} else {
-		err = EREMOVE_TYPE
-	}
+	id := am.tickGuard()
+	agent = &Agent{id}
+	am.agents[id] = agent
 	return
+}
+
+func (am *AgentMgr) tickGuard() uint32 {
+	am.idGuard++
+	return am.idGuard
 }

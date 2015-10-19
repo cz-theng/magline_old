@@ -1,14 +1,13 @@
 package maglined
+
 /**
 * Request for client
-*/
+ */
 
-import (
-)
+import ()
 
 type Request struct {
-	CMD uint16
+	CMD     uint16
 	AgentID uint32
-	Body []byte
+	Body    []byte
 }
-
