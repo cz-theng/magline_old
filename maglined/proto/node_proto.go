@@ -2,12 +2,12 @@ package proto
 
 /**
 * Proto for node
-*/
+ */
 
 import (
-	"io"
 	"encoding/binary"
 	"errors"
+	"io"
 )
 
 var (
@@ -16,32 +16,32 @@ var (
 
 type NodeProto struct {
 	Proto
-	Magic uint8
+	Magic   uint8
 	Version uint8
-	CMD uint16
-	Seq uint32
+	CMD     uint16
+	Seq     uint32
 	AgentID uint32
-	Length uint32
+	Length  uint32
 
 	headBuf [16]byte
 	readBuf []byte
 }
 
-func (np *NodeProto) Body() ([]byte) {
+func (np *NodeProto) Body() []byte {
 	return np.readBuf[:np.Length]
 }
 
 func (np *NodeProto) Init() {
-	
+
 }
 
 func (np *NodeProto) Unpack(rw io.ReadWriter) (err error) {
 	len, err := io.ReadFull(rw, np.headBuf[:])
 	if err != nil {
-		return 
+		return
 	}
 	if len != cap(np.headBuf) {
-		return 
+		return
 	}
 	np.Magic = np.headBuf[0]
 	np.Version = np.headBuf[1]
@@ -57,32 +57,11 @@ func (np *NodeProto) Unpack(rw io.ReadWriter) (err error) {
 
 	len, err = io.ReadFull(rw, np.readBuf[:np.Length])
 	if err != nil {
-		return 
+		return
 	}
 	return
 }
 
-
 func (np *NodeProto) Pack(rw io.ReadWriter) (err error) {
 	return nil
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
