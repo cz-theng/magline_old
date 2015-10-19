@@ -35,7 +35,7 @@ extern "C" {
     
     typedef struct node_t {
         struct mn_socket socket;
-        uint64_t agent_id;
+        uint32_t agent_id;
         void *sendbuf;
         size_t sendbuflen;
         void *recvbuf;

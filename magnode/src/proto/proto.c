@@ -30,11 +30,11 @@ int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *bu
     idx++;
     *(uint16_t *)((char *)buf+idx) = htons(head->cmd);
     idx += 2;
-    *(uint64_t *)((char *)buf+idx) = htonll(head->seq);
+    *(uint32_t *)((char *)buf+idx) = htonl(head->seq);
     idx += 4;
-    *(uint64_t *)((char *)buf+idx) = htonll(head->agent_id);
+    *(uint32_t *)((char *)buf+idx) = htonl(head->agent_id);
     idx += 4;
-    *(uint64_t *)((char *)buf+idx) = htonll(head->length);
+    *(uint32_t *)((char *)buf+idx) = htonl(head->length);
     idx += 4;
 
     memcpy((void *)((char *)buf+idx), body, body_len);
@@ -56,11 +56,11 @@ int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void
     idx++;
     head->cmd =ntohs(*(uint16_t *)((char *)buf+idx));
     idx += 2;
-    head->seq = ntohll(*(uint64_t *)((char *)buf+idx));
+    head->seq = ntohl(*(uint32_t *)((char *)buf+idx));
     idx += 4;
-    head->agent_id = ntohll(*(uint64_t *)((char *)buf+idx));
+    head->agent_id = ntohl(*(uint32_t *)((char *)buf+idx));
     idx += 4;
-    head->length = ntohll(*(uint64_t *)((char *)buf+idx));
+    head->length = ntohl(*(uint32_t *)((char *)buf+idx));
     idx += 4;
     
     if (head->length > *bodylen) {
@@ -73,7 +73,7 @@ int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void
 
 uint64_t tick_seq()
 {
-    static uint64_t seq = 0;
+    static uint32_t seq = 0;
     return seq++;
 }
 

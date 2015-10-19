@@ -47,7 +47,7 @@ typedef struct mn_nodemsg_head_t {
     uint8_t version;
     uint16_t cmd;
     uint32_t seq;
-    uint64_t agent_id;
+    uint32_t agent_id;
     uint32_t length;
 } mn_nodemsg_head;
 
