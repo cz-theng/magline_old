@@ -46,9 +46,9 @@ typedef struct mn_nodemsg_head_t {
     uint8_t magic;
     uint8_t version;
     uint16_t cmd;
-    uint64_t seq;
+    uint32_t seq;
     uint64_t agent_id;
-    uint64_t length;
+    uint32_t length;
 } mn_nodemsg_head;
 
 #undef MN_NODEMSG_HEAD_INIT
