@@ -10,6 +10,10 @@ import (
 	"github.com/cz-it/magline/maglined/proto"
 )
 
+const (
+	READ_BUF_SIZE = 10 * 1024
+)
+
 type Connection struct {
 	RWC       *net.TCPConn
 	ReadBuf   []byte
@@ -20,9 +24,15 @@ type Connection struct {
 	Server    *Server
 }
 
+func (conn *Connection) Init() error {
+	conn.ReadBuf = make([]byte, READ_BUF_SIZE)
+	conn.protoData = new(proto.NodeProto)
+	return nil
+}
+
 func (conn *Connection) RecvRequest() (*Request, error) {
-	conn.protoData.Init()
-	err := conn.protoData.Unpack(conn.RWC)
+	conn.protoData.Init(conn.ReadBuf)
+	err := conn.protoData.RecvAndUnpack(conn.RWC)
 	if err != nil {
 		return nil, err
 	}
@@ -35,15 +45,24 @@ func (conn *Connection) RecvRequest() (*Request, error) {
 }
 
 func (conn *Connection) SendResponse(rsp *Response) (err error) {
-	conn.protoData.Init()
-	conn.protoData.CMD = proto.MN_CMD_RSP_CONN
+	conn.protoData.Init(rsp.Body)
+	conn.protoData.CMD = rsp.CMD
 	conn.protoData.AgentID = rsp.AgentID
-	err = conn.protoData.Pack(conn.RWC)
+	err = conn.protoData.PackAndSend(conn.RWC)
 	return
 }
 
 func (conn *Connection) Close() error {
 	return nil
+}
+
+func (conn *Connection) DealNewAgent(req *Request) {
+	agent, err := conn.Server.AgentMgr.Alloc()
+	if err != nil {
+		Logger.Error("Alloc Agent Error")
+		return
+	}
+	agent.DealRequest(req)
 }
 
 func (conn *Connection) Serve() {
@@ -56,9 +75,14 @@ func (conn *Connection) Serve() {
 		}
 		cmd := req.CMD
 		if cmd == proto.MN_CMD_REQ_CONN {
-			DealNewAgent(conn, req)
+			print("MN_CMD_REQ_CONN")
+			conn.DealNewAgent(req)
+			continue
+		} else {
+			Logger.Error("Unknow CMD %d", cmd)
 			continue
 		}
+
 		ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
 		if err != nil {
 			if ag == nil {

@@ -79,7 +79,6 @@ func (svr *Server) ListenAndServeTCP(l *net.TCPListener, kpal bool) error {
 
 	for {
 		rw, e := l.AcceptTCP()
-		println(rw)
 		if e != nil {
 			if kpal {
 				rw.SetKeepAlive(true)

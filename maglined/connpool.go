@@ -29,8 +29,11 @@ func (cp *ConnPool) Alloc() (conn *Connection, err error) {
 	cp.mtx.Lock()
 	defer cp.mtx.Unlock()
 	conn = new(Connection)
+	err = conn.Init()
+	if err != nil {
+		return
+	}
 	cp.conns.PushBack(conn)
-	err = nil
 	return
 }
 

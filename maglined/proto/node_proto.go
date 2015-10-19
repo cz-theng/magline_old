@@ -31,11 +31,11 @@ func (np *NodeProto) Body() []byte {
 	return np.readBuf[:np.Length]
 }
 
-func (np *NodeProto) Init() {
-
+func (np *NodeProto) Init(buf []byte) {
+	np.readBuf = buf
 }
 
-func (np *NodeProto) Unpack(rw io.ReadWriter) (err error) {
+func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	len, err := io.ReadFull(rw, np.headBuf[:])
 	if err != nil {
 		return
@@ -62,6 +62,14 @@ func (np *NodeProto) Unpack(rw io.ReadWriter) (err error) {
 	return
 }
 
-func (np *NodeProto) Pack(rw io.ReadWriter) (err error) {
+func (np *NodeProto) PackAndSend(rw io.ReadWriter) (err error) {
+	np.headBuf[0] = np.Magic
+	np.headBuf[1] = np.Version
+	binary.BigEndian.PutUint16(np.headBuf[2:4], np.CMD)
+	binary.BigEndian.PutUint32(np.headBuf[4:8], np.Seq)
+	binary.BigEndian.PutUint32(np.headBuf[8:12], np.AgentID)
+	binary.BigEndian.PutUint32(np.headBuf[12:16], np.Length)
+	rw.Write(np.headBuf[:])
+	rw.Write(np.Body())
 	return nil
 }
