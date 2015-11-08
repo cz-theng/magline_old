@@ -38,7 +38,7 @@ func (svr *Server) Init(maxConns int) (err error) {
 
 	svr.AgentMgr, err = NewAgentMgr(maxConns)
 	if err != nil {
-		Logger.Error("New Agent Manager Error!")
+		Logger.Error("New Agent Manager Error err:%s", err.Error())
 		return
 	}
 
@@ -69,6 +69,7 @@ func (svr *Server) newConn(rwc *net.TCPConn) (conn *Connection, err error) {
 		return
 	}
 	conn.RWC = rwc
+	conn.Server = svr
 
 	return
 }

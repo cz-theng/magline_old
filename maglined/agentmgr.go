@@ -29,9 +29,10 @@ type AgentMgr struct {
 func NewAgentMgr(maxAgents int) (agentMgr *AgentMgr, err error) {
 	agentMgr = new(AgentMgr)
 	err = agentMgr.Init(maxAgents)
-	defer func() {
+	if err != nil {
 		err = ENewAgent
-	}()
+		return
+	}
 	return
 }
 
@@ -62,6 +63,7 @@ func (am *AgentMgr) Init(maxAgents int) error {
 	am.mtx.Lock()
 	defer am.mtx.Unlock()
 	am.idGuard = uint32(math.Exp2(20)) | 512<<21
+	am.agents = make(map[uint32]*Agent)
 	return nil
 }
 
@@ -69,7 +71,7 @@ func (am *AgentMgr) Alloc() (agent *Agent, err error) {
 	am.mtx.Lock()
 	defer am.mtx.Unlock()
 	id := am.tickGuard()
-	agent = &Agent{id}
+	agent = &Agent{id: id}
 	am.agents[id] = agent
 	return
 }

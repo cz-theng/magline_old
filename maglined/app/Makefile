@@ -6,6 +6,7 @@ SRC_FILES := $(shell find ..  -name "*.go" )
 .DEFAULT:all
 
 all : $(TARGET)
+	-rm -rf log
 	@echo "[SUCCESS] Done go build"
 
 

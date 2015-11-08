@@ -7,6 +7,7 @@ package proto
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -36,8 +37,12 @@ func (np *NodeProto) Init(buf []byte) {
 }
 
 func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
+	if rw == nil {
+		// TODO : add log here
+		fmt.Println("rw is null")
+	}
 	len, err := io.ReadFull(rw, np.headBuf[:])
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return
 	}
 	if len != cap(np.headBuf) {
@@ -55,8 +60,9 @@ func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 		return
 	}
 
+	fmt.Println("request cmd is %d, and body length %d", np.CMD, np.Length)
 	len, err = io.ReadFull(rw, np.readBuf[:np.Length])
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return
 	}
 	return

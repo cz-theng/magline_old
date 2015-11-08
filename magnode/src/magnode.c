@@ -1,4 +1,4 @@
-//
+ //
 //  magnode.c
 //  magnode
 //
@@ -32,7 +32,6 @@ int connect_transaction(mn_node *node, uint64_t timeout)
     if (NULL == node) {
         return -1;
     }
-    
     MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_CONN, 0);
     headlen = sizeof(mn_nodemsg_head);
     
@@ -44,7 +43,7 @@ int connect_transaction(mn_node *node, uint64_t timeout)
     }
     struct timeval sbtime;
     gettimeofday(&sbtime, NULL);
-    rst = mn_net_send(&node->socket, &head, &headlen, timeout);
+    rst = mn_net_send(&node->socket, buf, &headlen, timeout);
     if (rst != 0 ) {
         FREE(buf);
         return -1;
@@ -203,6 +202,9 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
     }
     
     MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_SEND, node->agent_id);
+    if (length < MN_MAX_SENDBUF_SIZE) {
+        node->sendbuflen  = length;
+    }
     
     rst = parse2mem(&head, buf, length, node->sendbuf, &node->sendbuflen);
     if (rst != 0) {
@@ -236,6 +238,9 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
         LOG_E("mn_recv: node is NULL or buf is NULL");
         return MN_EARG;
     }
+    
+    
+    
     
     MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_SEND, node->agent_id);
     
@@ -297,7 +302,6 @@ int mn_close(mn_node *node)
         return MN_EARG;
     }
     LOG_I("mn_close(node %p)", node);
-    
     
     MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_CLOSE, node->agent_id);
     

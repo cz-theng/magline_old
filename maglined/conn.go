@@ -5,9 +5,9 @@ package maglined
  */
 import (
 	"container/list"
-	"net"
-
+	"fmt"
 	"github.com/cz-it/magline/maglined/proto"
+	"net"
 )
 
 const (
@@ -31,6 +31,7 @@ func (conn *Connection) Init() error {
 }
 
 func (conn *Connection) RecvRequest() (*Request, error) {
+	Logger.Debug("RecvRequest with request ")
 	conn.protoData.Init(conn.ReadBuf)
 	err := conn.protoData.RecvAndUnpack(conn.RWC)
 	if err != nil {
@@ -57,11 +58,13 @@ func (conn *Connection) Close() error {
 }
 
 func (conn *Connection) DealNewAgent(req *Request) {
+	Logger.Debug("DealNewAgent with req %v", req)
 	agent, err := conn.Server.AgentMgr.Alloc()
 	if err != nil {
 		Logger.Error("Alloc Agent Error")
 		return
 	}
+	agent.conn = conn
 	agent.DealRequest(req)
 }
 
@@ -70,12 +73,12 @@ func (conn *Connection) Serve() {
 		// deal timeout
 		req, err := conn.RecvRequest()
 		if err != nil {
-			Logger.Error("Connection Read Request Error !")
+			Logger.Error("Connection Read Request Error:%s", err.Error())
 			break
 		}
 		cmd := req.CMD
+		fmt.Println("Cmd is ", cmd)
 		if cmd == proto.MN_CMD_REQ_CONN {
-			print("MN_CMD_REQ_CONN")
 			conn.DealNewAgent(req)
 			continue
 		} else {
