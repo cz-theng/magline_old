@@ -5,9 +5,41 @@ package maglined
  */
 
 import (
+	"errors"
 	"net"
 	"time"
 )
+
+var (
+	ErrAddr = errors.New("Address may be invalied")
+)
+
+type BridgeHead struct {
+	Addr     string
+	AgentMgr *AgentMgr
+}
+
+func (bh *BridgeHead) Init() {
+}
+
+func (bh *BridgeHead) ListenAndServe() (err error) {
+	var tempDelay time.Duration // how long to sleep on accept failure
+
+	addr, err := ParseAddr(bh.Addr)
+	if err != nil {
+		return err
+	}
+	Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
+
+	if addr.Network != "unix" {
+		Logger.Error("Error Inner Address, Should be unix://")
+		err = ErrAddr
+		return
+	}
+	ln, err := net.Listen("unix", addr.IPPort)
+
+	return
+}
 
 type Server struct {
 	/**
@@ -35,13 +67,6 @@ func (svr *Server) Init(maxConns int) (err error) {
 		Logger.Error("New Magline Connection Pool Error!")
 		return
 	}
-
-	svr.AgentMgr, err = NewAgentMgr(maxConns)
-	if err != nil {
-		Logger.Error("New Agent Manager Error err:%s", err.Error())
-		return
-	}
-
 	return
 }
 

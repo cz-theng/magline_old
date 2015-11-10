@@ -3,28 +3,13 @@ package maglined
 // Defination of config itmes
 
 import (
-	//"net"
+//"net"
 )
 
 var Config ConfigInfo
 
 type ConfigInfo struct {
 	OuterAddr string
+	InnerAddr string
 	MaxConns  int
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

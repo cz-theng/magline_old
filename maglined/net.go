@@ -1,14 +1,15 @@
 package maglined
+
 /**
 * Net Utils
-*/
+ */
 import (
 	"errors"
 	"strings"
 )
 
 var (
-	EURL = errors.New("Invaliad URL!")
+	EURL     = errors.New("Invaliad URL!")
 	ENETWORK = errors.New("Unknown Network Type!")
 )
 
@@ -21,6 +22,7 @@ type Addr struct {
 func ParseAddr(url string) (addr Addr, err error) {
 	if url[:6] == "udp://" {
 		addr.Network = "udp"
+		addr.IPPort = url[6:]
 	} else if url[:6] == "tcp://" {
 		addr.Network = "tcp"
 		if strings.Contains(url, "keep-alive=false") {
@@ -28,18 +30,15 @@ func ParseAddr(url string) (addr Addr, err error) {
 		} else {
 			addr.Kpal = true
 		}
-
+		addr.IPPort = url[6:]
+	} else if url[:7] == "unix://" {
+		addr.Network = "unix"
+		addr.IPPort = url[7:]
 	} else {
 		addr.Network = "unknown"
-		addr.IPPort  = "unknown:unknown"
+		addr.IPPort = "unknown:unknown"
 		err = ENETWORK
 		return
 	}
-	addr.IPPort = url[6:]
-	return 
+	return
 }
-
-
-
-
-
