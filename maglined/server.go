@@ -36,7 +36,9 @@ func (bh *BridgeHead) ListenAndServe() (err error) {
 		err = ErrAddr
 		return
 	}
-	ln, err := net.Listen("unix", addr.IPPort)
+	l, err := net.Listen("unix", addr.IPPort)
+	ln := l.(*net.UnixListener)
+	rw, err := ln.AcceptUnix()
 
 	return
 }
