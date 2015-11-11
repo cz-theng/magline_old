@@ -36,7 +36,7 @@ func (km *KnotMessage) Init(buf []byte) {
 	km.readBuf = buf
 }
 
-func (km *KnotMessage) RecvAndUkmack(rw io.ReadWriter) (err error) {
+func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	if rw == nil {
 		// TODO : add log here
 		fmt.Println("rw is null")

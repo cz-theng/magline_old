@@ -8,6 +8,8 @@ import (
 
 type ConfigJsonWrapper struct {
 	OuterAddr string
+	InnerAddr string
+	MaxConns  int
 }
 
 func LoadConfig(filePath string) (err error) {
@@ -25,6 +27,8 @@ func LoadConfig(filePath string) (err error) {
 		return
 	}
 	maglined.Config.OuterAddr = config.OuterAddr
+	maglined.Config.InnerAddr = config.InnerAddr
+	maglined.Config.MaxConns = config.MaxConns
 	maglined.Logger.Debug("Load Config file %s Success", filePath)
 	err = nil
 	return

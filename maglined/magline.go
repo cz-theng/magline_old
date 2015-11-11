@@ -22,11 +22,11 @@ func Start() {
 		Logger.Error("Create Agent Manager Error")
 		Exit()
 	}
-	backend := BridgeHead{
-		Addr:     Config.InnerAddr,
-		AgentMgr: agentMgr}
+	backend := BackendServer{
+		Addr: Config.InnerAddr,
+	}
 	backend.Init()
-	err = backend.ListenAndServe()
+	err = backend.Listen()
 	if err != nil {
 		fmt.Println("Start Magline Backend Server error with s", err.Error())
 		Logger.Error("Start Magline Backend Server error with s", err.Error())
@@ -35,7 +35,8 @@ func Start() {
 
 	svr := Server{
 		Addr:     Config.OuterAddr,
-		AgentMgr: agentMgr}
+		AgentMgr: agentMgr,
+	}
 	svr.Init(Config.MaxConns)
 	err = svr.ListenAndServe()
 	if err != nil {

@@ -1,3 +1,5 @@
 {
-	"OuterAddr":"tcp://127.0.0.1:8082"
+	"OuterAddr":"tcp://127.0.0.1:8082",
+	"InnerAddr":"unix://127.0.0.1:8083",
+    "MaxConns" :1024
 }

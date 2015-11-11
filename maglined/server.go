@@ -31,6 +31,7 @@ func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
 			return
 		}
 		lane, err := bs.Bridge.Alloc(rw)
+		lane.Init()
 		if err != nil {
 			return
 		}
@@ -39,7 +40,7 @@ func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
 }
 
 func (bs *BackendServer) Listen() (err error) {
-	var tempDelay time.Duration // how long to sleep on accept failure
+	//var tempDelay time.Duration // how long to sleep on accept failure
 
 	addr, err := ParseAddr(bs.Addr)
 	if err != nil {
@@ -53,6 +54,10 @@ func (bs *BackendServer) Listen() (err error) {
 		return
 	}
 	l, err := net.Listen("unix", addr.IPPort)
+	if err != nil {
+		Logger.Error(err.Error())
+		return
+	}
 	ln := l.(*net.UnixListener)
 	go bs.AcceptAndServe(ln)
 	return
