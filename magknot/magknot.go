@@ -4,7 +4,9 @@
 
 package magknot
 
-import ()
+import (
+	"time"
+)
 
 type MagKnot struct {
 }
@@ -17,7 +19,7 @@ func (knot *MagKnot) Deinit() (err error) {
 	return
 }
 
-func (knot *MagKnot) Connect(timeout uint32) (err error) {
+func (knot *MagKnot) Connect(addr string, timeout time.Duration) (err error) {
 	return
 }
 
