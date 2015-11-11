@@ -14,18 +14,34 @@ var (
 	ErrAddr = errors.New("Address may be invalied")
 )
 
-type BridgeHead struct {
-	Addr     string
-	AgentMgr *AgentMgr
+type BackendServer struct {
+	Addr   string
+	Bridge *Bridge
 }
 
-func (bh *BridgeHead) Init() {
+func (bs *BackendServer) Init() (err error) {
+	bs.Bridge = &Bridge{}
+	return
 }
 
-func (bh *BridgeHead) ListenAndServe() (err error) {
+func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
+	for {
+		rw, err := ln.AcceptUnix()
+		if err != nil {
+			return
+		}
+		lane, err := bs.Bridge.Alloc(rw)
+		if err != nil {
+			return
+		}
+		go lane.Serve()
+	}
+}
+
+func (bs *BackendServer) Listen() (err error) {
 	var tempDelay time.Duration // how long to sleep on accept failure
 
-	addr, err := ParseAddr(bh.Addr)
+	addr, err := ParseAddr(bs.Addr)
 	if err != nil {
 		return err
 	}
@@ -36,8 +52,9 @@ func (bh *BridgeHead) ListenAndServe() (err error) {
 		err = ErrAddr
 		return
 	}
-	ln, err := net.Listen("unix", addr.IPPort)
-
+	l, err := net.Listen("unix", addr.IPPort)
+	ln := l.(*net.UnixListener)
+	go bs.AcceptAndServe(ln)
 	return
 }
 
