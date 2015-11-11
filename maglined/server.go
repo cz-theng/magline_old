@@ -7,6 +7,7 @@ package maglined
 import (
 	"errors"
 	"net"
+	"os"
 	"time"
 )
 
@@ -53,6 +54,7 @@ func (bs *BackendServer) Listen() (err error) {
 		err = ErrAddr
 		return
 	}
+	os.Remove(addr.IPPort)
 	l, err := net.Listen("unix", addr.IPPort)
 	if err != nil {
 		Logger.Error(err.Error())
