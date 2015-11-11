@@ -44,3 +44,5 @@ test/iOS/test_magnode/test_magnode.xcodeproj/xcuserdata/
 # log files
 *.log
 *.error
+
+*/app/maglined
