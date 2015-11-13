@@ -11,6 +11,7 @@ import (
 type Agent struct {
 	conn *Connection
 	id   uint32
+	lane *Lane
 }
 
 // ID return's agent's id
@@ -20,10 +21,16 @@ func (ag *Agent) ID() uint32 {
 
 //DealConnReq deal connnection reqeuest
 func (ag *Agent) DealConnReq(req *Request) (err error) {
-	rsp := new(Response)
+	ag.lane.AddAgent(ag)
+	ag.lane.SendNewAgent(ag.id)
+	return
+}
+
+func (ag *Agent) DealNewAgentRsp() (err error) {
+	rsp := &Response{}
 	rsp.Init()
-	rsp.AgentID = ag.ID()
 	rsp.CMD = proto.MN_CMD_RSP_CONN
+	rsp.AgentID = ag.id
 	ag.conn.SendResponse(rsp)
 	return
 }

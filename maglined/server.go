@@ -83,6 +83,8 @@ type Server struct {
 	* Agent Manger
 	 */
 	AgentMgr *AgentMgr
+
+	Backend *BackendServer
 }
 
 func (svr *Server) Init(maxConns int) (err error) {

@@ -6,6 +6,7 @@ package magknot
 
 import (
 	"testing"
+	"time"
 )
 
 var (
@@ -16,5 +17,12 @@ func TestConnect(t *testing.T) {
 	t.Log("Test MagKnot")
 	knot := New()
 	knot.Init()
-	knot.Connect(Addr, timeout)
+	err := knot.Connect(Addr, 5000*time.Millisecond)
+	if err != nil {
+		t.Error("Connect error")
+	}
+	println("connected success!")
+	for {
+		knot.AcceptAgent(func(id uint32) bool { return true })
+	}
 }

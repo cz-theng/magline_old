@@ -25,6 +25,15 @@ func (b *Bridge) Alloc(rwc *net.UnixConn) (lane *Lane, err error) {
 	return
 }
 
-func (b *Bridge) Shunt(agent *Agent) (err error) {
+func (b *Bridge) Dispatch() (lane *Lane, err error) {
+	elem := b.lanes.Front()
+	if elem == nil {
+		return
+	}
+	lane, ok := elem.Value.(*Lane)
+	if !ok {
+		lane = nil
+		return
+	}
 	return
 }

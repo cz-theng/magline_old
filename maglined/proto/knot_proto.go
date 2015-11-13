@@ -25,15 +25,20 @@ type KnotMessage struct {
 	Length  uint32
 
 	headBuf [16]byte
-	readBuf []byte
+	ReadBuf []byte
 }
 
 func (km *KnotMessage) Body() []byte {
-	return km.readBuf[:km.Length]
+	return km.ReadBuf[:km.Length]
 }
 
 func (km *KnotMessage) Init(buf []byte) {
-	km.readBuf = buf
+	km.Magic = MK_MAGIC
+	km.Version = MK_VERSION
+	km.CMD = MK_CMD_UNKNOWN
+	km.Seq = 0
+	km.Length = 0
+	km.ReadBuf = buf
 }
 
 func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
@@ -55,13 +60,13 @@ func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	km.AgentID = binary.BigEndian.Uint32(km.headBuf[8:12])
 	km.Length = binary.BigEndian.Uint32(km.headBuf[12:16])
 
-	if km.Length > uint32(cap(km.readBuf)) {
+	if km.Length > uint32(cap(km.ReadBuf)) {
 		err = ELENGTH_TO_LONG
 		return
 	}
 
-	fmt.Println("request cmd is %d, and body length %d", km.CMD, km.Length)
-	len, err = io.ReadFull(rw, km.readBuf[:km.Length])
+	fmt.Println("Knot:request cmd is %d, and body length %d", km.CMD, km.Length)
+	len, err = io.ReadFull(rw, km.ReadBuf[:km.Length])
 	if err != nil && err != io.EOF {
 		return
 	}

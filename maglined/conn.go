@@ -5,7 +5,6 @@ package maglined
  */
 import (
 	"container/list"
-	"fmt"
 	"github.com/cz-it/magline/maglined/proto"
 	"net"
 )
@@ -65,6 +64,10 @@ func (conn *Connection) DealNewAgent(req *Request) {
 		return
 	}
 	agent.conn = conn
+	agent.lane, err = conn.Server.Backend.Bridge.Dispatch()
+	if err != nil {
+		return
+	}
 	agent.DealRequest(req)
 }
 
@@ -77,7 +80,7 @@ func (conn *Connection) Serve() {
 			break
 		}
 		cmd := req.CMD
-		fmt.Println("Cmd is ", cmd)
+		Logger.Debug("Cmd is ", cmd)
 		if cmd == proto.MN_CMD_REQ_CONN {
 			conn.DealNewAgent(req)
 			continue

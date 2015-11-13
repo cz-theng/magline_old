@@ -60,7 +60,7 @@ func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 		return
 	}
 
-	fmt.Println("request cmd is %d, and body length %d", np.CMD, np.Length)
+	fmt.Println("Node:request cmd is %d, and body length %d", np.CMD, np.Length)
 	len, err = io.ReadFull(rw, np.readBuf[:np.Length])
 	if err != nil && err != io.EOF {
 		return
@@ -75,6 +75,7 @@ func (np *NodeProto) PackAndSend(rw io.ReadWriter) (err error) {
 	binary.BigEndian.PutUint32(np.headBuf[4:8], np.Seq)
 	binary.BigEndian.PutUint32(np.headBuf[8:12], np.AgentID)
 	binary.BigEndian.PutUint32(np.headBuf[12:16], np.Length)
+	print("response with rsp:", np.CMD)
 	rw.Write(np.headBuf[:])
 	rw.Write(np.Body())
 	return nil

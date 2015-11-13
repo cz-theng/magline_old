@@ -22,7 +22,7 @@ func Start() {
 		Logger.Error("Create Agent Manager Error")
 		Exit()
 	}
-	backend := BackendServer{
+	backend := &BackendServer{
 		Addr: Config.InnerAddr,
 	}
 	backend.Init()
@@ -36,6 +36,7 @@ func Start() {
 	svr := Server{
 		Addr:     Config.OuterAddr,
 		AgentMgr: agentMgr,
+		Backend:  backend,
 	}
 	svr.Init(Config.MaxConns)
 	err = svr.ListenAndServe()
