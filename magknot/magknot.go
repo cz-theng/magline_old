@@ -18,10 +18,12 @@ const (
 type MagKnot struct {
 	conn    *net.UnixConn
 	readBuf []byte
+	agents  map[uint32]*Agent
 }
 
 func (knot *MagKnot) Init() (err error) {
 	knot.readBuf = make([]byte, MK_READBUF_LEN)
+	knot.agents = make(map[uint32]*Agent)
 	return
 }
 
@@ -36,6 +38,10 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 		return
 	}
 	conn, err := net.Dial("unix", addr.IPPort)
+	if err != nil {
+		println(err.Error())
+		return
+	}
 	knot.conn = conn.(*net.UnixConn)
 	if err != nil {
 		println(err.Error())
@@ -56,17 +62,10 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 	return
 }
 
-func (knot *MagKnot) Close() (err error) {
-	return
-}
-
-func (knot *MagKnot) Send(buf []byte, timeout uint32) (err error) {
-	return
-}
-func (knot *MagKnot) AcceptAgent(accepter func(uint32) bool) {
+func (knot *MagKnot) AcceptAgent(accepter func(uint32) bool) (agent *Agent, err error) {
 	var id uint32
 	rsp := proto.KnotMessage{ReadBuf: knot.readBuf}
-	err := rsp.RecvAndUnpack(knot.conn)
+	err = rsp.RecvAndUnpack(knot.conn)
 	if err != nil {
 		println("Recv And Unpack Error")
 		return
@@ -85,10 +84,6 @@ func (knot *MagKnot) AcceptAgent(accepter func(uint32) bool) {
 		Length:  0,
 	}
 	msg.PackAndSend(knot.conn)
-	return
-}
-
-func (knot *MagKnot) Recv(timeout uint32) (data []byte, err error) {
 	return
 }
 
