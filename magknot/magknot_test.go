@@ -27,6 +27,7 @@ func DealAgent(agent *Agent) {
 		}
 		fmt.Println("Send Message:", string(buf))
 	}
+	agent.Close()
 }
 
 func TestConnect(t *testing.T) {
