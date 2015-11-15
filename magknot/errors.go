@@ -17,4 +17,7 @@ var (
 
 	//ErrNoAgent
 	ErrNoAgent = errors.New("No such a Agent")
+
+	//ErrNoMessage
+	ErrEmptyMessage = errors.New("No Messages")
 )

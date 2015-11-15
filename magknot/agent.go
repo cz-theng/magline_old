@@ -5,14 +5,42 @@
 package magknot
 
 import (
+	"container/list"
 	"github.com/cz-it/magline/maglined/proto"
 	"net"
+	"sync"
 )
 
 type Agent struct {
-	ID      uint32
-	conn    *net.UnixConn
-	readBuf []byte
+	ID       uint32
+	conn     *net.UnixConn
+	readBuf  []byte
+	mtx      sync.Mutex
+	messages *list.List
+}
+
+func (ag *Agent) Init() {
+	ag.messages = list.New()
+}
+
+func (ag *Agent) PushMessage(msg *Message) (err error) {
+	ag.mtx.Lock()
+	ag.messages.PushBack(msg)
+	ag.mtx.Unlock()
+	return
+}
+
+func (ag *Agent) PopMessage() (msg *Message, err error) {
+	msgElem := ag.messages.Front()
+	if msgElem == nil {
+		msg = nil
+		err = ErrEmptyMessage
+	}
+	ag.mtx.Lock()
+	msg = msgElem.Value.(*Message)
+	ag.messages.Remove(msgElem)
+	ag.mtx.Unlock()
+	return
 }
 
 func (ag *Agent) Send(buf []byte) (err error) {
@@ -25,16 +53,8 @@ func (ag *Agent) Send(buf []byte) (err error) {
 	return
 }
 
-func (ag *Agent) Recv() (buf []byte, err error) {
-	msg := proto.KnotMessage{
-		Magic:   0x01,
-		Version: 0x01,
-		CMD:     proto.MK_CMD_MSG_K2N,
-		Seq:     0x01,
-		AgentID: ag.ID,
-		Length:  uint32(len(buf)),
-	}
-	msg.PackAndSend(buf, ag.conn)
+func (ag *Agent) Recv() (msg *Message, err error) {
+	msg, err = ag.PopMessage()
 	return
 }
 

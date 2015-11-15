@@ -18,7 +18,7 @@ const (
 
 type Message struct {
 	Seq  uint32
-	data []byte
+	Data []byte
 }
 
 type MagKnot struct {
@@ -38,18 +38,23 @@ func (knot *MagKnot) Deinit() (err error) {
 }
 
 func (knot *MagKnot) recvMsg() (err error) {
-	msg := proto.KnotMessage{ReadBuf: knot.readBuf}
-	err = msg.RecvAndUnpack(knot.conn)
+	kmsg := proto.KnotMessage{ReadBuf: knot.readBuf}
+	err = kmsg.RecvAndUnpack(knot.conn)
 	if err != nil {
 		println("Recv And Unpack Error")
 		return
 	}
-	agent, ok := agents[msg.AgentID]
+	agent, ok := knot.agents[kmsg.AgentID]
 	if !ok {
 		err = ErrNoAgent
 		return
 	}
-	agent.PushMessage()
+	msg := &Message{
+		Seq: kmsg.Seq,
+	}
+	msg.Data = make([]byte, len(kmsg.Body()))
+	copy(msg.Data, kmsg.Body())
+	agent.PushMessage(msg)
 	return
 }
 
