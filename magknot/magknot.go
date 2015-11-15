@@ -5,6 +5,7 @@
 package magknot
 
 import (
+	"fmt"
 	"github.com/cz-it/magline/maglined"
 	"github.com/cz-it/magline/maglined/proto"
 	"net"
@@ -34,19 +35,20 @@ func (knot *MagKnot) Deinit() (err error) {
 func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) {
 	addr, err := maglined.ParseAddr(address)
 	if err != nil {
-		println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	conn, err := net.Dial("unix", addr.IPPort)
 	if err != nil {
-		println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
 	knot.conn = conn.(*net.UnixConn)
 	if err != nil {
-		println(err.Error())
+		fmt.Println(err.Error())
 		return
 	}
+	fmt.Println("Create unix doamin connect")
 	msg := proto.KnotMessage{
 		Magic:   0x01,
 		Version: 0x01,
@@ -55,10 +57,11 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 		AgentID: 0x00,
 		Length:  0,
 	}
-	msg.PackAndSend(knot.conn)
+	msg.PackAndSend(nil, knot.conn)
+	fmt.Println("Send connect request!")
 	rsp := proto.KnotMessage{ReadBuf: knot.readBuf}
 	rsp.RecvAndUnpack(knot.conn)
-	println("rsp cmd", rsp.CMD)
+	fmt.Printf("Connect Success with rsp cmd", rsp.CMD)
 	return
 }
 
@@ -67,11 +70,13 @@ func (knot *MagKnot) AcceptAgent(accepter func(uint32) bool) (agent *Agent, err 
 	rsp := proto.KnotMessage{ReadBuf: knot.readBuf}
 	err = rsp.RecvAndUnpack(knot.conn)
 	if err != nil {
-		println("Recv And Unpack Error")
+		fmt.Printf("Recv And Unpack Error :%s", err.Error())
 		return
 	}
 	id = rsp.AgentID
+	fmt.Printf("Get Agent :%d", id)
 	if !accepter(id) {
+		fmt.Printf("id[%d] is not acceptable", id)
 		return
 	}
 
@@ -83,7 +88,13 @@ func (knot *MagKnot) AcceptAgent(accepter func(uint32) bool) (agent *Agent, err 
 		AgentID: id,
 		Length:  0,
 	}
-	msg.PackAndSend(knot.conn)
+	agent = &Agent{
+		conn:    knot.conn,
+		ID:      id,
+		readBuf: make([]byte, MK_READBUF_LEN),
+	}
+	msg.PackAndSend(nil, knot.conn)
+	fmt.Printf("Create a New Agent with id :%d", id)
 	return
 }
 

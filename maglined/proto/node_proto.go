@@ -7,7 +7,6 @@ package proto
 import (
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"io"
 )
 
@@ -39,10 +38,13 @@ func (np *NodeProto) Init(buf []byte) {
 func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	if rw == nil {
 		// TODO : add log here
-		fmt.Println("rw is null")
+		//fmt.Println("rw is null")
 	}
 	len, err := io.ReadFull(rw, np.headBuf[:])
-	if err != nil && err != io.EOF {
+	if err == io.EOF && len == 16 {
+		err = nil
+	}
+	if err != nil {
 		return
 	}
 	if len != cap(np.headBuf) {
@@ -60,9 +62,12 @@ func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 		return
 	}
 
-	fmt.Println("Node:request cmd is %d, and body length %d", np.CMD, np.Length)
+	//fmt.Println("Node:request cmd is %d, and body length %d", np.CMD, np.Length)
 	len, err = io.ReadFull(rw, np.readBuf[:np.Length])
-	if err != nil && err != io.EOF {
+	if err == io.EOF && len == int(np.Length) {
+		err = nil
+	}
+	if err != nil {
 		return
 	}
 	return
@@ -75,7 +80,7 @@ func (np *NodeProto) PackAndSend(rw io.ReadWriter) (err error) {
 	binary.BigEndian.PutUint32(np.headBuf[4:8], np.Seq)
 	binary.BigEndian.PutUint32(np.headBuf[8:12], np.AgentID)
 	binary.BigEndian.PutUint32(np.headBuf[12:16], np.Length)
-	print("response with rsp:", np.CMD)
+	//print("response with rsp:", np.CMD)
 	rw.Write(np.headBuf[:])
 	rw.Write(np.Body())
 	return nil

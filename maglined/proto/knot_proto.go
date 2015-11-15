@@ -7,7 +7,6 @@ package proto
 import (
 	"encoding/binary"
 	//"errors"
-	"fmt"
 	"io"
 )
 
@@ -44,10 +43,13 @@ func (km *KnotMessage) Init(buf []byte) {
 func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	if rw == nil {
 		// TODO : add log here
-		fmt.Println("rw is null")
+		//fmt.Println("rw is null")
 	}
 	len, err := io.ReadFull(rw, km.headBuf[:])
-	if err != nil && err != io.EOF {
+	if err == io.EOF && len == 16 {
+		err = nil
+	}
+	if err != nil {
 		return
 	}
 	if len != cap(km.headBuf) {
@@ -65,15 +67,18 @@ func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 		return
 	}
 
-	fmt.Println("Knot:request cmd is %d, and body length %d", km.CMD, km.Length)
+	//fmt.Println("Knot:request cmd is %d, and body length %d", km.CMD, km.Length)
 	len, err = io.ReadFull(rw, km.ReadBuf[:km.Length])
-	if err != nil && err != io.EOF {
+	if err == io.EOF && len == int(km.Length) {
+		err = nil
+	}
+	if err != nil {
 		return
 	}
 	return
 }
 
-func (km *KnotMessage) PackAndSend(rw io.ReadWriter) (err error) {
+func (km *KnotMessage) PackAndSend(data []byte, rw io.ReadWriter) (err error) {
 	km.headBuf[0] = km.Magic
 	km.headBuf[1] = km.Version
 	binary.BigEndian.PutUint16(km.headBuf[2:4], km.CMD)
@@ -81,6 +86,8 @@ func (km *KnotMessage) PackAndSend(rw io.ReadWriter) (err error) {
 	binary.BigEndian.PutUint32(km.headBuf[8:12], km.AgentID)
 	binary.BigEndian.PutUint32(km.headBuf[12:16], km.Length)
 	rw.Write(km.headBuf[:])
-	rw.Write(km.Body())
+	if data != nil {
+		rw.Write(data)
+	}
 	return nil
 }

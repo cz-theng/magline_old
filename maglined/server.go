@@ -20,6 +20,11 @@ type BackendServer struct {
 	Bridge *Bridge
 }
 
+func (bs *BackendServer) Dispatch() (lane *Lane, err error) {
+	lane, err = bs.Bridge.Dispatch()
+	return
+}
+
 func (bs *BackendServer) Init() (err error) {
 	bs.Bridge = &Bridge{}
 	return

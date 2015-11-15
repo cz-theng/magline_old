@@ -205,7 +205,7 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
     if (length < MN_MAX_SENDBUF_SIZE) {
         node->sendbuflen  = length;
     }
-    
+    node->sendbuflen =MN_MAX_SENDBUF_SIZE;
     rst = parse2mem(&head, buf, length, node->sendbuf, &node->sendbuflen);
     if (rst != 0) {
         return MN_EPARSE;

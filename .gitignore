@@ -46,3 +46,4 @@ test/iOS/test_magnode/test_magnode.xcodeproj/xcuserdata/
 *.error
 
 */app/maglined
+magknot/log/

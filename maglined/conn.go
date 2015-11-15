@@ -64,7 +64,7 @@ func (conn *Connection) DealNewAgent(req *Request) {
 		return
 	}
 	agent.conn = conn
-	agent.lane, err = conn.Server.Backend.Bridge.Dispatch()
+	agent.lane, err = conn.Server.Backend.Dispatch()
 	if err != nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (conn *Connection) Serve() {
 		// deal timeout
 		req, err := conn.RecvRequest()
 		if err != nil {
-			Logger.Error("Connection Read Request Error:%s", err.Error())
+			Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
 			break
 		}
 		cmd := req.CMD
@@ -88,7 +88,6 @@ func (conn *Connection) Serve() {
 			Logger.Error("Unknow CMD %d", cmd)
 			continue
 		}
-
 		ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
 		if err != nil {
 			if ag == nil {
