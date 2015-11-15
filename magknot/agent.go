@@ -7,7 +7,6 @@ package magknot
 import (
 	"github.com/cz-it/magline/maglined/proto"
 	"net"
-	"time"
 )
 
 type Agent struct {
@@ -16,7 +15,7 @@ type Agent struct {
 	readBuf []byte
 }
 
-func (ag *Agent) Send(buf []byte, timeout time.Duration) (err error) {
+func (ag *Agent) Send(buf []byte) (err error) {
 	msg := proto.KnotMessage{ReadBuf: ag.readBuf}
 	err = msg.RecvAndUnpack(ag.conn)
 	if err != nil {
@@ -26,7 +25,7 @@ func (ag *Agent) Send(buf []byte, timeout time.Duration) (err error) {
 	return
 }
 
-func (ag *Agent) Recv(timeout time.Duration) (buf []byte, err error) {
+func (ag *Agent) Recv() (buf []byte, err error) {
 	msg := proto.KnotMessage{
 		Magic:   0x01,
 		Version: 0x01,

@@ -16,6 +16,11 @@ const (
 	MK_READBUF_LEN = 100 * 1024
 )
 
+type Message struct {
+	Seq  uint32
+	data []byte
+}
+
 type MagKnot struct {
 	conn    *net.UnixConn
 	readBuf []byte
@@ -30,6 +35,32 @@ func (knot *MagKnot) Init() (err error) {
 
 func (knot *MagKnot) Deinit() (err error) {
 	return
+}
+
+func (knot *MagKnot) recvMsg() (err error) {
+	msg := proto.KnotMessage{ReadBuf: knot.readBuf}
+	err = msg.RecvAndUnpack(knot.conn)
+	if err != nil {
+		println("Recv And Unpack Error")
+		return
+	}
+	agent, ok := agents[msg.AgentID]
+	if !ok {
+		err = ErrNoAgent
+		return
+	}
+	agent.PushMessage()
+	return
+}
+
+func (knot *MagKnot) Routine() {
+	for {
+		select {
+		case <-time.After(1000 * time.Millisecond):
+			fmt.Println("One second")
+			knot.recvMsg()
+		}
+	}
 }
 
 func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) {
@@ -62,6 +93,7 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 	rsp := proto.KnotMessage{ReadBuf: knot.readBuf}
 	rsp.RecvAndUnpack(knot.conn)
 	fmt.Printf("Connect Success with rsp cmd", rsp.CMD)
+	go knot.Routine()
 	return
 }
 

@@ -16,12 +16,12 @@ var (
 
 func DealAgent(agent *Agent) {
 	for {
-		buf, err := agent.Recv(time.Second * 5)
+		buf, err := agent.Recv()
 		if err != nil {
 			continue
 		}
 		fmt.Println("Recv Message:", string(buf))
-		err = agent.Send(buf, time.Second*5)
+		err = agent.Send(buf)
 		if err != nil {
 			continue
 		}
