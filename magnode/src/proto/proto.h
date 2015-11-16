@@ -39,6 +39,9 @@ enum MN_CMD {
     
     MN_CMD_REQ_RECONN = 0x0009,
     MN_CMD_RSPREQCONN = 0x000a,
+    
+    MN_CMD_MSG_NODE  = 0x000b,
+    MN_CMD_MSG_KNOT = 0x000c,
 
 };
 

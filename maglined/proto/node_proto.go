@@ -33,6 +33,8 @@ func (np *NodeProto) Body() []byte {
 
 func (np *NodeProto) Init(buf []byte) {
 	np.readBuf = buf
+	np.Magic = MN_MAGIC
+	np.Version = MN_VERSION
 }
 
 func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {

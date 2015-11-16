@@ -22,6 +22,10 @@ func (ag *Agent) ID() uint32 {
 //DealConnReq deal connnection reqeuest
 func (ag *Agent) DealConnReq(req *Request) (err error) {
 	Logger.Info("Deal New Agent[%d]'s Connection ", ag.id)
+	if ag.lane == nil {
+		Logger.Info("There is no magknot")
+		return
+	}
 	ag.lane.AddAgent(ag)
 	ag.lane.SendNewAgent(ag.id)
 	return
@@ -37,6 +41,9 @@ func (ag *Agent) DealNewAgentRsp() (err error) {
 	return
 }
 func (ag *Agent) DealNodeMsg(data []byte) (err error) {
+	if ag.lane == nil {
+		Logger.Error("Agent %d 's lane is nil ", ag.ID())
+	}
 	ag.lane.SendNodeMsg(ag.ID(), data)
 	return
 }

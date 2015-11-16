@@ -14,41 +14,41 @@ const (
 )
 
 type Connection struct {
-	RWC       *net.TCPConn
-	ReadBuf   []byte
-	ID        int
-	protoData *proto.NodeProto
-	Elem      *list.Element
-	AgentID   uint32
-	Server    *Server
+	RWC     *net.TCPConn
+	ReadBuf []byte
+	ID      int
+	Elem    *list.Element
+	AgentID uint32
+	Server  *Server
 }
 
 func (conn *Connection) Init() error {
 	conn.ReadBuf = make([]byte, READ_BUF_SIZE)
-	conn.protoData = new(proto.NodeProto)
 	return nil
 }
 
-func (conn *Connection) RecvRequest() (*Request, error) {
-	Logger.Debug("RecvRequest with request ")
-	conn.protoData.Init(conn.ReadBuf)
-	err := conn.protoData.RecvAndUnpack(conn.RWC)
+func (conn *Connection) RecvRequest() (req *Request, err error) {
+	Logger.Debug("RecvRequest with request and readbuf cap is %d", cap(conn.ReadBuf))
+	protoData := new(proto.NodeProto)
+	protoData.Init(conn.ReadBuf)
+	err = protoData.RecvAndUnpack(conn.RWC)
 	if err != nil {
 		return nil, err
 	}
-	req := &Request{
-		CMD:     conn.protoData.CMD,
-		AgentID: conn.protoData.AgentID,
-		Body:    conn.protoData.Body(),
+	req = &Request{
+		CMD:     protoData.CMD,
+		AgentID: protoData.AgentID,
+		Body:    protoData.Body(),
 	}
-	return req, nil
+	return
 }
 
 func (conn *Connection) SendResponse(rsp *Response) (err error) {
-	conn.protoData.Init(rsp.Body)
-	conn.protoData.CMD = rsp.CMD
-	conn.protoData.AgentID = rsp.AgentID
-	err = conn.protoData.PackAndSend(conn.RWC)
+	protoData := new(proto.NodeProto)
+	protoData.Init(rsp.Body)
+	protoData.CMD = rsp.CMD
+	protoData.AgentID = rsp.AgentID
+	err = protoData.PackAndSend(conn.RWC)
 	return
 }
 
@@ -71,6 +71,22 @@ func (conn *Connection) DealNewAgent(req *Request) {
 	agent.DealRequest(req)
 }
 
+func (conn *Connection) DealSendReq(req *Request) {
+	Logger.Debug("Deal Send Req with req:%d ", req.AgentID)
+	ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
+	if err != nil {
+		Logger.Error("Find Agent Error %s", err.Error())
+		if ag == nil {
+			// timeout or something
+		}
+		// otherwith close conn
+		Logger.Error("Close Connection of Agent %d", req.AgentID)
+		conn.Close()
+	}
+	Logger.Debug("message req data  len is %d and data is %s", len(req.Body), string(req.Body))
+	ag.DealRequest(req)
+}
+
 func (conn *Connection) Serve() {
 	for {
 		// deal timeout
@@ -83,19 +99,10 @@ func (conn *Connection) Serve() {
 		Logger.Debug("Cmd is ", cmd)
 		if cmd == proto.MN_CMD_REQ_CONN {
 			conn.DealNewAgent(req)
-			continue
+		} else if cmd == proto.MN_CMD_MSG_NODE {
+			conn.DealSendReq(req)
 		} else {
 			Logger.Error("Unknow CMD %d", cmd)
-			continue
 		}
-		ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
-		if err != nil {
-			if ag == nil {
-				// timeout or something
-			}
-			// otherwith close conn
-			conn.Close()
-		}
-		ag.DealRequest(req)
 	}
 }

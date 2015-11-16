@@ -6,6 +6,7 @@ package maglined
 
 import (
 	"github.com/cz-it/magline/maglined/proto"
+	"io"
 	"net"
 	"sync"
 )
@@ -48,7 +49,7 @@ func (l *Lane) Init() (err error) {
 func (l *Lane) ReadMsg() (msg *proto.KnotMessage, err error) {
 	msg = &proto.KnotMessage{ReadBuf: l.ReadBuf}
 	err = msg.RecvAndUnpack(l.RWC)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		msg = nil
 		return
 	}
@@ -94,13 +95,14 @@ func (l *Lane) DealMsgK2N(msg *proto.KnotMessage) (err error) {
 }
 
 func (l *Lane) SendNodeMsg(id uint32, data []byte) (err error) {
-	Logger.Debug("Get Message form Node by agent id:", 0)
-	rsp := &proto.KnotMessage{}
-	rsp.CMD = proto.MK_CMD_MSG_N2K
-	rsp.Length = uint32(len(data))
-	rsp.Seq = l.TickSeq()
-	rsp.AgentID = id
-	rsp.PackAndSend(data, l.RWC)
+	Logger.Debug("Get Message form Node by agent id:%d", id)
+	msg := &proto.KnotMessage{}
+	msg.CMD = proto.MK_CMD_MSG_N2K
+	msg.Length = uint32(len(data))
+	msg.Seq = l.TickSeq()
+	msg.AgentID = id
+	msg.PackAndSend(data, l.RWC)
+	Logger.Debug("send node msg with length %d,data:%s", msg.Length, string(data))
 	return
 
 }

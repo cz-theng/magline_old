@@ -42,6 +42,7 @@ func (am *AgentMgr) FindAgent(id uint32) (agent *Agent, err error) {
 	if a, ok := am.agents[id]; ok {
 		err = nil
 		agent = a
+		return
 	}
 	err = ENOAGENT
 	return

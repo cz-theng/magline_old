@@ -25,21 +25,27 @@ func (ag *Agent) Init() {
 
 func (ag *Agent) PushMessage(msg *Message) (err error) {
 	ag.mtx.Lock()
+	defer ag.mtx.Unlock()
 	ag.messages.PushBack(msg)
-	ag.mtx.Unlock()
 	return
 }
 
 func (ag *Agent) PopMessage() (msg *Message, err error) {
+	if ag.messages == nil {
+		msg = nil
+		err = ErrEmptyMessage
+		return
+	}
 	msgElem := ag.messages.Front()
 	if msgElem == nil {
 		msg = nil
 		err = ErrEmptyMessage
+		return
 	}
 	ag.mtx.Lock()
+	defer ag.mtx.Unlock()
 	msg = msgElem.Value.(*Message)
 	ag.messages.Remove(msgElem)
-	ag.mtx.Unlock()
 	return
 }
 

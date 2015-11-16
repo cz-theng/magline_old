@@ -38,7 +38,7 @@ int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *bu
     idx += 4;
 
     memcpy((void *)((char *)buf+idx), body, body_len);
-    buflen = body_len + sizeof(mn_nodemsg_head);
+    *buflen = body_len + sizeof(mn_nodemsg_head);
     return 0;
 }
 

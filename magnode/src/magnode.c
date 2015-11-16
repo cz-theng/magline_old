@@ -51,7 +51,7 @@ int connect_transaction(mn_node *node, uint64_t timeout)
     struct timeval setime;
     gettimeofday(&setime, NULL);
     long diff = timeval_min_usec(&setime, &sbtime);
-    if (diff <= 0 || diff > timeout) {
+    if (diff < 0 || diff > timeout) {
         FREE(buf);
         return MN_ETIMEOUT;
     }
@@ -71,7 +71,7 @@ int connect_transaction(mn_node *node, uint64_t timeout)
     }
     gettimeofday(&setime, NULL);
     diff = timeval_min_usec(&setime, &sbtime);
-    if (diff <= 0 || diff > rtimeout) {
+    if (diff < 0 || diff > rtimeout) {
         FREE(buf);
         return MN_ETIMEOUT;
     }
@@ -89,6 +89,7 @@ int connect_transaction(mn_node *node, uint64_t timeout)
     }
     if (head.cmd == MN_CMD_RSP_CONN) {
         FREE(buf);
+        node->agent_id =head.agent_id;
         return 0;        
     } else {
         FREE(buf);
@@ -155,6 +156,7 @@ int mn_connect(mn_node *node,const char *url, uint64_t timeout)
     struct timeval cbtime;
     gettimeofday(&cbtime, NULL);
     rst = mn_net_connect(url, &node->socket, timeout);
+    LOG_I("net connect with %d rst", rst);
     if (rst != 0 ) {
         if (rst == MN__ETIMEOUT) {
             return MN_ETIMEOUT;
@@ -166,7 +168,8 @@ int mn_connect(mn_node *node,const char *url, uint64_t timeout)
     struct timeval cetime;
     gettimeofday(&cetime, NULL);
     long diff = timeval_min_usec(&cetime, &cbtime);
-    if (diff <= 0 || diff > timeout) {
+    if (diff < 0 || diff > timeout) {
+        LOG_I("mn_connect timeout with diff %ld",diff);
         return MN_ETIMEOUT;
     }
     uint64_t rtimeout = timeout - diff;
@@ -201,11 +204,13 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
         return MN_EARG;
     }
     
-    MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_SEND, node->agent_id);
+    MN_NODEMSG_HEAD_INIT(&head, MN_CMD_MSG_NODE, node->agent_id);
     if (length < MN_MAX_SENDBUF_SIZE) {
         node->sendbuflen  = length;
     }
     node->sendbuflen =MN_MAX_SENDBUF_SIZE;
+    head.agent_id = node->agent_id;
+    head.length = length;
     rst = parse2mem(&head, buf, length, node->sendbuf, &node->sendbuflen);
     if (rst != 0) {
         return MN_EPARSE;
@@ -220,7 +225,7 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
     struct timeval setime;
     gettimeofday(&setime, NULL);
     long diff = timeval_min_usec(&setime, &sbtime);
-    if (diff<0 || diff > timeout) {
+    if (diff<0 || (timeout >0 &&diff > timeout)) {
         return MN_ETIMEOUT;
     }
     
@@ -257,7 +262,7 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
     }
     gettimeofday(&setime, NULL);
     diff = timeval_min_usec(&setime, &sbtime);
-    if (diff <= 0 || diff > timeout) {
+    if (diff < 0 || diff > timeout) {
         FREE(buf);
         return MN_ETIMEOUT;
     }
@@ -283,7 +288,7 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
             return MN_ERECV;
         }
         gettimeofday(&setime, NULL);
-        if (diff <= 0 || diff > rtimeout) {
+        if (diff < 0 || diff > rtimeout) {
             FREE(buf);
             return MN_ETIMEOUT;
         }

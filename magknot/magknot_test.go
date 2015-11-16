@@ -15,17 +15,21 @@ var (
 )
 
 func DealAgent(agent *Agent) {
+	fmt.Printf("Test a new Agent %d \n", agent.ID)
 	for {
-		buf, err := agent.Recv()
+		msg, err := agent.Recv()
+		if err != nil {
+			if err == ErrEmptyMessage {
+				time.Sleep(time.Millisecond * 200)
+			}
+			continue
+		}
+		fmt.Println("Recv Message:", string(msg.Data))
+		err = agent.Send(msg.Data)
 		if err != nil {
 			continue
 		}
-		fmt.Println("Recv Message:", string(buf))
-		err = agent.Send(buf)
-		if err != nil {
-			continue
-		}
-		fmt.Println("Send Message:", string(buf))
+		fmt.Println("Send Message:", string(msg.Data))
 	}
 	agent.Close()
 }
@@ -43,7 +47,11 @@ func TestConnect(t *testing.T) {
 	for {
 		agent, err := knot.AcceptAgent(func(id uint32) bool { return true })
 		if err != nil {
-			fmt.Println(err.Error())
+			if err == ErrNoAgent {
+				time.Sleep(time.Millisecond * 200)
+			} else {
+				fmt.Println(err.Error())
+			}
 			continue
 		}
 		go DealAgent(agent)

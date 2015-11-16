@@ -82,12 +82,16 @@ int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint
     guard = buf;
     task = *len;
     while (task > 0) {
-        size_t rst = recv(fd->sfd, guard, task, flags);
+        ssize_t rst = recv(fd->sfd, guard, task, flags);
         if (0 == timeout) {
             if (rst > 0) {
                 *len = rst;
                 return 0;
             } else {
+                if (errno == EAGAIN) {
+                    continue;
+                }
+                
                 *len = 0;
                 return MN__ERECV;
             }
