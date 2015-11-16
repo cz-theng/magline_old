@@ -88,6 +88,7 @@ func (l *Lane) DealMsgK2N(msg *proto.KnotMessage) (err error) {
 	Logger.Debug("Send Message to Node by agent : %d", msg.AgentID)
 	agent, ok := l.agents[msg.AgentID]
 	if !ok {
+		Logger.Error("No such Agent %d", msg.AgentID)
 		return
 	}
 	err = agent.Send2Node(msg.Body())

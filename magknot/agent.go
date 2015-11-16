@@ -50,10 +50,17 @@ func (ag *Agent) PopMessage() (msg *Message, err error) {
 }
 
 func (ag *Agent) Send(buf []byte) (err error) {
-	msg := proto.KnotMessage{ReadBuf: ag.readBuf}
-	err = msg.RecvAndUnpack(ag.conn)
+	msg := proto.KnotMessage{
+		Magic:   0x01,
+		Version: 0x01,
+		CMD:     proto.MK_CMD_MSG_K2N,
+		Seq:     0x01,
+		AgentID: ag.ID,
+		Length:  uint32(len(buf)),
+	}
+	err = msg.PackAndSend(buf, ag.conn)
 	if err != nil {
-		println("Recv And Unpack Error")
+		println("Send And Pack Error")
 		return
 	}
 	return

@@ -44,11 +44,15 @@ func (ag *Agent) DealNodeMsg(data []byte) (err error) {
 	if ag.lane == nil {
 		Logger.Error("Agent %d 's lane is nil ", ag.ID())
 	}
-	ag.lane.SendNodeMsg(ag.ID(), data)
+	err = ag.lane.SendNodeMsg(ag.ID(), data)
+	if err != nil {
+		Logger.Error("Send to Node %d error %s", ag.ID(), err.Error())
+	}
 	return
 }
 
 func (ag *Agent) Send2Node(data []byte) (err error) {
+	Logger.Debug("Send data %s to node %d", string(data), ag.id)
 	rsp := &Response{}
 	rsp.Init()
 	rsp.CMD = proto.MN_CMD_MSG_KNOT

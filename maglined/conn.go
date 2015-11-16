@@ -47,6 +47,7 @@ func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	protoData := new(proto.NodeProto)
 	protoData.Init(rsp.Body)
 	protoData.CMD = rsp.CMD
+	protoData.Length = uint32(len(rsp.Body))
 	protoData.AgentID = rsp.AgentID
 	err = protoData.PackAndSend(conn.RWC)
 	return

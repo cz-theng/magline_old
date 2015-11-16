@@ -74,7 +74,10 @@ func (knot *MagKnot) Routine() {
 	for {
 		select {
 		case <-time.After(200 * time.Millisecond):
-			knot.recvMsg()
+			err := knot.recvMsg()
+			if err != nil {
+				fmt.Println("recv Msg Error ", err.Error())
+			}
 		}
 	}
 }
@@ -149,8 +152,10 @@ func (knot *MagKnot) dealNewAgent(kmsg *proto.KnotMessage) (err error) {
 		ID:      id,
 		readBuf: make([]byte, MK_READBUF_LEN),
 	}
+	agent.Init()
 	knot.mtx.Lock()
 	knot.newAgents.PushBack(agent)
+	knot.agents[id] = agent
 	knot.mtx.Unlock()
 	msg.PackAndSend(nil, knot.conn)
 	fmt.Printf("Create a New Agent with id :%d \n", id)

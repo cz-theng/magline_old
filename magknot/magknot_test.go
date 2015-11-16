@@ -27,6 +27,7 @@ func DealAgent(agent *Agent) {
 		fmt.Println("Recv Message:", string(msg.Data))
 		err = agent.Send(msg.Data)
 		if err != nil {
+			fmt.Println("agent send error ", err.Error())
 			continue
 		}
 		fmt.Println("Send Message:", string(msg.Data))

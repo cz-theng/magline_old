@@ -262,8 +262,7 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
     }
     gettimeofday(&setime, NULL);
     diff = timeval_min_usec(&setime, &sbtime);
-    if (diff < 0 || diff > timeout) {
-        FREE(buf);
+    if (diff < 0 ||(timeout >0 && diff > timeout)) {
         return MN_ETIMEOUT;
     }
     rst = parse_from_mem(&head, node->recvbuf, &node->recvbuflen, node->recvbuf);
@@ -275,7 +274,7 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
     if (0 != rst ) {
         return MN_EHEAD;
     }
-    if (MN_CMD_RSP_RECV) {
+    if (MN_CMD_MSG_KNOT) {
         uint64_t rtimeout = timeout - diff;
         memset(node->recvbuf, 0, MN_MAX_RECVBUF_SIZE);
         node->recvbuflen = head.length;
@@ -288,11 +287,11 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
             return MN_ERECV;
         }
         gettimeofday(&setime, NULL);
-        if (diff < 0 || diff > rtimeout) {
-            FREE(buf);
+        if (diff < 0 || (timeout > 0 && diff > rtimeout)) {
             return MN_ETIMEOUT;
         }
-        return 0;
+        memcpy(buf, node->recvbuf, node->recvbuflen);
+        return node->recvbuflen;
     } else {
         return MN_ECMD;
     }
