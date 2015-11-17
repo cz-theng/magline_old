@@ -6,7 +6,7 @@ package magknot
 
 import (
 	"container/list"
-	"fmt"
+	//	"fmt"
 	"github.com/cz-it/magline/maglined"
 	"github.com/cz-it/magline/maglined/proto"
 	"net"
@@ -47,7 +47,6 @@ func (knot *MagKnot) recvMsg() (err error) {
 	kmsg.Init(knot.readBuf[:])
 	err = kmsg.RecvAndUnpack(knot.conn)
 	if err != nil {
-		println("Recv And Unpack Error")
 		return
 	}
 	//fmt.Println("kmsg:", kmsg)
@@ -55,7 +54,7 @@ func (knot *MagKnot) recvMsg() (err error) {
 	if kmsg.CMD == proto.MK_CMD_REQ_NEWAGENT {
 		return knot.dealNewAgent(kmsg)
 	}
-	fmt.Printf("Get Node Message with agentid %d  data length :%d data: %s\n", kmsg.AgentID, kmsg.Length, string(kmsg.Body()))
+	//fmt.Printf("Get Node Message with agentid %d  data length :%d data: %s\n", kmsg.AgentID, kmsg.Length, string(kmsg.Body()))
 	agent, ok := knot.agents[kmsg.AgentID]
 	if !ok {
 		err = ErrNoAgent
@@ -76,7 +75,7 @@ func (knot *MagKnot) Routine() {
 		case <-time.After(200 * time.Millisecond):
 			err := knot.recvMsg()
 			if err != nil {
-				fmt.Println("recv Msg Error ", err.Error())
+				//fmt.Println("recv Msg Error ", err.Error())
 			}
 		}
 	}
@@ -85,20 +84,20 @@ func (knot *MagKnot) Routine() {
 func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) {
 	addr, err := maglined.ParseAddr(address)
 	if err != nil {
-		fmt.Println(err.Error())
+		//fmt.Println(err.Error())
 		return
 	}
 	conn, err := net.Dial("unix", addr.IPPort)
 	if err != nil {
-		fmt.Println(err.Error())
+		//fmt.Println(err.Error())
 		return
 	}
 	knot.conn = conn.(*net.UnixConn)
 	if err != nil {
-		fmt.Println(err.Error())
+		//fmt.Println(err.Error())
 		return
 	}
-	fmt.Println("Create unix doamin connect")
+	//fmt.Println("Create unix doamin connect")
 	msg := proto.KnotMessage{
 		Magic:   0x01,
 		Version: 0x01,
@@ -108,10 +107,10 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 		Length:  0,
 	}
 	msg.PackAndSend(nil, knot.conn)
-	fmt.Println("Send connect request!")
+	//fmt.Println("Send connect request!")
 	rsp := proto.KnotMessage{ReadBuf: knot.readBuf}
 	rsp.RecvAndUnpack(knot.conn)
-	fmt.Printf("Connect Success with rsp cmd", rsp.CMD)
+	//fmt.Printf("Connect Success with rsp cmd", rsp.CMD)
 	go knot.Routine()
 	return
 }
@@ -137,7 +136,7 @@ func (knot *MagKnot) AcceptAgent(accepter func(uint32) bool) (agent *Agent, err 
 func (knot *MagKnot) dealNewAgent(kmsg *proto.KnotMessage) (err error) {
 	var id uint32
 	id = kmsg.AgentID
-	fmt.Printf("Get Agent :%d \n", id)
+	//fmt.Printf("Get Agent :%d \n", id)
 
 	msg := proto.KnotMessage{
 		Magic:   0x01,
@@ -158,7 +157,7 @@ func (knot *MagKnot) dealNewAgent(kmsg *proto.KnotMessage) (err error) {
 	knot.agents[id] = agent
 	knot.mtx.Unlock()
 	msg.PackAndSend(nil, knot.conn)
-	fmt.Printf("Create a New Agent with id :%d \n", id)
+	//fmt.Printf("Create a New Agent with id :%d \n", id)
 	return
 }
 
