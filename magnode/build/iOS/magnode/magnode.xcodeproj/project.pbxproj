@@ -21,6 +21,7 @@
 		F0DBD52B1BFAD87C00C2EC20 /* proto.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD51C1BFAD87C00C2EC20 /* proto.c */; };
 		F0DBD52C1BFAD87C00C2EC20 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD51F1BFAD87C00C2EC20 /* log.c */; };
 		F0DBD52D1BFAD87C00C2EC20 /* os.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD5211BFAD87C00C2EC20 /* os.c */; };
+		F0DBD5691BFB60C100C2EC20 /* magnode_uinty.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD5671BFB60C100C2EC20 /* magnode_uinty.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,8 @@
 		F0DBD5201BFAD87C00C2EC20 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		F0DBD5211BFAD87C00C2EC20 /* os.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = os.c; sourceTree = "<group>"; };
 		F0DBD5221BFAD87C00C2EC20 /* os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = os.h; sourceTree = "<group>"; };
+		F0DBD5671BFB60C100C2EC20 /* magnode_uinty.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = magnode_uinty.c; sourceTree = "<group>"; };
+		F0DBD5681BFB60C100C2EC20 /* magnode_uinty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_uinty.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +156,8 @@
 		F0DBD50A1BFAD87C00C2EC20 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				F0DBD5671BFB60C100C2EC20 /* magnode_uinty.c */,
+				F0DBD5681BFB60C100C2EC20 /* magnode_uinty.h */,
 				F0DBD50B1BFAD87C00C2EC20 /* magnode.c */,
 				F0DBD50C1BFAD87C00C2EC20 /* magnode_errcode.c */,
 				F0DBD50D1BFAD87C00C2EC20 /* net */,
@@ -292,6 +297,7 @@
 			files = (
 				F0DBD52C1BFAD87C00C2EC20 /* log.c in Sources */,
 				F0DBD52B1BFAD87C00C2EC20 /* proto.c in Sources */,
+				F0DBD5691BFB60C100C2EC20 /* magnode_uinty.c in Sources */,
 				F0DBD5261BFAD87C00C2EC20 /* poll.c in Sources */,
 				F0DBD52D1BFAD87C00C2EC20 /* os.c in Sources */,
 				216CC3791B52A5D800EFD63A /* magnode.m in Sources */,
