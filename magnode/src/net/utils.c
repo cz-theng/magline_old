@@ -2,8 +2,13 @@
  * Author :cz cz.theng@gmail.com
  * Licence MIT
  */
+#include "os.h"
+#if defined MN_APPLE  || defined MN_ANDROID
+#include <arpa/inet.h>
+#endif
 
 #include "utils.h"
+
 
 #ifdef MN_ANDROID
 uint64_t htonll(uint64_t val) {

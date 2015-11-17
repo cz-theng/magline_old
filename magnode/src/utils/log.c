@@ -44,7 +44,7 @@ static mn_logger g_logger;
 void mn_print(const char *log)
 {
 #ifdef __ANDROID__
-    __android_log_print(ANDROID_LOG_DEBUG, _TAG, log);
+    __android_log_print(ANDROID_LOG_DEBUG, _TAG, "%s", log);
 #endif
     
 #ifdef __APPLE__
