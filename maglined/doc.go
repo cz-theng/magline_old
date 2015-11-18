@@ -1,4 +1,5 @@
-package maglined
+//Package maglined is a daemon process for connection layer
 /**
-* doc for magline
-*/
+* Author: CZ cz.theng@gmail.com
+ */
+package maglined
