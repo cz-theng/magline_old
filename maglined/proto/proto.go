@@ -1,9 +1,4 @@
 package proto
-/**
-* Proto.
-*/
 
-
-type Proto struct {
-
+type proto struct {
 }

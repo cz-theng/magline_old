@@ -1,21 +1,17 @@
-package proto
-
 /**
-* Proto for node
+* Author: CZ cz.theng@gmail.com
  */
+
+package proto
 
 import (
 	"encoding/binary"
-	"errors"
 	"io"
 )
 
-var (
-	ELENGTH_TO_LONG = errors.New("Request's Length is Bigger than Read Buffer!")
-)
-
+// NodeProto is node's proto
 type NodeProto struct {
-	Proto
+	proto
 	Magic   uint8
 	Version uint8
 	CMD     uint16
@@ -27,16 +23,23 @@ type NodeProto struct {
 	readBuf []byte
 }
 
+//Body return proto's body
 func (np *NodeProto) Body() []byte {
 	return np.readBuf[:np.Length]
 }
 
+// Init is initionlize
 func (np *NodeProto) Init(buf []byte) {
 	np.readBuf = buf
-	np.Magic = MN_MAGIC
-	np.Version = MN_VERSION
+	np.Magic = MNMagic
+	np.Version = MNVersion
+	np.CMD = MNCMDUnknown
+	np.Seq = 0
+	np.AgentID = 0
+	np.Length = 0
 }
 
+//RecvAndUnpack recv and upack message
 func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	if rw == nil {
 		// TODO : add log here
@@ -60,7 +63,7 @@ func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	np.Length = binary.BigEndian.Uint32(np.headBuf[12:16])
 
 	if np.Length > uint32(cap(np.readBuf)) {
-		err = ELENGTH_TO_LONG
+		err = ErrRequestTooLong
 		return
 	}
 
@@ -75,6 +78,7 @@ func (np *NodeProto) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	return
 }
 
+//PackAndSend pack and send message
 func (np *NodeProto) PackAndSend(rw io.ReadWriter) (err error) {
 	np.headBuf[0] = np.Magic
 	np.headBuf[1] = np.Version

@@ -1,21 +1,17 @@
-package proto
-
 /**
-* Proto for knot
+* Author: CZ cz.theng@gmail.com
  */
+
+package proto
 
 import (
 	"encoding/binary"
-	//"errors"
 	"io"
 )
 
-var (
-//ELENGTH_TO_LONG = errors.New("Request's Length is Bigger than Read Buffer!")
-)
-
+//KnotMessage is knot's proto
 type KnotMessage struct {
-	Proto
+	proto
 	Magic   uint8
 	Version uint8
 	CMD     uint16
@@ -27,19 +23,23 @@ type KnotMessage struct {
 	ReadBuf []byte
 }
 
+//Body get message's body
 func (km *KnotMessage) Body() []byte {
 	return km.ReadBuf[:km.Length]
 }
 
+//Init is initionlize
 func (km *KnotMessage) Init(buf []byte) {
-	km.Magic = MK_MAGIC
-	km.Version = MK_VERSION
-	km.CMD = MK_CMD_UNKNOWN
+	km.Magic = MKMagic
+	km.Version = MKVersion
+	km.CMD = MKCMDUnknown
 	km.Seq = 0
+	km.AgentID = 0
 	km.Length = 0
 	km.ReadBuf = buf
 }
 
+//RecvAndUnpack recv and unpack message
 func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	if rw == nil {
 		// TODO : add log here
@@ -63,7 +63,7 @@ func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	km.Length = binary.BigEndian.Uint32(km.headBuf[12:16])
 
 	if km.Length > uint32(cap(km.ReadBuf)) {
-		err = ELENGTH_TO_LONG
+		err = ErrRequestTooLong
 		return
 	}
 
@@ -78,6 +78,7 @@ func (km *KnotMessage) RecvAndUnpack(rw io.ReadWriter) (err error) {
 	return
 }
 
+//PackAndSend pack and send message
 func (km *KnotMessage) PackAndSend(data []byte, rw io.ReadWriter) (err error) {
 	km.headBuf[0] = km.Magic
 	km.headBuf[1] = km.Version

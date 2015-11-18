@@ -1,49 +1,70 @@
+/**
+* Author: CZ cz.theng@gmail.com
+ */
+
 package proto
 
+// MagNodeCMD is Node's cmd type
 type MagNodeCMD uint16
 
 const (
-	MN_MAGIC   = 0x7f
-	MN_VERSION = 0x01
+	// MNMagic magnode's magic
+	MNMagic = 0x7f
+	// MNVersion magnode's version
+	MNVersion = 0x01
+	//MNCMDUnknown is unknown commands
+	MNCMDUnknown = uint16(0x0000)
 
-	MN_CMD_UNKNOWN = uint16(0x0000)
+	//MNCMDReqConn is connect reqeust
+	MNCMDReqConn = uint16(0x0001)
+	//MNCMDRspConn is connect response
+	MNCMDRspConn = uint16(0x0002)
 
-	MN_CMD_REQ_CONN = uint16(0x0001)
-	MN_CMD_RSP_CONN = uint16(0x0002)
+	//MNCMDReqClose is close request
+	MNCMDReqClose = uint16(0x0003)
+	//MNCMDRspClose is close response
+	MNCMDRspClose = uint16(0x0004)
 
-	MN_CMD_REQ_SEND = uint16(0x0003)
-	MN_CMD_RSP_SEND = uint16(0x0004)
+	//MNCMDReqReconn is reconnect request
+	MNCMDReqReconn = uint16(0x0005)
+	//MNCMDRspReconn is reconnect response
+	MNCMDRspReconn = uint16(0x0006)
 
-	MN_CMD_REQ_RECV = uint16(0x0005)
-	MN_CMD_RSP_RECV = uint16(0x0006)
-
-	MN_CMD_REQ_CLOSE = uint16(0x0007)
-	MN_CMD_RSP_CLOSE = uint16(0x0008)
-
-	MN_CMD_REQ_RECONN = uint16(0x0009)
-	MN_CMD_RSPREQCONN = uint16(0x000a)
-
-	MN_CMD_MSG_NODE = uint16(0x000b)
-	MN_CMD_MSG_KNOT = uint16(0x000c)
+	// MNCMDMsgNode is message from magnode
+	MNCMDMsgNode = uint16(0x0007)
+	// MNCMDMsgKnot is message from magknot
+	MNCMDMsgKnot = uint16(0x0008)
 )
 
+// MagKnotCMD is Knot's cmd type
 type MagKnotCMD uint16
 
 const (
-	MK_MAGIC   = 0x7f
-	MK_VERSION = 0x01
+	// MKMagic is magknot's magic
+	MKMagic = 0x7f
+	// MKVersion is magknot's version
+	MKVersion = 0x01
 
-	MK_CMD_UNKNOWN = uint16(0x0000)
+	//MKCMDUnknown is unknown commands
+	MKCMDUnknown = uint16(0x0000)
 
-	MK_CMD_REQ_CONN = uint16(0x0001)
-	MK_CMD_RSP_CONN = uint16(0x0002)
+	//MKCMDReqConn is magknot's connect request
+	MKCMDReqConn = uint16(0x0001)
+	// MKCMDRspConn is magknot's connection response
+	MKCMDRspConn = uint16(0x0002)
 
-	MK_CMD_MSG_N2K = uint16(0x0003)
-	MK_CMD_MSG_K2N = uint16(0x0004)
+	//MKCMDMsgN2K is message from node to knot
+	MKCMDMsgN2K = uint16(0x0003)
+	//MKCMDMsgK2N is message from knot to node
+	MKCMDMsgK2N = uint16(0x0004)
 
-	MK_CMD_REQ_CLOSE = uint16(0x0005)
-	MK_CMD_RSP_CLOSE = uint16(0x0006)
+	// MKCMDReqClose is knot's close request
+	MKCMDReqClose = uint16(0x0005)
+	//MKCMDRspClose is knot's close response
+	MKCMDRspClose = uint16(0x0006)
 
-	MK_CMD_REQ_NEWAGENT = uint16(0x0007)
-	MK_CMD_RSP_NEWAGENT = uint16(0x0008)
+	//MKCMDReqNewAgent is new agent's request
+	MKCMDReqNewAgent = uint16(0x0007)
+	//MKCMDRspNewAgent is new agent's response
+	MKCMDRspNewAgent = uint16(0x0008)
 )
