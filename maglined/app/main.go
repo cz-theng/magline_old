@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 
-	"github.com/cz-it/golangutils/daemon"	
+	"github.com/cz-it/golangutils/daemon"
 	"github.com/cz-it/magline/maglined"
 )
 
 func main() {
 	if Flag.Version {
-		fmt.Println("Cur Version:%s",maglined.Version())
+		fmt.Println("Cur Version:%s", maglined.Version())
 		return
 	}
 
@@ -19,32 +19,18 @@ func main() {
 		return
 	}
 
-	if err := LoadConfig(Flag.Config); err != nil{
+	if err := LoadConfig(Flag.Config); err != nil {
 		println("Loading Config Error")
 		return
 	}
-	
+
 	if Flag.Daemon {
-		daemon.Boot("/tmp/magline.lock","/tmp/magline.pid")
+		daemon.Boot("/tmp/magline.lock", "/tmp/magline.pid", func() {
+			maglined.Start()
+		})
+	} else {
+		maglined.Start()
 	}
-	
-	maglined.Start()
+
 	println("[Testing]:End")
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
