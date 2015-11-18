@@ -6,7 +6,9 @@ package maglined
 import (
 	"container/list"
 	"github.com/cz-it/magline/maglined/proto"
+	"io"
 	"net"
+	"time"
 )
 
 const (
@@ -93,7 +95,11 @@ func (conn *Connection) Serve() {
 		// deal timeout
 		req, err := conn.RecvRequest()
 		if err != nil {
-			Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
+			if err != io.EOF {
+				Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
+				time.Sleep(200 * time.Millisecond)
+				continue
+			}
 			break
 		}
 		cmd := req.CMD
