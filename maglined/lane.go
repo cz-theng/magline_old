@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 const (
@@ -112,7 +113,10 @@ func (l *Lane) Serve() {
 		// deal timeout
 		msg, err := l.ReadMsg()
 		if err != nil {
-			Logger.Error("Connection Read Request Error:%s", err.Error())
+			time.Sleep(200 * time.Millisecond)
+			if err != io.EOF {
+				Logger.Error("Connection Read Request Error:%s", err.Error())
+			}
 			continue
 		}
 		if msg.CMD == proto.MK_CMD_REQ_CONN {
