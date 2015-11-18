@@ -8,7 +8,10 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include "os.h"
+#if defined MN_APPLE  || defined MN_ANDROID
+#include <arpa/inet.h>
+#endif
 #include "proto.h"
 #include "magnode_errcode.h"
 
