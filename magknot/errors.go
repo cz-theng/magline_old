@@ -15,9 +15,9 @@ var (
 	// ErrEmpty read buffer is empty
 	ErrEmpty = errors.New("Buffer is emtpy")
 
-	//ErrNoAgent
+	//ErrNoAgent is No such a Agent
 	ErrNoAgent = errors.New("No such a Agent")
 
-	//ErrNoMessage
+	//ErrEmptyMessage is No Messages
 	ErrEmptyMessage = errors.New("No Messages")
 )
