@@ -10,11 +10,13 @@ import (
 	"sync"
 )
 
+//Bridge is lane manager
 type Bridge struct {
 	mtx   sync.Mutex
 	lanes list.List
 }
 
+//Alloc alloc a lane
 func (b *Bridge) Alloc(rwc *net.UnixConn) (lane *Lane, err error) {
 	b.mtx.Lock()
 	defer b.mtx.Unlock()
@@ -25,6 +27,7 @@ func (b *Bridge) Alloc(rwc *net.UnixConn) (lane *Lane, err error) {
 	return
 }
 
+//Dispatch dispatch a lane
 func (b *Bridge) Dispatch() (lane *Lane, err error) {
 	elem := b.lanes.Front()
 	if elem == nil {

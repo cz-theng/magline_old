@@ -1,35 +1,34 @@
+//Package maglined is a daemon process for connection layer
+/**
+* Author: CZ cz.theng@gmail.com
+ */
 package maglined
 
-/**
-* Server.
- */
-
 import (
-	"errors"
 	"net"
 	"os"
 	"time"
 )
 
-var (
-	ErrAddr = errors.New("Address may be invalied")
-)
-
+//BackendServer is backend server
 type BackendServer struct {
 	Addr   string
 	Bridge *Bridge
 }
 
+//Dispatch Dispatch a lane
 func (bs *BackendServer) Dispatch() (lane *Lane, err error) {
 	lane, err = bs.Bridge.Dispatch()
 	return
 }
 
+//Init is initionlize
 func (bs *BackendServer) Init() (err error) {
 	bs.Bridge = &Bridge{}
 	return
 }
 
+//AcceptAndServe accept and serve
 func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
 	for {
 		rw, err := ln.AcceptUnix()
@@ -45,6 +44,7 @@ func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
 	}
 }
 
+// Listen listen the port
 func (bs *BackendServer) Listen() (err error) {
 	//var tempDelay time.Duration // how long to sleep on accept failure
 
@@ -70,28 +70,15 @@ func (bs *BackendServer) Listen() (err error) {
 	return
 }
 
+//Server is frontend server
 type Server struct {
-	/**
-	 * Address to listen such as
-	 * "tcp://114.1.0.1?keep-alive=true"
-	 * "tcp://114.1.0.1:80?keep-alive=false"
-	 * "udp://114.1.0.1:8088"
-	 */
-	Addr string
-
-	/**
-	 * Coonection pool for client
-	 */
+	Addr     string
 	ConnPool *ConnPool
-
-	/**
-	* Agent Manger
-	 */
 	AgentMgr *AgentMgr
-
-	Backend *BackendServer
+	Backend  *BackendServer
 }
 
+//Init is server's init
 func (svr *Server) Init(maxConns int) (err error) {
 	svr.ConnPool, err = NewMLConnPool(maxConns)
 	if err != nil {
@@ -101,6 +88,7 @@ func (svr *Server) Init(maxConns int) (err error) {
 	return
 }
 
+//ListenAndServe is server's listen and serve
 func (svr *Server) ListenAndServe() error {
 	Logger.Debug("ListenAndServe with addr %s", svr.Addr)
 	addr, err := ParseAddr(svr.Addr)
@@ -114,7 +102,7 @@ func (svr *Server) ListenAndServe() error {
 			return err
 		}
 
-		svr.ListenAndServeTCP(ln.(*net.TCPListener), addr.Kpal)
+		svr.listenAndServeTCP(ln.(*net.TCPListener), addr.Kpal)
 	}
 	return nil
 }
@@ -130,7 +118,7 @@ func (svr *Server) newConn(rwc *net.TCPConn) (conn *Connection, err error) {
 	return
 }
 
-func (svr *Server) ListenAndServeTCP(l *net.TCPListener, kpal bool) error {
+func (svr *Server) listenAndServeTCP(l *net.TCPListener, kpal bool) error {
 	defer l.Close()
 	var tempDelay time.Duration // how long to sleep on accept failure
 

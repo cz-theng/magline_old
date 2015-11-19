@@ -5,15 +5,17 @@ import (
 	"fmt"
 )
 
+//Flag Flag
 var Flag FlagInfo
 
+//FlagInfo FlagInfo
 type FlagInfo struct {
 	Version bool
 	Daemon  bool
 	Config  string
 }
 
-func init (){
+func init() {
 	flag.Usage = func() {
 		fmt.Printf("Magline server\n")
 		fmt.Println("Usage: server -[vdc]")
@@ -26,22 +28,3 @@ func init (){
 	flag.Parse()
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

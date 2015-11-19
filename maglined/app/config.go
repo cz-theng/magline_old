@@ -6,12 +6,14 @@ import (
 	"os"
 )
 
-type ConfigJsonWrapper struct {
+//ConfigJSONWrapper ConfigJsonWrapper
+type ConfigJSONWrapper struct {
 	OuterAddr string
 	InnerAddr string
 	MaxConns  int
 }
 
+//LoadConfig load configure
 func LoadConfig(filePath string) (err error) {
 	fp, err := os.Open(filePath)
 	if err != nil {
@@ -20,7 +22,7 @@ func LoadConfig(filePath string) (err error) {
 	}
 	defer fp.Close()
 
-	var config ConfigJsonWrapper
+	var config ConfigJSONWrapper
 	decoder := json.NewDecoder(fp)
 	if err = decoder.Decode(&config); err != nil {
 		maglined.Logger.Error("Decode Config Error:%s", err.Error())

@@ -1,13 +1,15 @@
+//Package maglined is a daemon process for connection layer
+/**
+* Author: CZ cz.theng@gmail.com
+ */
 package maglined
 
-// Defination of config itmes
+import ()
 
-import (
-//"net"
-)
-
+//Config is config info
 var Config ConfigInfo
 
+//ConfigInfo is config info's data
 type ConfigInfo struct {
 	OuterAddr string
 	InnerAddr string

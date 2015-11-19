@@ -1,8 +1,9 @@
+//Package maglined is a daemon process for connection layer
+/**
+* Author: CZ cz.theng@gmail.com
+ */
 package maglined
 
-/**
-* Connection for client
- */
 import (
 	"container/list"
 	"github.com/cz-it/magline/maglined/proto"
@@ -12,9 +13,11 @@ import (
 )
 
 const (
-	READ_BUF_SIZE = 10 * 1024
+	//ReadBufSize is read buffer size
+	ReadBufSize = 10 * 1024
 )
 
+//Connection is connection object
 type Connection struct {
 	RWC     *net.TCPConn
 	ReadBuf []byte
@@ -24,11 +27,13 @@ type Connection struct {
 	Server  *Server
 }
 
+//Init is initialize
 func (conn *Connection) Init() error {
-	conn.ReadBuf = make([]byte, READ_BUF_SIZE)
+	conn.ReadBuf = make([]byte, ReadBufSize)
 	return nil
 }
 
+//RecvRequest Recv a request
 func (conn *Connection) RecvRequest() (req *Request, err error) {
 	Logger.Debug("RecvRequest with request and readbuf cap is %d", cap(conn.ReadBuf))
 	protoData := new(proto.NodeProto)
@@ -45,6 +50,7 @@ func (conn *Connection) RecvRequest() (req *Request, err error) {
 	return
 }
 
+//SendResponse Send a response
 func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	protoData := new(proto.NodeProto)
 	protoData.Init(rsp.Body)
@@ -55,10 +61,12 @@ func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	return
 }
 
+//Close close connection
 func (conn *Connection) Close() error {
 	return nil
 }
 
+//DealNewAgent deal a new agent
 func (conn *Connection) DealNewAgent(req *Request) {
 	Logger.Debug("DealNewAgent with req %v", req)
 	agent, err := conn.Server.AgentMgr.Alloc()
@@ -74,6 +82,7 @@ func (conn *Connection) DealNewAgent(req *Request) {
 	agent.DealRequest(req)
 }
 
+//DealSendReq deal send request
 func (conn *Connection) DealSendReq(req *Request) {
 	Logger.Debug("Deal Send Req with req:%d ", req.AgentID)
 	ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
@@ -90,6 +99,7 @@ func (conn *Connection) DealSendReq(req *Request) {
 	ag.DealRequest(req)
 }
 
+//Serve serve a server
 func (conn *Connection) Serve() {
 	for {
 		// deal timeout
@@ -104,9 +114,9 @@ func (conn *Connection) Serve() {
 		}
 		cmd := req.CMD
 		Logger.Debug("Cmd is ", cmd)
-		if cmd == proto.MN_CMD_REQ_CONN {
+		if cmd == proto.MNCMDReqConn {
 			conn.DealNewAgent(req)
-		} else if cmd == proto.MN_CMD_MSG_NODE {
+		} else if cmd == proto.MNCMDMsgNode {
 			conn.DealSendReq(req)
 		} else {
 			Logger.Error("Unknow CMD %d", cmd)

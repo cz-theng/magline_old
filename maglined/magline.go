@@ -1,18 +1,19 @@
-package maglined
-
+//Package maglined is a daemon process for connection layer
 /**
-* Magline
+* Author: CZ cz.theng@gmail.com
  */
+package maglined
 
 import (
 	"fmt"
 	"os"
 )
 
-func Exit() {
+func exit() {
 	os.Exit(-1)
 }
 
+//Start the two servers
 func Start() {
 	var err error
 
@@ -20,7 +21,7 @@ func Start() {
 	if err != nil {
 		fmt.Println("Create Agent Manager Error")
 		Logger.Error("Create Agent Manager Error")
-		Exit()
+		exit()
 	}
 	backend := &BackendServer{
 		Addr: Config.InnerAddr,
@@ -30,7 +31,7 @@ func Start() {
 	if err != nil {
 		fmt.Println("Start Magline Backend Server error with s", err.Error())
 		Logger.Error("Start Magline Backend Server error with s", err.Error())
-		Exit()
+		exit()
 	}
 
 	svr := Server{
@@ -43,6 +44,6 @@ func Start() {
 	if err != nil {
 		fmt.Println("Start Magline Server error with s", err.Error())
 		Logger.Error("Start Magline Server error with s", err.Error())
-		Exit()
+		exit()
 	}
 }

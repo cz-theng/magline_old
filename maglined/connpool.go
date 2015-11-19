@@ -1,30 +1,28 @@
-package maglined
-
+//Package maglined is a daemon process for connection layer
 /**
-* Connector Magnager for client
+* Author: CZ cz.theng@gmail.com
  */
+package maglined
 
 import (
 	"container/list"
-	"errors"
 	"sync"
 )
 
-var (
-	ENewConn = errors.New("New Connection Error!")
-)
-
+//ConnPool is connection poll
 type ConnPool struct {
 	mtx   sync.Mutex
 	conns list.List
 }
 
+//Init is initialize
 func (cp *ConnPool) Init() error {
 	cp.mtx.Lock()
 	defer cp.mtx.Unlock()
 	return nil
 }
 
+//Alloc is a allocater
 func (cp *ConnPool) Alloc() (conn *Connection, err error) {
 	cp.mtx.Lock()
 	defer cp.mtx.Unlock()
@@ -37,12 +35,14 @@ func (cp *ConnPool) Alloc() (conn *Connection, err error) {
 	return
 }
 
+//Release will reuse a connection
 func (cp *ConnPool) Release(conn *Connection) (err error) {
 	cp.conns.Remove(conn.Elem)
 	err = nil
 	return
 }
 
+//NewMLConnPool is ConnPoll creater
 func NewMLConnPool(size int) (conn *ConnPool, err error) {
 	conn = new(ConnPool)
 	err = conn.Init()

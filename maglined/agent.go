@@ -1,8 +1,9 @@
+//Package maglined is a daemon process for connection layer
+/**
+* Author: CZ cz.theng@gmail.com
+ */
 package maglined
 
-/**
-* Agent.
- */
 import (
 	"github.com/cz-it/magline/maglined/proto"
 )
@@ -31,15 +32,18 @@ func (ag *Agent) DealConnReq(req *Request) (err error) {
 	return
 }
 
+//DealNewAgentRsp deal a new agent's response for knot
 func (ag *Agent) DealNewAgentRsp() (err error) {
 	Logger.Info("Agent Confirm New Agent ID: %d", ag.id)
 	rsp := &Response{}
 	rsp.Init()
-	rsp.CMD = proto.MN_CMD_RSP_CONN
+	rsp.CMD = proto.MNCMDRspConn
 	rsp.AgentID = ag.id
 	ag.conn.SendResponse(rsp)
 	return
 }
+
+//DealNodeMsg deal a message form node
 func (ag *Agent) DealNodeMsg(data []byte) (err error) {
 	if ag.lane == nil {
 		Logger.Error("Agent %d 's lane is nil ", ag.ID())
@@ -51,11 +55,12 @@ func (ag *Agent) DealNodeMsg(data []byte) (err error) {
 	return
 }
 
+//Send2Node send message to node
 func (ag *Agent) Send2Node(data []byte) (err error) {
 	Logger.Debug("Send data %s to node %d", string(data), ag.id)
 	rsp := &Response{}
 	rsp.Init()
-	rsp.CMD = proto.MN_CMD_MSG_KNOT
+	rsp.CMD = proto.MNCMDMsgKnot
 	rsp.AgentID = ag.id
 	rsp.Body = data
 	ag.conn.SendResponse(rsp)
@@ -65,9 +70,9 @@ func (ag *Agent) Send2Node(data []byte) (err error) {
 // DealRequest deal a client's request
 func (ag *Agent) DealRequest(req *Request) (err error) {
 	Logger.Info("Deal a Client Request! with cmd %d", req.CMD)
-	if req.CMD == proto.MN_CMD_REQ_CONN {
+	if req.CMD == proto.MNCMDReqConn {
 		err = ag.DealConnReq(req)
-	} else if req.CMD == proto.MN_CMD_MSG_NODE {
+	} else if req.CMD == proto.MNCMDMsgNode {
 		err = ag.DealNodeMsg(req.Body)
 	}
 	if err != nil {

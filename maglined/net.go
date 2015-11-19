@@ -1,24 +1,24 @@
+//Package maglined is a daemon process for connection layer
+/**
+* Author: CZ cz.theng@gmail.com
+ */
 package maglined
 
 /**
 * Net Utils
  */
 import (
-	"errors"
 	"strings"
 )
 
-var (
-	EURL     = errors.New("Invaliad URL!")
-	ENETWORK = errors.New("Unknown Network Type!")
-)
-
+//Addr is net address
 type Addr struct {
 	Network string
 	IPPort  string
 	Kpal    bool
 }
 
+//ParseAddr will parse a string url
 func ParseAddr(url string) (addr Addr, err error) {
 	if url[:6] == "udp://" {
 		addr.Network = "udp"
@@ -37,7 +37,7 @@ func ParseAddr(url string) (addr Addr, err error) {
 	} else {
 		addr.Network = "unknown"
 		addr.IPPort = "unknown:unknown"
-		err = ENETWORK
+		err = ErrNetworkType
 		return
 	}
 	return
