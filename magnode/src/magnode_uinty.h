@@ -27,11 +27,11 @@ extern "C" {
     
     MAGNODE_API int exp_mn_deinit();
 
-    MAGNODE_API int exp_mn_connect();
+    MAGNODE_API int exp_mn_connect(char *url, int timeout);
     
-    MAGNODE_API int exp_mn_send();
+    MAGNODE_API int exp_mn_send(char *data, int length);
     
-    MAGNODE_API int exp_mn_recv();
+    MAGNODE_API int exp_mn_recv(char *data, int length);
     
     MAGNODE_API int exp_mn_close();
     
