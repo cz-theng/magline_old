@@ -9,5 +9,5 @@ all :
 .PHONY:clean
 
 clean:
-	cd maglined/app; make clean 
+	cd maglined; make clean 
 	cd magknot; make clean
