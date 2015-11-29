@@ -2,7 +2,7 @@
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package maglined
+package main
 
 //Response is response to knot
 type Response struct {

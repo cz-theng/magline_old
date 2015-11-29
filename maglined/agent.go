@@ -2,7 +2,7 @@
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package maglined
+package main
 
 import (
 	"github.com/cz-it/magline/maglined/proto"

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/cz-it/magline/maglined"
 	"os"
 )
 
@@ -17,7 +16,7 @@ type ConfigJSONWrapper struct {
 func LoadConfig(filePath string) (err error) {
 	fp, err := os.Open(filePath)
 	if err != nil {
-		maglined.Logger.Error("Open Config file %s error: %s", filePath, err.Error())
+		Logger.Error("Open Config file %s error: %s", filePath, err.Error())
 		return
 	}
 	defer fp.Close()
@@ -25,13 +24,13 @@ func LoadConfig(filePath string) (err error) {
 	var config ConfigJSONWrapper
 	decoder := json.NewDecoder(fp)
 	if err = decoder.Decode(&config); err != nil {
-		maglined.Logger.Error("Decode Config Error:%s", err.Error())
+		Logger.Error("Decode Config Error:%s", err.Error())
 		return
 	}
-	maglined.Config.OuterAddr = config.OuterAddr
-	maglined.Config.InnerAddr = config.InnerAddr
-	maglined.Config.MaxConns = config.MaxConns
-	maglined.Logger.Debug("Load Config file %s Success", filePath)
+	Config.OuterAddr = config.OuterAddr
+	Config.InnerAddr = config.InnerAddr
+	Config.MaxConns = config.MaxConns
+	Logger.Debug("Load Config file %s Success", filePath)
 	err = nil
 	return
 }
