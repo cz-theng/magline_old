@@ -14,6 +14,7 @@
 void _main()
 {
     mn_node node;
+    //int ret = mn_connect(&node, "tcp://127.0.0.1:8082", 500*1000);
     int ret = mn_connect(&node, "tcp://127.0.0.1:8082", 500*1000);
     if (ret != 0){
         printf("connect error with ret %d",(int)ret);
