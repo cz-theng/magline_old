@@ -53,6 +53,7 @@
 		216CC3781B52A5D800EFD63A /* magnode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = magnode.m; sourceTree = "<group>"; };
 		216CC37E1B52A5D800EFD63A /* magnodeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = magnodeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		216CC3841B52A5D800EFD63A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F0B419651C11343100D8413E /* magnode_inner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_inner.h; sourceTree = "<group>"; };
 		F0DBD5081BFAD87C00C2EC20 /* magnode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode.h; sourceTree = "<group>"; };
 		F0DBD5091BFAD87C00C2EC20 /* magnode_errcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_errcode.h; sourceTree = "<group>"; };
 		F0DBD50B1BFAD87C00C2EC20 /* magnode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = magnode.c; sourceTree = "<group>"; };
@@ -160,6 +161,7 @@
 				F0DBD5681BFB60C100C2EC20 /* magnode_uinty.h */,
 				F0DBD50B1BFAD87C00C2EC20 /* magnode.c */,
 				F0DBD50C1BFAD87C00C2EC20 /* magnode_errcode.c */,
+				F0B419651C11343100D8413E /* magnode_inner.h */,
 				F0DBD50D1BFAD87C00C2EC20 /* net */,
 				F0DBD51B1BFAD87C00C2EC20 /* proto */,
 				F0DBD51E1BFAD87C00C2EC20 /* utils */,
@@ -411,7 +413,7 @@
 		216CC3881B52A5D800EFD63A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				GCC_INPUT_FILETYPE = automatic;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,7 +424,7 @@
 		216CC3891B52A5D800EFD63A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				GCC_INPUT_FILETYPE = automatic;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

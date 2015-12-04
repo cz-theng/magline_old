@@ -21,20 +21,21 @@
 extern "C" {
 #endif
     
-    MAGNODE_API int exp_create();
+    MAGNODE_API void *exp_create();
 
-    MAGNODE_API int exp_mn_init();
+    MAGNODE_API int exp_mn_init(void *node);
     
-    MAGNODE_API int exp_mn_deinit();
+    MAGNODE_API int exp_mn_deinit(void *node);
 
-    MAGNODE_API int exp_mn_connect(char *url, int timeout);
+    MAGNODE_API int exp_mn_connect(void *node, char *url, int timeout);
     
-    MAGNODE_API int exp_mn_send(char *data, int length);
+    MAGNODE_API int exp_mn_send(void *node, char *data, int length, int timeout);
     
-    MAGNODE_API int exp_mn_recv(char *data, int length);
+    MAGNODE_API int exp_mn_recv(void *node, char *data, int length, int timeout);
     
-    MAGNODE_API int exp_mn_close();
+    MAGNODE_API int exp_mn_close(void *node);
     
+    MAGNODE_API void exp_mn_destory(void *node);
     
 #ifdef __cplusplus
 }

@@ -97,7 +97,7 @@ extern "C" {
         NET_RECV_BUF_SIZE = 1*1024*1024,
         NET_SEND_BUF_SIZE = 1*1024*1024,
     };
-/*
+
     struct mn_socket
     {
         int sfd;
@@ -105,7 +105,7 @@ extern "C" {
         struct sockaddr dest_addr;
         socklen_t addrlen;
     };
-*/
+
     struct mn_sockaddr
     {
         enum net_proto proto;

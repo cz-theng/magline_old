@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "proto.h"
 #include "log.h"
+#include "magnode_inner.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
 #include <sys/time.h>
@@ -97,6 +98,14 @@ int connect_transaction(mn_node *node, uint64_t timeout)
     }
     
     return -1;
+}
+
+mn_node *mn_new()
+{
+    void *buf =(void *) malloc(sizeof(mn_node));
+    memset(buf,0,sizeof(mn_node));
+    mn_node *node = (mn_node *)buf;
+    return node;
 }
 
 int mn_init(mn_node *node)

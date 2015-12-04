@@ -24,7 +24,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+    /*
     struct mn_socket
     {
         int sfd;
@@ -41,7 +41,17 @@ extern "C" {
         void *recvbuf;
         size_t recvbuflen;
     } mn_node;
-
+     */
+    
+    typedef struct node_t mn_node;
+    
+    /**
+     * New a Node.
+     *
+     * @return : a mn_node point
+     */
+    mn_node *mn_new();
+    
     /**
      * Init a Node.
      *
