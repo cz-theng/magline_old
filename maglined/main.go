@@ -5,12 +5,11 @@ import (
 	"fmt"
 
 	"github.com/cz-it/golangutils/daemon"
-	"github.com/cz-it/magline/maglined"
 )
 
 func main() {
 	if Flag.Version {
-		fmt.Println("Cur Version:%s", maglined.Version())
+		fmt.Println("Cur Version:%s", Version())
 		return
 	}
 
@@ -26,10 +25,10 @@ func main() {
 
 	if Flag.Daemon {
 		daemon.Boot("/tmp/magline.lock", "/tmp/magline.pid", func() {
-			maglined.Start()
+			Start()
 		})
 	} else {
-		maglined.Start()
+		Start()
 	}
 
 	println("[Testing]:End")
