@@ -7,55 +7,89 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "magnode_uinty.h"
 
-static mn_node g_node ;
-
-int exp_create()
+void *exp_create()
 {
     printf("exp_create");
-    return 0;
+    mn_node *node = mn_new();
+    return node;
 }
 
-int exp_mn_init()
+int exp_mn_init(void *node)
 {
     printf("exp_mn_init");
-    mn_init(&g_node);
+    if (!node) {
+        return -1;
+    }
+    mn_node *n = (mn_node *)node;
+    mn_init(n);
     return 0;
 }
 
-int exp_mn_deinit()
+int exp_mn_deinit(void *node)
 {
     printf("exp_mn_deinit");
-    mn_deinit(&g_node);
+    if (!node) {
+        return -1;
+    }
+    mn_node *n = (mn_node *)node;
+    mn_deinit(n);
     return 0;
 }
 
-int exp_mn_connect(char *url, int timeout)
+int exp_mn_connect(void *node, char *url, int timeout)
 {
     printf("exp_mn_connect");
-    mn_connect(&g_node, url, timeout);
+    if (!node) {
+        return -1;
+    }
+    mn_node *n = ( mn_node *)node;
+    mn_connect(n, url, timeout);
     return 0;
 }
 
-int exp_mn_send(char *data, int length)
+int exp_mn_send(void *node, char *data, int length, int timeout)
 {
     printf("exp_mn_send");
-    mn_send(&g_node, data, length, 5000);
+    if (!node) {
+        return -1;
+    }
+    mn_node *n = (mn_node *)node;
+    mn_send(n, data, length, timeout);
     return 0;
 }
 
-int exp_mn_recv(char *data, int length)
+int exp_mn_recv(void *node, char *data, int length, int timeout)
 {
     printf("exp_mn_recv");
-    mn_recv(&g_node, data, length, 5000);
+    if (!node) {
+        return -1;
+    }
+    mn_node *n = (mn_node *)node;
+    mn_recv(n, data, length, timeout);
     return 0;
 }
 
-int exp_mn_close()
+int exp_mn_close(void *node)
 {
     printf("exp_mn_close");
-    mn_close(&g_node);
+    if (!node) {
+        return -1;
+    }
+    mn_node *n = (mn_node *)node;
+    mn_close(n);
     return 0;
+}
+
+void exp_mn_destory(void *node)
+{
+    if (!node) {
+        return ;
+    }
+    mn_node *n = (mn_node *)node;
+    mn_deinit(n);
+    free(n);
 }
