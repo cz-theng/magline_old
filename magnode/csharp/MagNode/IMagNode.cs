@@ -2,6 +2,7 @@
 
 	public enum ErrNO {
 		Success,
+		Nil,
 	}
 
 	public interface INode {
@@ -15,7 +16,7 @@
 
 		ErrNO Send(byte[] data,uint length,ulong timeout);
 
-		ErrNO Recv(ref byte[] buf,uint length,ulong timeout);
+		ErrNO Recv(ref byte[] buf, ref uint length,ulong timeout);
 
 		ErrNO Close();
 

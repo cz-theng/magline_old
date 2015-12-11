@@ -8,84 +8,98 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "log.h"
 
 #include "magnode_uinty.h"
 
 void *exp_create()
 {
-    printf("exp_create");
+    LOG_I("exp_create");
     mn_node *node = mn_new();
     return node;
 }
 
 int exp_mn_init(void *node)
 {
-    printf("exp_mn_init");
+    LOG_I("exp_mn_init");
+    int rst;
     if (!node) {
         return -1;
     }
     mn_node *n = (mn_node *)node;
-    mn_init(n);
-    return 0;
+    rst = mn_init(n);
+    return rst;
 }
 
 int exp_mn_deinit(void *node)
 {
-    printf("exp_mn_deinit");
+    LOG_I("exp_mn_deinit");
+    int rst;
     if (!node) {
         return -1;
     }
     mn_node *n = (mn_node *)node;
-    mn_deinit(n);
-    return 0;
+    rst = mn_deinit(n);
+    return rst;
 }
 
 int exp_mn_connect(void *node, char *url, int timeout)
 {
-    printf("exp_mn_connect");
+    LOG_I("exp_mn_connect");
+    int rst;
     if (!node) {
         return -1;
     }
     mn_node *n = ( mn_node *)node;
-    mn_connect(n, url, timeout);
-    return 0;
+    rst = mn_connect(n, url, timeout);
+    return rst;
 }
 
 int exp_mn_send(void *node, char *data, int length, int timeout)
 {
-    printf("exp_mn_send");
+    LOG_I("exp_mn_send");
+    int rst;
     if (!node) {
         return -1;
     }
     mn_node *n = (mn_node *)node;
-    mn_send(n, data, length, timeout);
-    return 0;
+    rst = mn_send(n, data, length, timeout);
+    return rst;
 }
 
-int exp_mn_recv(void *node, char *data, int length, int timeout)
+int exp_mn_recv(void *node, char *data, int *length, int timeout)
 {
-    printf("exp_mn_recv");
+    LOG_I("exp_mn_recv");
+    int rst;
+    size_t len = *length;
     if (!node) {
         return -1;
     }
     mn_node *n = (mn_node *)node;
-    mn_recv(n, data, length, timeout);
-    return 0;
+    rst = mn_recv(n, data, &len, timeout);
+    if (rst != 0) {
+        return -1;
+    }
+    *length = len;
+    LOG_I("length is %d ",*length);
+    return rst;
 }
 
 int exp_mn_close(void *node)
 {
-    printf("exp_mn_close");
+    LOG_I("exp_mn_close");
+    int rst;
     if (!node) {
         return -1;
     }
     mn_node *n = (mn_node *)node;
-    mn_close(n);
-    return 0;
+    rst = mn_close(n);
+    return rst;
 }
 
 void exp_mn_destory(void *node)
 {
+    LOG_I("exp_mn_destory");
     if (!node) {
         return ;
     }

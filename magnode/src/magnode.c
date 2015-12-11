@@ -241,7 +241,7 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
     return 0;
 }
 
-int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
+int mn_recv(mn_node *node,void *buf,size_t *length,uint64_t timeout)
 {
     mn_nodemsg_head head;
     int rst;
@@ -253,12 +253,8 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
         return MN_EARG;
     }
     
-    
-    
-    
     MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_SEND, node->agent_id);
     
- 
     node->recvbuflen = sizeof(mn_nodemsg_head);
     memset(node->recvbuf, 0, MN_MAX_RECVBUF_SIZE);
     gettimeofday(&sbtime, NULL);
@@ -300,7 +296,8 @@ int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout)
             return MN_ETIMEOUT;
         }
         memcpy(buf, node->recvbuf, node->recvbuflen);
-        return node->recvbuflen;
+        *length =node->recvbuflen;
+        return 0;
     } else {
         return MN_ECMD;
     }

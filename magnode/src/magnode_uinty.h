@@ -31,7 +31,7 @@ extern "C" {
     
     MAGNODE_API int exp_mn_send(void *node, char *data, int length, int timeout);
     
-    MAGNODE_API int exp_mn_recv(void *node, char *data, int length, int timeout);
+    MAGNODE_API int exp_mn_recv(void *node, char *data, int *length, int timeout);
     
     MAGNODE_API int exp_mn_close(void *node);
     

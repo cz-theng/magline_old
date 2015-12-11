@@ -108,7 +108,7 @@ extern "C" {
      * @param timeout : recv timout
      * @return : 0 on success , <0 on error
      */
-    int mn_recv(mn_node *node,void *buf,size_t length,uint64_t timeout);
+    int mn_recv(mn_node *node,void *buf,size_t *length,uint64_t timeout);
     
     /**
      * Close Connection.
