@@ -1,0 +1,62 @@
+package magline
+
+/** SYN **/
+message SYN {
+    uint32 seq
+    uint16 buffers
+    uint16 channel
+    uint16 crypto
+}
+
+/** ACK **/
+message ACK_None {
+    
+}
+
+message ACK_Salt {
+    uchar[16] pubkey
+    uchar[16] salt
+}
+
+message ACK_DH {
+
+}
+
+message ACK {
+    uint16 errno
+    uint16 channel
+    union {
+        ACK_None 
+        ACK_Salt
+        ACK_DH
+    }
+}
+
+/** Session Request **/
+message SessionReq {
+    uchar[16] key
+}
+
+/** Seesion Response **/
+message SeesionRsp {
+    uint16 errno
+    uint32 seesionid
+}
+
+
+/** Auth Request **/
+message AuthReq {
+    uint16 platform
+    uchar[32] accesskey
+    uchar[32] openid
+}
+
+/** Auth Response **/
+message AuthRsp {
+    uint16 errno
+}
+
+/** Confirm **/
+message Confirm {
+    uint16 errno
+}
