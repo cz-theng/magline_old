@@ -41,14 +41,30 @@ typedef struct mn_logger_t
 
 static mn_logger g_logger;
 
+#ifdef MN_MAC
+FILE *g_fp = NULL;
+#endif
+
 void mn_print(const char *log)
 {
-#ifdef __ANDROID__
+#ifdef MN_ANDROID
     __android_log_print(ANDROID_LOG_DEBUG, _TAG, "%s", log);
 #endif
     
-#ifdef __APPLE__
+#ifdef MN_IOS
     printf("%s\n",log);
+#endif
+#ifdef MN_MAC
+    if (NULL == g_fp) {
+        g_fp = fopen("/Users/apollo/Tmp/magline.log", "wb");
+        if (NULL == g_fp) {
+            printf("%s", log);
+            return;
+        }
+    } else {
+        fprintf(g_fp,"%s \n", log);
+        fflush(g_fp);
+    }
 #endif
 }
 
