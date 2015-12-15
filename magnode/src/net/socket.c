@@ -127,7 +127,7 @@ int mn_socket_tcp(struct mn_sockaddr *addr, struct mn_socket *sfd)
         struct sockaddr_in *tcpaddr =(struct sockaddr_in*) &sfd->dest_addr;
         int rst = host2in(addr->host, &tcpaddr->sin_addr);
         if (0 != rst) {
-            return -1;
+            return MN__EHOST;
         }
         
         tcpaddr->sin_family = AF_INET;
@@ -185,6 +185,12 @@ int mn_socket_setrecvbuff(struct mn_socket *sfd, int size)
 int mn_socket_setsendbuff(struct mn_socket *sfd, int size)
 {
     return setsockopt(sfd->sfd, SOL_SOCKET, SO_SNDBUF, (void*)&size, sizeof(size));
+}
+
+int mn_socket_setnodelay(struct mn_socket *sfd)
+{
+    int flag = 1;
+    return setsockopt(sfd->sfd, IPPROTO_TCP, TCP_NODELAY, (const char *)&flag, sizeof(flag));
 }
 
 

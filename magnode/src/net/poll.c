@@ -9,6 +9,8 @@
 
 int mn_poll(int fd, int type, uint64_t timeout)
 {
+    
+    // should check less than FD_SETSIZE when use select
     fd_set fds;
     int rst;
     struct timeval poll_timeout;

@@ -20,6 +20,7 @@
 		F04293651C200914001D5637 /* proto.c in Sources */ = {isa = PBXBuildFile; fileRef = F04293541C200914001D5637 /* proto.c */; };
 		F04293661C200914001D5637 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = F04293571C200914001D5637 /* log.c */; };
 		F04293671C200914001D5637 /* os.c in Sources */ = {isa = PBXBuildFile; fileRef = F04293591C200914001D5637 /* os.c */; };
+		F04293701C204001001D5637 /* sys.c in Sources */ = {isa = PBXBuildFile; fileRef = F042936E1C204001001D5637 /* sys.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,8 @@
 		F04293581C200914001D5637 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		F04293591C200914001D5637 /* os.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = os.c; sourceTree = "<group>"; };
 		F042935A1C200914001D5637 /* os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = os.h; sourceTree = "<group>"; };
+		F042936E1C204001001D5637 /* sys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sys.c; sourceTree = "<group>"; };
+		F042936F1C204001001D5637 /* sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sys.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +135,8 @@
 				F04293501C200914001D5637 /* socket_udp.h */,
 				F04293511C200914001D5637 /* utils.c */,
 				F04293521C200914001D5637 /* utils.h */,
+				F042936E1C204001001D5637 /* sys.c */,
+				F042936F1C204001001D5637 /* sys.h */,
 			);
 			path = net;
 			sourceTree = "<group>";
@@ -228,6 +233,7 @@
 				F04293601C200914001D5637 /* poll.c in Sources */,
 				F04293671C200914001D5637 /* os.c in Sources */,
 				F042935D1C200914001D5637 /* magnode_uinty.c in Sources */,
+				F04293701C204001001D5637 /* sys.c in Sources */,
 				F04293621C200914001D5637 /* socket_tcp.c in Sources */,
 				F04293641C200914001D5637 /* utils.c in Sources */,
 				F04293611C200914001D5637 /* socket.c in Sources */,
