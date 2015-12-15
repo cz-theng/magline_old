@@ -25,22 +25,23 @@ type Connection struct {
 	Elem    *list.Element
 	AgentID uint32
 	Server  *Server
+	proto   proto.NodeProto
 }
 
 //Init is initialize
 func (conn *Connection) Init() error {
 	conn.ReadBuf = make([]byte, ReadBufSize)
+	conn.proto.Init(conn.ReadBuf)
 	return nil
 }
 
 //RecvRequest Recv a request
 func (conn *Connection) RecvRequest() (req *Request, err error) {
 	Logger.Debug("RecvRequest with request and readbuf cap is %d", cap(conn.ReadBuf))
-	protoData := new(proto.NodeProto)
-	protoData.Init(conn.ReadBuf)
-	err = protoData.RecvAndUnpack(conn.RWC)
+	err = proto.RecvAndUnpack(conn.RWC)
 	if err != nil {
-		return nil, err
+		req = nil
+		return
 	}
 	req = &Request{
 		CMD:     protoData.CMD,

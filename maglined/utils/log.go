@@ -1,8 +1,8 @@
-//Package maglined is a daemon process for connection layer
+//Package utils is utils
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package main
+package utils
 
 import (
 	"fmt"
