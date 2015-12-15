@@ -56,7 +56,7 @@ void mn_print(const char *log)
 #endif
 #ifdef MN_MAC
     if (NULL == g_fp) {
-        g_fp = fopen("/Users/apollo/Tmp/magline.log", "wb");
+        g_fp = fopen("/tmp/magline.log", "wb");
         if (NULL == g_fp) {
             printf("%s", log);
             return;
