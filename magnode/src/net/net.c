@@ -95,6 +95,12 @@ static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
     
     // use poll to instead select
     if (errno == EINPROGRESS){
+        //FD_SETSIZE check
+        
+        if (socket->sfd >= FD_SETSIZE) {
+            return MN__ECONN;
+        }
+        
         // select here
         fd_set rfds,wfds;
         struct timeval tv;
