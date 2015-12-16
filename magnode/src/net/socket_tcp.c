@@ -11,6 +11,40 @@
 #include <sys/time.h>
 #endif
 
+// send or write
+ssize_t	socket_send(int fd, const void *buf, size_t len, int flag)
+{
+    ssize_t rst  = 0;
+    rst = send(fd, buf, len, flag);
+    if (rst > 0) {
+        return rst;
+    } else if (0 == rst) {
+        return MN__ECLOSED;
+    } else if (rst <0 &&(errno==EINTR || errno==EAGAIN || errno==EWOULDBLOCK)) {
+        return 0;
+    } else {
+        return rst;
+    }
+    return rst;
+}
+
+// recv or read
+ssize_t	socket_recv(int fd, void *buf, size_t len, int flag)
+{
+    ssize_t rst = 0;
+    rst = recv(fd, buf, len, flag);
+    if (rst > 0) {
+        return rst;
+    } else if (0 == rst) {
+        return MN__ECLOSED;
+    } else if (rst <0 &&(errno==EINTR || errno==EAGAIN || errno==EWOULDBLOCK)) {
+        return 0;
+    } else {
+        return rst;
+    }
+    return  rst;
+}
+
 int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags, uint64_t timeout)
 {
     if (NULL == fd || buf == fd || NULL==len) {
@@ -24,45 +58,53 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
     
     guard=buf;
     task=*len;
+    int pollrst = 0;
     while (task >0) {
-        ssize_t rst = send(fd->sfd, guard, task, flags);
+        struct timeval et;
+        gettimeofday(&et, NULL);
+        long rtimeout = timeout - timeval_min_usec(&et, &bt) > 0 ? timeout - timeval_min_usec(&et, &bt): 0;
+        if (0 == timeout) {
+            rtimeout = 0;
+        }
+        pollrst = mn_poll(fd->sfd, MN_POLL_OUT, rtimeout);
+        if (pollrst !=0 ) {
+            if (MN__ETIMEOUT == pollrst) {
+                return MN__ETIMEOUT;
+            } else {
+                return MN__EPOLL;
+            }
+        }
+        
+        ssize_t rst = socket_send(fd->sfd, guard, task, flags);
         if (0 == timeout) {
             if (rst > 0) {
                 *len = rst;
                 return 0;
-            } else if (errno==EINTR || errno==EAGAIN) {
+            } else if (rst == 0) {//errno==EINTR || errno==EAGAIN || errno==EWOULDBLOCK
+                *len= 0;
                 return 0;
+            } else if (MN__ECLOSED == rst){
+                *len = 0;
+                return MN__ECLOSED;
             } else {
                 *len = 0;
                 return MN__ESEND;
             }
         }
         
-        struct timeval st;
-        gettimeofday(&st, NULL);
-        if (timeval_min_usec(&st, &bt) > timeout) {
-            if (rst >0) {
-                *len = (*len) - (task - rst);
-            } else {
-                *len = (*len) - task;
-            }
-            return MN__ETIMEOUT;
-        }
         if (rst > 0) {
             task -= rst;
             guard += rst;
-        } else if (0 == rst) {
+        } else if (0 == rst) { //errno==EINTR || errno==EAGAIN || errno==EWOULDBLOCK
+            continue;
+        } else if (MN__ECLOSED == rst) {
             //close
             *len = (*len) - task;
-            return 0;
+            return MN__ECLOSED;
         } else { // ret<0
-            if (errno==EINTR || errno==EAGAIN) {
-                continue;
-            } else {
-                *len = (*len) - task;
-                // other errors
-                return MN__ESEND;
-            }
+            *len = (*len) - task;
+            // other errors
+            return MN__ESEND;
         }
     }
 
@@ -83,47 +125,53 @@ int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint
     
     guard = buf;
     task = *len;
+    int pollrst = 0;
     while (task > 0) {
-        ssize_t rst = recv(fd->sfd, guard, task, flags);
+        struct timeval et;
+        gettimeofday(&et, NULL);
+        long rtimeout = timeout - timeval_min_usec(&et, &bt) > 0 ? timeout - timeval_min_usec(&et, &bt) : 0;
+        if (0 == timeout) {
+            rtimeout = 0;
+        }
+        pollrst = mn_poll(fd->sfd, MN_POLL_IN, rtimeout);
+        if (pollrst !=0 ) {
+            if (MN__ETIMEOUT == pollrst) {
+                return MN__ETIMEOUT;
+            } else {
+                return MN__EPOLL;
+            }
+        }
+        
+        ssize_t rst = socket_recv(fd->sfd, guard, task, flags);
         if (0 == timeout) {
             if (rst > 0) {
                 *len = rst;
                 return 0;
+            } else if (rst == 0) { //errno==EINTR || errno==EAGAIN || errno==EWOULDBLOCK
+                *len = 0;
+                return 0;
+            } else if (MN__ECLOSED == rst) {
+                *len = 0;
+                return MN__ECLOSED;
             } else {
-                if (errno == EAGAIN) {
-                    continue;
-                }
-                
                 *len = 0;
                 return MN__ERECV;
             }
         }
         
-        struct timeval st;
-        gettimeofday(&st, NULL);
-        if (timeval_min_usec(&st, &bt) > timeout) {
-            if (rst >0) {
-                *len = (*len) - (task - rst);
-            } else {
-                *len = (*len) - task;
-            }
-            return MN__ETIMEOUT;
-        }
         if (rst > 0) {
             guard += rst;
             task -= rst;
-        } else if (task == 0) {
+        } else if (0 == rst) { //errno==EINTR || errno==EAGAIN || errno==EWOULDBLOCK
+            continue;
+        } else if (MN__ECLOSED == rst) {
             //close
             *len = (*len) - task;
-            return 0;
+            return MN__ECLOSED;
         } else {
-            if (errno==EINTR || errno==EAGAIN) {
-                continue;
-            } else {
-                // other errors
-                *len = (*len) - task;
-                return MN__ESEND;
-            }
+            // other errors
+            *len = (*len) - task;
+            return MN__ESEND;
         }
     }
     return 0;

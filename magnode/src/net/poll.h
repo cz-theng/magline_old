@@ -22,10 +22,12 @@
 
     
 enum poll_type {
-    MN_POLL_IN  = 1,
-    MN_POLL_OUT = 2,
+    MN_POLL_IN  = 0x01,
+    MN_POLL_OUT = 0x02,
+    MN_POLL_INOUT = 0x04,
 };
-    
+
+// type could be xor by poll_type
 int mn_poll(int fd, int type, uint64_t timeout);
 
 

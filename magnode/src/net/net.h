@@ -86,6 +86,10 @@ extern "C" {
     #ifndef MN__EHOST
     #define MN__EHOST        -(MN_HAUSNUMERO + 13)
     #endif
+    #ifndef MN__ECLOSED
+    #define MN__ECLOSED        -(MN_HAUSNUMERO + 14)
+    #endif
+    
     
     
     enum net_proto

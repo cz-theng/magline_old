@@ -19,6 +19,13 @@
 #include <sys/time.h>
 #endif
 
+#if defined  MN_APPLE || defined MN_ANDROID
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#endif
+
 
 int parse_url(const char *url,struct mn_sockaddr *addr)
 {
@@ -86,6 +93,7 @@ static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
         return 0;
     }
     
+    // use poll to instead select
     if (errno == EINPROGRESS){
         // select here
         fd_set rfds,wfds;
@@ -217,7 +225,11 @@ int mn_net_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeo
     }
 	
     if (NET_TCP ==  sfd->proto) {
+#if defined MN_ANDROID
+        rst = mn_socket_send(sfd, buf, len, MSG_NOSIGNAL, timeout);
+#else
         rst = mn_socket_send(sfd, buf, len, 0, timeout);
+#endif
     } else  if (NET_UDP) {
         ssize_t ret = mn_socket_sendto(sfd, buf, *len, 0, timeout);
         *len = ret;

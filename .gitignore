@@ -36,6 +36,8 @@ _testmain.go
 .xcuserdatad
 magnode/build/iOS/magnode/magnode.xcodeproj/xcuserdata/
 magnode/build/iOS/magnode/magnode.xcodeproj/project.xcworkspace
+magnode/build/MacOS/magnode/magnode.xcodeproj/project.xcworkspace
+magnode/build/MacOS/magnode/magnode.xcodeproj/xcuserdata
 
 
 test/iOS/test_magnode/test_magnode.xcodeproj/project.xcworkspace/
