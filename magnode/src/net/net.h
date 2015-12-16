@@ -83,6 +83,9 @@ extern "C" {
     #ifndef MN__ERECV
     #define MN__ERECV        -(MN_HAUSNUMERO + 12)
     #endif
+    #ifndef MN__EHOST
+    #define MN__EHOST        -(MN_HAUSNUMERO + 13)
+    #endif
     
     
     enum net_proto
@@ -113,11 +116,9 @@ extern "C" {
         uint16_t port;
     };
 
-    int mn_net_listen(char *url);
-
     int mn_net_close(struct mn_socket *sfd);
 
-    int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout);
+    int mn_net_connect(struct mn_socket *sfd, const char *url, uint64_t timeout);
 
     int mn_net_send(struct mn_socket *sfd,const void *buf,size_t *len,uint64_t timeout);
 

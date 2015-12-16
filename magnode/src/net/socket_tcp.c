@@ -30,6 +30,8 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
             if (rst > 0) {
                 *len = rst;
                 return 0;
+            } else if (errno==EINTR || errno==EAGAIN) {
+                return 0;
             } else {
                 *len = 0;
                 return MN__ESEND;

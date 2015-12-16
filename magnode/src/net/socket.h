@@ -20,4 +20,6 @@ int mn_socket_setrecvbuff(struct mn_socket *sfd, int size);
 
 int mn_socket_setsendbuff(struct mn_socket *sfd, int size);
 
+int mn_socket_setnodelay(struct mn_socket *sfd);
+
 #endif /* defined(MAGNODE_NET_MN_SOCKET_H_) */

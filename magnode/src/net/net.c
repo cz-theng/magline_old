@@ -13,6 +13,7 @@
 #include "socket_tcp.h"
 #include "poll.h"
 #include "utils.h"
+#include "sys.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
 #include <sys/time.h>
@@ -147,12 +148,6 @@ static int connect_timeout(const struct mn_socket *socket, uint64_t timeout)
     return 0;
 }
 
-
-int mn_net_listen(char *url)
-{
-    return 0;
-}
-
 int mn_net_close(struct mn_socket *sfd)
 {
     if (NULL == sfd) {
@@ -165,7 +160,7 @@ int mn_net_close(struct mn_socket *sfd)
     return rst;
 }
 
-int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
+int mn_net_connect(struct mn_socket *sfd, const char *url, uint64_t timeout)
 {
     struct mn_sockaddr addr;
     if (NULL == url || NULL == sfd) {
@@ -189,12 +184,18 @@ int mn_net_connect(const char *url,struct mn_socket *sfd, uint64_t timeout)
         return rst;
     }
         
-    // set socketopt
+    // set nonblock
     mn_socket_setnonblock(sfd);
     
     // set send & recv buf
     mn_socket_setsendbuff(sfd, NET_SEND_BUF_SIZE);
     mn_socket_setrecvbuff(sfd, NET_RECV_BUF_SIZE);
+    
+    // set no delay
+    mn_socket_setnodelay(sfd);
+    
+    // ignore pipe siganl
+    mn_sys_ignore_pipe();
     
     // do connect for tcp
     if (NET_TCP == addr.proto) {
