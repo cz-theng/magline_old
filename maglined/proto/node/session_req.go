@@ -8,7 +8,7 @@ import (
 	"github.com/cz-it/magline/maglined/proto"
 )
 
-// SYN is syn
-type SYN struct {
+// SessionReq is syn
+type SessionReq struct {
 	proto.Request
 }
