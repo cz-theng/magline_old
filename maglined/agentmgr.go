@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/cz-it/magline/maglined/proto"
+	"github.com/cz-it/magline/maglined/utils"
 )
 
 //AgentMgr is agent manager
@@ -43,11 +44,11 @@ func (am *AgentMgr) FindAgent(id uint32) (agent *Agent, err error) {
 }
 
 //DealNewAgent deal a new agent
-func DealNewAgent(conn *Connection, req *Request) (err error) {
-	Logger.Info("Deal a New Agent")
+func DealNewAgent(conn *Connection, req proto.Requester) (err error) {
+	utils.Logger.Info("Deal a New Agent")
 	agt, err := agentMgr.Alloc()
 	rsp := &Response{
-		CMD:     proto.MNCMDRspConn,
+		CMD:     1, //proto.MNCMDRspConn,
 		AgentID: uint32(agt.ID()),
 		Body:    nil,
 	}

@@ -2,7 +2,7 @@
 * Author: CZ cz.theng@gmail.com
  */
 
-package knot
+package proto
 
 import ()
 

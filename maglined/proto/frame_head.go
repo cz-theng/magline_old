@@ -11,7 +11,6 @@ import (
 
 // FrameHead is frame head info
 type FrameHead struct {
-	proto
 	Magic   uint8
 	Version uint8
 	CMD     uint16
