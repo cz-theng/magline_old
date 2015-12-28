@@ -25,18 +25,16 @@ type Connection struct {
 	Elem    *list.Element
 	AgentID uint32
 	Server  *Server
-	proto   proto.NodeProto
 }
 
 //Init is initialize
 func (conn *Connection) Init() error {
 	conn.ReadBuf = make([]byte, ReadBufSize)
-	conn.proto.Init(conn.ReadBuf)
 	return nil
 }
 
 //RecvRequest Recv a request
-func (conn *Connection) RecvRequest() (req *Request, err error) {
+func (conn *Connection) RecvRequest() (req proto.Requester, err error) {
 	Logger.Debug("RecvRequest with request and readbuf cap is %d", cap(conn.ReadBuf))
 	err = proto.RecvAndUnpack(conn.RWC)
 	if err != nil {
@@ -68,7 +66,7 @@ func (conn *Connection) Close() error {
 }
 
 //DealNewAgent deal a new agent
-func (conn *Connection) DealNewAgent(req *Request) {
+func (conn *Connection) DealNewAgent(req proto.Requester) {
 	Logger.Debug("DealNewAgent with req %v", req)
 	agent, err := conn.Server.AgentMgr.Alloc()
 	if err != nil {
@@ -84,7 +82,7 @@ func (conn *Connection) DealNewAgent(req *Request) {
 }
 
 //DealSendReq deal send request
-func (conn *Connection) DealSendReq(req *Request) {
+func (conn *Connection) DealSendReq(req proto.Requester) {
 	Logger.Debug("Deal Send Req with req:%d ", req.AgentID)
 	ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
 	if err != nil {

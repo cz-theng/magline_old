@@ -2,7 +2,7 @@
 * Author: CZ cz.theng@gmail.com
  */
 
-package proto
+package node
 
 import (
 	"encoding/binary"
@@ -11,7 +11,6 @@ import (
 
 // NodeProto is node's proto
 type NodeProto struct {
-	proto
 	Magic   uint8
 	Version uint8
 	CMD     uint16

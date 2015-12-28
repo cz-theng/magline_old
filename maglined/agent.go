@@ -1,4 +1,5 @@
 //Package maglined is a daemon process for connection layer
+
 /**
 * Author: CZ cz.theng@gmail.com
  */
@@ -6,6 +7,7 @@ package main
 
 import (
 	"github.com/cz-it/magline/maglined/proto"
+	"github.com/cz-it/magline/maglined/utils"
 )
 
 //Agent is a client object
@@ -21,10 +23,10 @@ func (ag *Agent) ID() uint32 {
 }
 
 //DealConnReq deal connnection reqeuest
-func (ag *Agent) DealConnReq(req *Request) (err error) {
-	Logger.Info("Deal New Agent[%d]'s Connection ", ag.id)
+func (ag *Agent) DealConnReq(req proto.Requester) (err error) {
+	utils.Logger.Info("Deal New Agent[%d]'s Connection ", ag.id)
 	if ag.lane == nil {
-		Logger.Info("There is no magknot")
+		utils.Logger.Info("There is no magknot")
 		return
 	}
 	ag.lane.AddAgent(ag)
@@ -34,10 +36,10 @@ func (ag *Agent) DealConnReq(req *Request) (err error) {
 
 //DealNewAgentRsp deal a new agent's response for knot
 func (ag *Agent) DealNewAgentRsp() (err error) {
-	Logger.Info("Agent Confirm New Agent ID: %d", ag.id)
+	utils.Logger.Info("Agent Confirm New Agent ID: %d", ag.id)
 	rsp := &Response{}
 	rsp.Init()
-	rsp.CMD = proto.MNCMDRspConn
+	rsp.CMD = 1 //proto.MNCMDRspConn
 	rsp.AgentID = ag.id
 	ag.conn.SendResponse(rsp)
 	return
@@ -46,21 +48,21 @@ func (ag *Agent) DealNewAgentRsp() (err error) {
 //DealNodeMsg deal a message form node
 func (ag *Agent) DealNodeMsg(data []byte) (err error) {
 	if ag.lane == nil {
-		Logger.Error("Agent %d 's lane is nil ", ag.ID())
+		utils.Logger.Error("Agent %d 's lane is nil ", ag.ID())
 	}
 	err = ag.lane.SendNodeMsg(ag.ID(), data)
 	if err != nil {
-		Logger.Error("Send to Node %d error %s", ag.ID(), err.Error())
+		utils.Logger.Error("Send to Node %d error %s", ag.ID(), err.Error())
 	}
 	return
 }
 
 //Send2Node send message to node
 func (ag *Agent) Send2Node(data []byte) (err error) {
-	Logger.Debug("Send data %s to node %d", string(data), ag.id)
+	utils.Logger.Debug("Send data %s to node %d", string(data), ag.id)
 	rsp := &Response{}
 	rsp.Init()
-	rsp.CMD = proto.MNCMDMsgKnot
+	rsp.CMD = 1 //proto.MNCMDMsgKnot
 	rsp.AgentID = ag.id
 	rsp.Body = data
 	ag.conn.SendResponse(rsp)
@@ -68,15 +70,17 @@ func (ag *Agent) Send2Node(data []byte) (err error) {
 }
 
 // DealRequest deal a client's request
-func (ag *Agent) DealRequest(req *Request) (err error) {
-	Logger.Info("Deal a Client Request! with cmd %d", req.CMD)
-	if req.CMD == proto.MNCMDReqConn {
-		err = ag.DealConnReq(req)
-	} else if req.CMD == proto.MNCMDMsgNode {
-		err = ag.DealNodeMsg(req.Body)
-	}
-	if err != nil {
-		Logger.Error("Deal Request Error %v", req)
-	}
+func (ag *Agent) DealRequest(req proto.Requester) (err error) {
+	utils.Logger.Info("Deal a Client Request! with cmd %d", req.CMD)
+	/*
+		if req.CMD == node.MNCMDReqConn {
+			err = ag.DealConnReq(req)
+		} else if req.CMD == proto.MNCMDMsgNode {
+			err = ag.DealNodeMsg(req.Body)
+		}
+		if err != nil {
+			utils.Logger.Error("Deal Request Error %v", req)
+		}
+	*/
 	return
 }

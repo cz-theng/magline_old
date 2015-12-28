@@ -8,7 +8,7 @@ import ()
 
 //Requester is Request's interface
 type Requester interface {
-	Init()
+	Unpack([]byte) error
 	AgentID() uint32
 	CMD() uint16
 	Body() []byte
@@ -16,29 +16,29 @@ type Requester interface {
 
 //Request is request object
 type Request struct {
-	CMD     uint16
-	AgentID uint32
-	Body    []byte
+	cmd     uint16
+	agentID uint32
+	body    []byte
 }
 
 //Init is initialize
 func (req *Request) Init() {
-	req.CMD = uint16(0)
-	req.AgentID = uint32(0)
-	req.Body = req.Body[:0]
+	req.cmd = uint16(0)
+	req.agentID = uint32(0)
+	req.body = req.body[:0]
 }
 
 //CMD return request's cmd
 func (req *Request) CMD() uint16 {
-	return req.CMD
+	return req.cmd
 }
 
 //AgentID return request's agent id
 func (req *Request) AgentID() uint32 {
-	return req.AgentID
+	return req.agentID
 }
 
 //Body return request's  body
 func (req *Request) Body() []byte {
-	return req.Body
+	return req.body
 }
