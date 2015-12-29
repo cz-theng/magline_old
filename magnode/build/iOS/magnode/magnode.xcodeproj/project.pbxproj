@@ -16,6 +16,7 @@
 		F04298A91C326F72001D5637 /* auth.c in Sources */ = {isa = PBXBuildFile; fileRef = F04298A71C326F72001D5637 /* auth.c */; };
 		F04298AC1C326F81001D5637 /* confirm.c in Sources */ = {isa = PBXBuildFile; fileRef = F04298AA1C326F81001D5637 /* confirm.c */; };
 		F04298AF1C32810B001D5637 /* frame_head.c in Sources */ = {isa = PBXBuildFile; fileRef = F04298AD1C32810B001D5637 /* frame_head.c */; };
+		F04298E61C32BCF7001D5637 /* magnode_inner.c in Sources */ = {isa = PBXBuildFile; fileRef = F04298E51C32BCF7001D5637 /* magnode_inner.c */; };
 		F0DBD5231BFAD87C00C2EC20 /* magnode.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD50B1BFAD87C00C2EC20 /* magnode.c */; };
 		F0DBD5241BFAD87C00C2EC20 /* magnode_errcode.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD50C1BFAD87C00C2EC20 /* magnode_errcode.c */; };
 		F0DBD5251BFAD87C00C2EC20 /* net.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD50F1BFAD87C00C2EC20 /* net.c */; };
@@ -71,6 +72,7 @@
 		F04298AB1C326F81001D5637 /* confirm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = confirm.h; sourceTree = "<group>"; };
 		F04298AD1C32810B001D5637 /* frame_head.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = frame_head.c; sourceTree = "<group>"; };
 		F04298AE1C32810B001D5637 /* frame_head.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frame_head.h; sourceTree = "<group>"; };
+		F04298E51C32BCF7001D5637 /* magnode_inner.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = magnode_inner.c; sourceTree = "<group>"; };
 		F0B419651C11343100D8413E /* magnode_inner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_inner.h; sourceTree = "<group>"; };
 		F0DBD5081BFAD87C00C2EC20 /* magnode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode.h; sourceTree = "<group>"; };
 		F0DBD5091BFAD87C00C2EC20 /* magnode_errcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_errcode.h; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 				F0DBD50B1BFAD87C00C2EC20 /* magnode.c */,
 				F0DBD50C1BFAD87C00C2EC20 /* magnode_errcode.c */,
 				F0B419651C11343100D8413E /* magnode_inner.h */,
+				F04298E51C32BCF7001D5637 /* magnode_inner.c */,
 				F0DBD50D1BFAD87C00C2EC20 /* net */,
 				F0DBD51B1BFAD87C00C2EC20 /* proto */,
 				F0DBD51E1BFAD87C00C2EC20 /* utils */,
@@ -345,6 +348,7 @@
 				F0DBD5251BFAD87C00C2EC20 /* net.c in Sources */,
 				F0DBD5231BFAD87C00C2EC20 /* magnode.c in Sources */,
 				F0DBD5291BFAD87C00C2EC20 /* socket_udp.c in Sources */,
+				F04298E61C32BCF7001D5637 /* magnode_inner.c in Sources */,
 				F0DBD5241BFAD87C00C2EC20 /* magnode_errcode.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

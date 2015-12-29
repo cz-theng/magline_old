@@ -27,6 +27,21 @@ extern "C" {
     
     typedef struct node_t mn_node;
     
+    typedef enum mn_key_type_t {
+        MN_KEY_SALT,
+        MN_KEY_DH,
+    } mn_key_type;
+    
+    typedef enum mn_protobuf_type_t {
+        MN_PB_BIN,
+        MN_PB_PB,
+    } mn_protobuf_type;
+    
+    typedef enum mn_crypto_type_t {
+        MN_CRYPTO_AES128,
+    } mn_crypto_type;
+    
+    
     /**
      * New a Node.
      *
@@ -50,6 +65,15 @@ extern "C" {
      */
     int mn_deinit(mn_node *node);
     
+    /**
+     * Set channel infomation
+     * 
+     * @param protobuf : proto buffer type
+     * @param key : key chain type
+     * @param crypto : crypto method
+     * @return : 0 on success , <0 on error
+     */
+    int mn_set_channel(mn_protobuf_type protobuf, mn_key_type key, mn_crypto_type crypto);
      
     /**
      * Connect to Server.

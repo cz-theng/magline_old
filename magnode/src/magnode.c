@@ -6,13 +6,7 @@
 //  Copyright © 2015年 proj-m. All rights reserved.
 //
 
-#include "os.h"
-#include "magnode.h"
-#include "magnode_errcode.h"
-#include "net.h"
-#include "utils.h"
-#include "proto.h"
-#include "log.h"
+
 #include "magnode_inner.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
@@ -21,96 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FREE(p) do { if (NULL != p){free(p); p=NULL;} } while(0)
 
-
-uint32_t cal_remain_time(struct timeval begintime, uint32_t timeout)
-{
-    uint32_t remain = 0;
-    struct timeval now;
-    gettimeofday(&now, NULL);
-    long elapse = timeval_min_usec(&now, &begintime);
-    remain = timeout - (uint32_t)elapse;
-    remain = remain>0 ? remain : 0;
-    return remain;
-}
-
-int connect_transaction(mn_node *node, uint32_t timeout)
-{
-    mn_nodemsg_head head;
-    size_t headlen = 0;
-    int rst = 0;
-
-    
-    if (NULL == node) {
-        return -1;
-    }
-    MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_CONN, 0);
-    headlen = sizeof(mn_nodemsg_head);
-    
-    size_t buflen = sizeof(mn_nodemsg_head);
-    void *buf = malloc(sizeof(mn_nodemsg_head));
-    rst = parse2mem(&head, NULL, 0, buf, &buflen);
-    if (0 != rst) {
-        return -1;
-    }
-    struct timeval sbtime;
-    gettimeofday(&sbtime, NULL);
-    rst = mn_net_send(&node->socket, buf, &headlen, timeout);
-    if (rst != 0 ) {
-        FREE(buf);
-        return -1;
-    }
-    struct timeval setime;
-    gettimeofday(&setime, NULL);
-    long diff = timeval_min_usec(&setime, &sbtime);
-    if (diff < 0 || diff > timeout) {
-        FREE(buf);
-        return MN_ETIMEOUT;
-    }
-    uint64_t rtimeout = timeout-diff;
-    
-    buflen = sizeof(mn_nodemsg_head);
-    memset(buf, 0, buflen);
-    gettimeofday(&sbtime, NULL);
-    rst = mn_net_recv(&node->socket, buf, &buflen, rtimeout);
-    if (rst != 0 ) {
-        if (rst == MN__ETIMEOUT) {
-            FREE(buf);
-            return MN_ETIMEOUT;
-        }
-        FREE(buf);
-        return -1;
-    }
-    gettimeofday(&setime, NULL);
-    diff = timeval_min_usec(&setime, &sbtime);
-    if (diff < 0 || diff > rtimeout) {
-        FREE(buf);
-        return MN_ETIMEOUT;
-    }
-    buflen = 0;
-    rst = parse_from_mem(&head, NULL, &buflen, buf);
-    if (rst != 0 ){
-        FREE(buf);
-        return -1;
-    }
-    
-    rst = is_invalied_head(&head);
-    if (rst != 0) {
-        FREE(buf);
-        return MN_EHEAD;
-    }
-    if (head.cmd == MN_CMD_RSP_CONN) {
-        FREE(buf);
-        node->agent_id =head.agent_id;
-        return 0;        
-    } else {
-        FREE(buf);
-        return MN_ECMD;
-    }
-    
-    return -1;
-}
 
 mn_node *mn_new()
 {
@@ -177,8 +82,8 @@ int mn_connect(mn_node *node,const char *url, uint32_t timeout)
     }
     LOG_I("mn_connect(node %p,url %s, timeout %llu)", node, url, timeout);
     
-    struct timeval stime;
-    gettimeofday(&stime, NULL);
+    struct timeval btime;
+    gettimeofday(&btime, NULL);
     rst = mn_net_connect(&node->socket, url, timeout);
     LOG_D("net connect with %d rst", rst);
     if (rst != 0 ) {
@@ -190,12 +95,11 @@ int mn_connect(mn_node *node,const char *url, uint32_t timeout)
         
     }
     
-    uint32_t rt = cal_remain_time(stime, timeout);
+    uint32_t rt = cal_remain_time(btime, timeout);
     if ( 0 == rt) {
         LOG_I("mn_connect timeout");
         return MN_ETIMEOUT;
     }
-
     rst = connect_transaction(node, rt);
     if (rst < 0) {
         if (MN_ETIMEOUT ==rst ) {
@@ -204,6 +108,7 @@ int mn_connect(mn_node *node,const char *url, uint32_t timeout)
             return MN_ECONN;
         }
     }
+    
     return 0;
 }
 
