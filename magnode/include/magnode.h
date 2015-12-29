@@ -24,24 +24,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    /*
-    struct mn_socket
-    {
-        int sfd;
-        int proto;
-        struct sockaddr dest_addr;
-        socklen_t addrlen;
-    };
-    
-    typedef struct node_t {
-        struct mn_socket socket;
-        uint32_t agent_id;
-        void *sendbuf;
-        size_t sendbuflen;
-        void *recvbuf;
-        size_t recvbuflen;
-    } mn_node;
-     */
     
     typedef struct node_t mn_node;
     
@@ -77,7 +59,7 @@ extern "C" {
      * @param timeout: connect timeout
      * @return : 0 on success , <0 on error
      */
-    int mn_connect(mn_node *node,const char *url, uint64_t timeout);
+    int mn_connect(mn_node *node,const char *url, uint32_t timeout);
 
     /**
      * Reconnect to Server.
@@ -86,7 +68,7 @@ extern "C" {
      * @param timeout: timeout to reconnect
      * @return : 0 on success , <0 on error
      */
-    int mn_reconnect(mn_node *node, uint64_t timeout);
+    int mn_reconnect(mn_node *node, uint32_t timeout);
     
     /**
      * Send Message Data.
@@ -97,7 +79,7 @@ extern "C" {
      * @param timeout : send timout
      * @return : 0 on success , <0 on error
      */
-    int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout);
+    int mn_send(mn_node *node,const void *buf,size_t length,uint32_t timeout);
     
     /**
      * Recv Message Data.
@@ -108,7 +90,7 @@ extern "C" {
      * @param timeout : recv timout
      * @return : 0 on success , <0 on error
      */
-    int mn_recv(mn_node *node,void *buf,size_t *length,uint64_t timeout);
+    int mn_recv(mn_node *node,void *buf,size_t *length,uint32_t timeout);
     
     /**
      * Close Connection.

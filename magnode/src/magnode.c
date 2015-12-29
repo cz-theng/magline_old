@@ -23,7 +23,19 @@
 
 #define FREE(p) do { if (NULL != p){free(p); p=NULL;} } while(0)
 
-int connect_transaction(mn_node *node, uint64_t timeout)
+
+uint32_t cal_remain_time(struct timeval begintime, uint32_t timeout)
+{
+    uint32_t remain = 0;
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    long elapse = timeval_min_usec(&now, &begintime);
+    remain = timeout - (uint32_t)elapse;
+    remain = remain>0 ? remain : 0;
+    return remain;
+}
+
+int connect_transaction(mn_node *node, uint32_t timeout)
 {
     mn_nodemsg_head head;
     size_t headlen = 0;
@@ -102,6 +114,7 @@ int connect_transaction(mn_node *node, uint64_t timeout)
 
 mn_node *mn_new()
 {
+    // just like golang's new . new with 0 memory
     void *buf =(void *) malloc(sizeof(mn_node));
     memset(buf,0,sizeof(mn_node));
     mn_node *node = (mn_node *)buf;
@@ -117,19 +130,21 @@ int mn_init(mn_node *node)
     LOG_I("mn_init(node %p)", node);
     
     node->agent_id = 0;
-    node->sendbuf = malloc(MN_MAX_SENDBUF_SIZE);
+    node->sendbuf = malloc(2 * MN_MAX_SENDBUF_SIZE);
     if (NULL == node->sendbuf) {
         LOG_E("Alloc Memory Error: malloc(MN_MAX_SENDBUF_SIZE)");
         return MN_EALLOC;
     }
-    node->sendbuflen = MN_MAX_SENDBUF_SIZE;
+    node->sendbuflen = 2 * MN_MAX_SENDBUF_SIZE;
     
-    node->recvbuf = malloc(MN_MAX_RECVBUF_SIZE);
+    node->recvbuf = malloc(2 *MN_MAX_RECVBUF_SIZE);
     if (NULL == node->recvbuf) {
         LOG_E("Alloc Memory Error: malloc(MN_MAX_RECVBUF_SIZE)");
         return MN_EALLOC;
     }
-    node->recvbuflen = MN_MAX_RECVBUF_SIZE;
+    node->recvbuflen =2 * MN_MAX_RECVBUF_SIZE;
+    
+    memset(&node->socket, 0, sizeof(node->socket));
     return 0;
 }
 
@@ -153,7 +168,7 @@ int mn_deinit(mn_node *node)
     return 0;
 }
 
-int mn_connect(mn_node *node,const char *url, uint64_t timeout)
+int mn_connect(mn_node *node,const char *url, uint32_t timeout)
 {
     int rst;
     if (NULL == node || NULL==url ){
@@ -162,10 +177,10 @@ int mn_connect(mn_node *node,const char *url, uint64_t timeout)
     }
     LOG_I("mn_connect(node %p,url %s, timeout %llu)", node, url, timeout);
     
-    struct timeval cbtime;
-    gettimeofday(&cbtime, NULL);
-    rst = mn_net_connect(url, &node->socket, timeout);
-    LOG_I("net connect with %d rst", rst);
+    struct timeval stime;
+    gettimeofday(&stime, NULL);
+    rst = mn_net_connect(&node->socket, url, timeout);
+    LOG_D("net connect with %d rst", rst);
     if (rst != 0 ) {
         if (rst == MN__ETIMEOUT) {
             return MN_ETIMEOUT;
@@ -174,15 +189,14 @@ int mn_connect(mn_node *node,const char *url, uint64_t timeout)
         }
         
     }
-    struct timeval cetime;
-    gettimeofday(&cetime, NULL);
-    long diff = timeval_min_usec(&cetime, &cbtime);
-    if (diff < 0 || diff > timeout) {
-        LOG_I("mn_connect timeout with diff %ld",diff);
+    
+    uint32_t rt = cal_remain_time(stime, timeout);
+    if ( 0 == rt) {
+        LOG_I("mn_connect timeout");
         return MN_ETIMEOUT;
     }
-    uint64_t rtimeout = timeout - diff;
-    rst = connect_transaction(node, rtimeout);
+
+    rst = connect_transaction(node, rt);
     if (rst < 0) {
         if (MN_ETIMEOUT ==rst ) {
             return MN_ETIMEOUT;
@@ -193,7 +207,7 @@ int mn_connect(mn_node *node,const char *url, uint64_t timeout)
     return 0;
 }
 
-int mn_reconnect(mn_node *node, uint64_t timeout)
+int mn_reconnect(mn_node *node, uint32_t timeout)
 {
     if (NULL == node){
         LOG_E("mn_reconnect: node is NULL");
@@ -204,7 +218,7 @@ int mn_reconnect(mn_node *node, uint64_t timeout)
     return 0;
 }
 
-int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
+int mn_send(mn_node *node,const void *buf,size_t length,uint32_t timeout)
 {
     mn_nodemsg_head head;
     int rst;
@@ -241,7 +255,7 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint64_t timeout)
     return 0;
 }
 
-int mn_recv(mn_node *node,void *buf,size_t *length,uint64_t timeout)
+int mn_recv(mn_node *node,void *buf,size_t *length,uint32_t timeout)
 {
     mn_nodemsg_head head;
     int rst;
