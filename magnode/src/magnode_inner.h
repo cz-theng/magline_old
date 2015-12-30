@@ -16,6 +16,7 @@
 #include "utils.h"
 #include "proto.h"
 #include "log.h"
+#include "buffer.h"
 
 #if defined MN_APPLE  || defined MN_ANDROID
 #include <sys/time.h>
@@ -37,23 +38,38 @@
 
 #define FREE(p) do { if (NULL != p){free(p); p=NULL;} } while(0)
 
-typedef struct node_t {
+
+
+typedef struct mn_node_t {
     struct mn_socket socket;
     uint32_t agent_id;
-    void *sendbuf;
-    size_t sendbuflen;
-    void *recvbuf;
-    size_t recvbuflen;
+    mn_buffer sendbuf;
+    mn_buffer recvbuf;
 } mn_node;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
     
-    uint32_t cal_remain_time(struct timeval begintime, uint32_t timeout);
+    uint32_t mn_cal_remain_time(struct timeval begintime, uint32_t timeout);
     
     
-    int connect_transaction(mn_node *node, uint32_t timeout);
+    int mn_connect_transaction(mn_node *node, uint32_t timeout);
+    
+    int mn_send_syn(mn_node *node, uint32_t timeout);
+    
+    int mn_recv_ack(mn_node *node, uint32_t timeout);
+    
+    int mn_send_session_req(mn_node *node, uint32_t timeout);
+    
+    int mn_recv_session_rsp(mn_node *node, uint32_t timeout);
+    
+    int mn_send_auth_req(mn_node *node, uint32_t timeout);
+    
+    int mn_recv_auth_rsp(mn_node *node, uint32_t timeout);
+    
+    int mn_recv_confirm(mn_node *node, uint32_t timeout);
+    
     
 #ifdef __cplusplus
 }

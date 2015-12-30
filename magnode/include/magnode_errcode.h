@@ -27,6 +27,11 @@ extern  "C" {
         MN_ERECV        = -(MN_ERRNO_BASE + 9),
         MN_EPARSE       = -(MN_ERRNO_BASE + 10),
         MN_EUNPARSE     = -(MN_ERRNO_BASE + 11),
+        MN_ESYN         = -(MN_ERRNO_BASE + 12),
+        MN_ENULLNODE    = -(MN_ERRNO_BASE + 13),
+        MN_EACK         = -(MN_ERRNO_BASE + 14),
+        MN_ENEWBUF      = -(MN_ERRNO_BASE + 15),
+        MN_EPACKLEN     = -(MN_ERRNO_BASE + 16),
     };
     
 #ifdef __cplusplus

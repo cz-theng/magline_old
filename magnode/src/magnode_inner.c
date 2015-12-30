@@ -8,8 +8,30 @@
 
 #include "magnode_inner.h"
 
+int mn_clear_legacy_sendbuf(mn_node *node)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    
+    if ( 0 ==  node->sendbuf.used ) {
+        return 0;
+    }
+    size_t ts = node->sendbuf.used;
+    int rst = mn_net_send(&node->socket, node->sendbuf.data, &ts, 0);
+    if (ts == node->sendbuf.used) {
+        node->sendbuf.used = 0;
+    } else {
+        mn_buffer_align(&node->sendbuf,(int) ts);
+    }
+    if (rst) {
+        return rst;
+    }
 
-uint32_t cal_remain_time(struct timeval begintime, uint32_t timeout)
+    return 0;
+}
+
+uint32_t mn_cal_remain_time(struct timeval begintime, uint32_t timeout)
 {
     uint32_t remain = 0;
     struct timeval now;
@@ -20,21 +42,112 @@ uint32_t cal_remain_time(struct timeval begintime, uint32_t timeout)
     return remain;
 }
 
-int connect_transaction(mn_node *node, uint32_t timeout)
+int mn_send_syn(mn_node *node, uint32_t timeout)
 {
-    mn_nodemsg_head head;
-    size_t headlen = 0;
     int rst = 0;
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
     
+    rst = mn_clear_legacy_sendbuf(node);
+    if (rst) {
+        LOG_E("Clear send buffer's legacy error");
+        return rst;
+    }
+    
+    return 0;
+}
+
+
+
+int mn_recv_ack(mn_node *node, uint32_t timeout)
+{
+    int rst =0;
     
     if (NULL == node) {
-        return -1;
+        return MN_ENULLNODE;
     }
     
     
-    // send syn
+    mn_clear_legacy_sendbuf(node);
+    return 0;
+}
+
+int mn_send_session_req(mn_node *node, uint32_t timeout)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
     
-    // recv ack
+    return 0;
+}
+
+int mn_recv_session_rsp(mn_node *node, uint32_t timeout)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    
+    return 0;
+}
+
+int mn_send_auth_req(mn_node *node, uint32_t timeout)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    return 0;
+}
+
+int mn_recv_auth_rsp(mn_node *node, uint32_t timeout)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    return 0;
+}
+
+int mn_recv_confirm(mn_node *node, uint32_t timeout)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    return 0;
+}
+
+int mn_connect_transaction(mn_node *node, uint32_t timeout)
+{
+    int rst = 0;
+    uint32_t rt = timeout;
+    
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    
+    struct timeval btime;
+    gettimeofday(&btime, NULL);
+    // 1. send syn
+    rst = mn_send_syn(node, rt);
+    if (rst <0 ) {
+        LOG_E("send syn error");
+        if (MN_ETIMEOUT == rst ) {
+            return rst;
+        } else {
+            return MN_ESYN;
+        }
+    }
+    
+    // 2. recv ack
+    rt = mn_cal_remain_time(btime, timeout);
+    rst = mn_recv_ack(node, rt);
+    if (rst <0 ) {
+        LOG_E("send syn error");
+        if (MN_ETIMEOUT == rst ) {
+            return rst;
+        } else {
+            return MN_EACK;
+        }
+    }
     
     // send connect req
     
@@ -46,7 +159,7 @@ int connect_transaction(mn_node *node, uint32_t timeout)
     
     // recv confirm
     
-    
+#if 0
     MN_NODEMSG_HEAD_INIT(&head, MN_CMD_REQ_CONN, 0);
     headlen = sizeof(mn_nodemsg_head);
     
@@ -110,7 +223,7 @@ int connect_transaction(mn_node *node, uint32_t timeout)
         FREE(buf);
         return MN_ECMD;
     }
-    
+#endif
     return -1;
 }
 

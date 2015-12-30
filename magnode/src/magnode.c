@@ -28,6 +28,7 @@ mn_node *mn_new()
 
 int mn_init(mn_node *node)
 {
+    int rst = 0;
     if (NULL == node){
         LOG_E("mn_init: node is NULL");
         return MN_EARG;
@@ -35,19 +36,20 @@ int mn_init(mn_node *node)
     LOG_I("mn_init(node %p)", node);
     
     node->agent_id = 0;
-    node->sendbuf = malloc(2 * MN_MAX_SENDBUF_SIZE);
-    if (NULL == node->sendbuf) {
-        LOG_E("Alloc Memory Error: malloc(MN_MAX_SENDBUF_SIZE)");
-        return MN_EALLOC;
-    }
-    node->sendbuflen = 2 * MN_MAX_SENDBUF_SIZE;
     
-    node->recvbuf = malloc(2 *MN_MAX_RECVBUF_SIZE);
-    if (NULL == node->recvbuf) {
-        LOG_E("Alloc Memory Error: malloc(MN_MAX_RECVBUF_SIZE)");
-        return MN_EALLOC;
+    rst = mn_buffer_init(&node->sendbuf, MN_MAX_SENDBUF_SIZE);
+    if (rst ) {
+        LOG_E("Init send buffer error");
+        mn_deinit(node);
+        return rst;
     }
-    node->recvbuflen =2 * MN_MAX_RECVBUF_SIZE;
+    
+    rst = mn_buffer_init(&node->recvbuf, MN_MAX_RECVBUF_SIZE *2 );
+    if (rst ) {
+        LOG_E("Init recv buffer error");
+        mn_deinit(node);
+        return rst;
+    }
     
     memset(&node->socket, 0, sizeof(node->socket));
     return 0;
@@ -61,14 +63,8 @@ int mn_deinit(mn_node *node)
     }
     LOG_I("mn_deinit(node %p)", node);
     
-    if (NULL != node->sendbuf) {
-        FREE(node->sendbuf);
-        node->sendbuflen = 0;
-    }
-    if (NULL != node->recvbuf) {
-        FREE(node->recvbuf);
-        node->recvbuflen = 0;
-    }
+    mn_buffer_deinit(&node->sendbuf);
+    mn_buffer_deinit(&node->recvbuf);
     node->agent_id = 0;
     return 0;
 }
@@ -95,17 +91,17 @@ int mn_connect(mn_node *node,const char *url, uint32_t timeout)
         
     }
     
-    uint32_t rt = cal_remain_time(btime, timeout);
+    uint32_t rt = mn_cal_remain_time(btime, timeout);
     if ( 0 == rt) {
         LOG_I("mn_connect timeout");
         return MN_ETIMEOUT;
     }
-    rst = connect_transaction(node, rt);
+    rst = mn_connect_transaction(node, rt);
     if (rst < 0) {
         if (MN_ETIMEOUT ==rst ) {
             return MN_ETIMEOUT;
         } else {
-            return MN_ECONN;
+            return rst;
         }
     }
     
@@ -125,6 +121,7 @@ int mn_reconnect(mn_node *node, uint32_t timeout)
 
 int mn_send(mn_node *node,const void *buf,size_t length,uint32_t timeout)
 {
+#if 0
     mn_nodemsg_head head;
     int rst;
     if (NULL == node || NULL == buf ){
@@ -156,12 +153,13 @@ int mn_send(mn_node *node,const void *buf,size_t length,uint32_t timeout)
     if (diff<0 || (timeout >0 &&diff > timeout)) {
         return MN_ETIMEOUT;
     }
-    
+#endif
     return 0;
 }
 
 int mn_recv(mn_node *node,void *buf,size_t *length,uint32_t timeout)
 {
+#if 0
     mn_nodemsg_head head;
     int rst;
     struct timeval sbtime;
@@ -220,10 +218,13 @@ int mn_recv(mn_node *node,void *buf,size_t *length,uint32_t timeout)
     } else {
         return MN_ECMD;
     }
+#endif 
+    return 0;
 }
 
 int mn_close(mn_node *node)
 {
+#if 0
     mn_nodemsg_head head;
     int rst;
     if (NULL == node){
@@ -244,6 +245,6 @@ int mn_close(mn_node *node)
         return MN_ESEND;
     }
     mn_net_close(&node->socket);
-    
+#endif
     return 0;
 }

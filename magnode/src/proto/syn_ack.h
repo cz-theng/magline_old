@@ -9,6 +9,20 @@
 #ifndef syn_ack_h
 #define syn_ack_h
 
-#include <stdio.h>
+#include "frame_head.h"
+#pragma pack(1)
+typedef  struct mn_ack_t
+{
+    mn_frame_head frame_head;
+} mn_ack;
+#pragma pack()
 
+
+
+#pragma pack(1)
+typedef struct mn_syn_t
+{
+    mn_frame_head frame_head;
+} mn_syn;
+#pragma pack()
 #endif /* syn_ack_h */

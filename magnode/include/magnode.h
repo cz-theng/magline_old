@@ -25,7 +25,7 @@
 extern "C" {
 #endif
     
-    typedef struct node_t mn_node;
+    typedef struct mn_node_t mn_node;
     
     typedef enum mn_key_type_t {
         MN_KEY_SALT,
@@ -67,13 +67,20 @@ extern "C" {
     
     /**
      * Set channel infomation
-     * 
+     *
+     * @param node: mn_node object to set channel info
      * @param protobuf : proto buffer type
      * @param key : key chain type
      * @param crypto : crypto method
      * @return : 0 on success , <0 on error
      */
-    int mn_set_channel(mn_protobuf_type protobuf, mn_key_type key, mn_crypto_type crypto);
+    int mn_set_channel(mn_node *node, mn_protobuf_type protobuf, mn_key_type key, mn_crypto_type crypto);
+    
+    /**
+     * Set Auth infomation
+     *
+     */
+    int mn_set_auth(mn_node *node, const char *openid, const char *accesskey);
      
     /**
      * Connect to Server.
