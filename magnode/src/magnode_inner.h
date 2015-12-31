@@ -45,6 +45,7 @@ typedef struct mn_node_t {
     uint32_t agent_id;
     mn_buffer sendbuf;
     mn_buffer recvbuf;
+    mn_buffer packbuf;
 } mn_node;
 
 #ifdef __cplusplus

@@ -28,6 +28,7 @@ extern "C" {
     typedef struct mn_node_t mn_node;
     
     typedef enum mn_key_type_t {
+        MN_KEY_NONE,
         MN_KEY_SALT,
         MN_KEY_DH,
     } mn_key_type;
@@ -38,6 +39,7 @@ extern "C" {
     } mn_protobuf_type;
     
     typedef enum mn_crypto_type_t {
+        MN_CRYPTO_NONE,
         MN_CRYPTO_AES128,
     } mn_crypto_type;
     

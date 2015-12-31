@@ -7,6 +7,10 @@
 //
 
 #include "magnode_inner.h"
+#include "syn_ack.h"
+#include "magnode.h"
+#include "proto.h"
+
 
 int mn_clear_legacy_sendbuf(mn_node *node)
 {
@@ -14,13 +18,13 @@ int mn_clear_legacy_sendbuf(mn_node *node)
         return MN_ENULLNODE;
     }
     
-    if ( 0 ==  node->sendbuf.used ) {
+    if ( 0 ==  node->sendbuf.length ) {
         return 0;
     }
-    size_t ts = node->sendbuf.used;
+    size_t ts = node->sendbuf.length;
     int rst = mn_net_send(&node->socket, node->sendbuf.data, &ts, 0);
-    if (ts == node->sendbuf.used) {
-        node->sendbuf.used = 0;
+    if (ts == node->sendbuf.length) {
+        node->sendbuf.length = 0;
     } else {
         mn_buffer_align(&node->sendbuf,(int) ts);
     }
@@ -28,6 +32,27 @@ int mn_clear_legacy_sendbuf(mn_node *node)
         return rst;
     }
 
+    return 0;
+}
+
+int mn_send_packbuf(mn_node *node)
+{
+    int rst = 0;
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    
+    if ((node->sendbuf.cap - node->sendbuf.length)<node->packbuf.length) {
+        return MN_EPACKLEN;
+    }
+    rst = mn_buffer_append(&node->sendbuf, &node->packbuf);
+    if (rst <0) {
+        return rst;
+    }
+    rst = mn_clear_legacy_sendbuf(node);
+    if (rst < 0) {
+        return rst;
+    }
     return 0;
 }
 
@@ -55,6 +80,20 @@ int mn_send_syn(mn_node *node, uint32_t timeout)
         return rst;
     }
     
+    mn_syn syn;
+    rst = mn_init_syn(&syn, MN_PB_BIN, MN_KEY_NONE, MN_CRYPTO_NONE);
+    if (rst <0) {
+        LOG_E("init syn error with %d", rst);
+        return rst;
+    }
+    
+    mn_buffer_reset(&node->packbuf, MN_MAX_PROTO_SIZE);
+    mn_pack_syn(&syn, node->packbuf.data, node->packbuf.length);
+    rst = mn_send_packbuf(node);
+    if (rst < 0) {
+        LOG_E("send syn error with %d", rst);
+        return rst;
+    }
     return 0;
 }
 

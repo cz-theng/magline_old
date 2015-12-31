@@ -12,7 +12,7 @@
 typedef  struct mn_buffer_t {
     void *data;
     int length;
-    int used;
+    int cap;
 } mn_buffer;
 
 #ifdef __cplusplus
@@ -26,6 +26,8 @@ extern "C" {
     int mn_buffer_deinit(mn_buffer *buffer);
 
     int mn_buffer_align(mn_buffer *buffer, int index);
+    
+    int mn_buffer_append(mn_buffer *dest, mn_buffer *src);
     
 #ifdef __cplusplus
 }

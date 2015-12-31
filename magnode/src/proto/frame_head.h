@@ -11,6 +11,9 @@
 
 #include "magnode_errcode.h"
 #include "sys.h"
+
+#include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
 // we use little endian
@@ -24,7 +27,7 @@ typedef struct mn_frame_head_t
     uint16_t cmd;
     uint32_t seq;
     uint32_t agent_id;
-    uint16_t length;
+    uint32_t length;
 
     
 } mn_frame_head;
@@ -35,10 +38,13 @@ typedef struct mn_frame_head_t
 #ifdef __cplusplus
 extern "C" {
 #endif
+    int mn_init_frame_head(mn_frame_head *head, uint16_t cmd, uint32_t length);
     
     int mn_pack_frame_head(mn_frame_head *head, void *buf, int len);
     
     int mn_unpack_frame_head(mn_frame_head *head, const void *buf, int len);
+    
+    int tick_seq();
     
 #ifdef __cplusplus
 }

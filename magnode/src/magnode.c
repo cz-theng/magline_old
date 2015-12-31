@@ -37,16 +37,23 @@ int mn_init(mn_node *node)
     
     node->agent_id = 0;
     
-    rst = mn_buffer_init(&node->sendbuf, MN_MAX_SENDBUF_SIZE);
+    rst = mn_buffer_init(&node->sendbuf, MN_MAX_PROTO_SIZE);
     if (rst ) {
         LOG_E("Init send buffer error");
         mn_deinit(node);
         return rst;
     }
     
-    rst = mn_buffer_init(&node->recvbuf, MN_MAX_RECVBUF_SIZE *2 );
+    rst = mn_buffer_init(&node->recvbuf, MN_MAX_PROTO_SIZE *2 );
     if (rst ) {
         LOG_E("Init recv buffer error");
+        mn_deinit(node);
+        return rst;
+    }
+    
+    rst = mn_buffer_init(&node->packbuf, MN_MAX_PROTO_SIZE );
+    if (rst ) {
+        LOG_E("Init pack buffer error");
         mn_deinit(node);
         return rst;
     }
@@ -65,6 +72,7 @@ int mn_deinit(mn_node *node)
     
     mn_buffer_deinit(&node->sendbuf);
     mn_buffer_deinit(&node->recvbuf);
+    mn_buffer_deinit(&node->packbuf);
     node->agent_id = 0;
     return 0;
 }

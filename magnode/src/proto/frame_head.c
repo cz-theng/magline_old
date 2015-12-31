@@ -6,15 +6,35 @@
 //  Copyright © 2015年 proj-m. All rights reserved.
 //
 
-#include "frame_head.h"
-
-#include <stdlib.h>
-#include <string.h>
-
 // we all use little endian
+
+#include "frame_head.h"
+#include "proto.h"
+
+int mn_init_frame_head(mn_frame_head *head, uint16_t cmd, uint32_t length)
+{
+    if (NULL == head) {
+        return MN_EARG;
+    }
+    head->cmd = cmd;
+    head->length = length;
+    
+    head->magic = MN_MAGIC;
+    head->version = MN_VERSION;
+    head->seq = tick_seq();
+    return 0;
+}
+
+int tick_seq()
+{
+    static seq = 0;
+    return seq++;
+}
+
+
 int mn_pack_frame_head(mn_frame_head *head, void *buf, int len)
 {
-    if (NULL == head || buf == head) {
+    if (NULL == head || NULL == buf) {
         return MN_EARG;
     }
     
@@ -24,12 +44,12 @@ int mn_pack_frame_head(mn_frame_head *head, void *buf, int len)
     
     memcpy(buf, head, sizeof(*head));
     
-    return 0;
+    return sizeof(*head);
 }
 
 int mn_unpack_frame_head(mn_frame_head *head, const void *buf, int len)
 {
-    if (NULL == head || buf == head) {
+    if (NULL == head || NULL == buf) {
         return MN_EARG;
     }
     

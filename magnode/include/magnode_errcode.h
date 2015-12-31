@@ -32,6 +32,8 @@ extern  "C" {
         MN_EACK         = -(MN_ERRNO_BASE + 14),
         MN_ENEWBUF      = -(MN_ERRNO_BASE + 15),
         MN_EPACKLEN     = -(MN_ERRNO_BASE + 16),
+        MN_EUNKNOWNACK  = -(MN_ERRNO_BASE + 17),
+        MN_EBUFLEN      = -(MN_ERRNO_BASE + 18),
     };
     
 #ifdef __cplusplus
