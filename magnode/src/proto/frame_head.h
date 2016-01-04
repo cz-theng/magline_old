@@ -44,7 +44,7 @@ extern "C" {
     
     int mn_unpack_frame_head(mn_frame_head *head, const void *buf, int len);
     
-    int tick_seq();
+    uint32_t tick_seq();
     
 #ifdef __cplusplus
 }

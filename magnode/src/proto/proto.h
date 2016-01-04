@@ -54,7 +54,5 @@ int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *bu
 
 int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void *buf);
 
-uint64_t tick_seq();
-
 int is_invalied_head(mn_nodemsg_head *head);
 #endif /* proto_h */

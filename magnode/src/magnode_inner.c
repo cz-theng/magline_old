@@ -35,6 +35,19 @@ int mn_clear_legacy_sendbuf(mn_node *node)
     return 0;
 }
 
+int mn_unpack_legacy_recvbuf(mn_node *node)
+{
+    if (NULL == node) {
+        return MN_ENULLNODE;
+    }
+    
+    if ( 0 ==  node->recvbuf.length ) {
+        return 0;
+    }
+    
+    return 0;
+}
+
 int mn_send_packbuf(mn_node *node)
 {
     int rst = 0;
@@ -107,8 +120,11 @@ int mn_recv_ack(mn_node *node, uint32_t timeout)
         return MN_ENULLNODE;
     }
     
+    rst = mn_unpack_legacy_recvbuf(node);
+    if (rst < 0) {
+        return rst;
+    }
     
-    mn_clear_legacy_sendbuf(node);
     return 0;
 }
 

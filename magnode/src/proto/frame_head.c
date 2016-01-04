@@ -25,9 +25,9 @@ int mn_init_frame_head(mn_frame_head *head, uint16_t cmd, uint32_t length)
     return 0;
 }
 
-int tick_seq()
+uint32_t tick_seq()
 {
-    static seq = 0;
+    static uint32_t seq = 0;
     return seq++;
 }
 
