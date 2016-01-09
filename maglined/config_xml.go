@@ -16,7 +16,7 @@ type ConfigJSONWrapper struct {
 func LoadConfig(filePath string) (err error) {
 	fp, err := os.Open(filePath)
 	if err != nil {
-		Logger.Error("Open Config file %s error: %s", filePath, err.Error())
+		//		Logger.Error("Open Config file %s error: %s", filePath, err.Error())
 		return
 	}
 	defer fp.Close()
@@ -24,13 +24,13 @@ func LoadConfig(filePath string) (err error) {
 	var config ConfigJSONWrapper
 	decoder := json.NewDecoder(fp)
 	if err = decoder.Decode(&config); err != nil {
-		Logger.Error("Decode Config Error:%s", err.Error())
+		//		Logger.Error("Decode Config Error:%s", err.Error())
 		return
 	}
 	Config.OuterAddr = config.OuterAddr
 	Config.InnerAddr = config.InnerAddr
 	Config.MaxConns = config.MaxConns
-	Logger.Debug("Load Config file %s Success", filePath)
+	//	Logger.Debug("Load Config file %s Success", filePath)
 	err = nil
 	return
 }

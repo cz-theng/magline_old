@@ -5,6 +5,7 @@
 package main
 
 import (
+	"github.com/cz-it/magline/maglined/utils"
 	"net"
 	"os"
 	"time"
@@ -52,17 +53,17 @@ func (bs *BackendServer) Listen() (err error) {
 	if err != nil {
 		return err
 	}
-	Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
+	utils.Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
 
 	if addr.Network != "unix" {
-		Logger.Error("Error Inner Address, Should be unix://")
+		utils.Logger.Error("Error Inner Address, Should be unix://")
 		err = ErrAddr
 		return
 	}
 	os.Remove(addr.IPPort)
 	l, err := net.Listen("unix", addr.IPPort)
 	if err != nil {
-		Logger.Error(err.Error())
+		utils.Logger.Error(err.Error())
 		return
 	}
 	ln := l.(*net.UnixListener)
@@ -82,7 +83,7 @@ type Server struct {
 func (svr *Server) Init(maxConns int) (err error) {
 	svr.ConnPool, err = NewMLConnPool(maxConns)
 	if err != nil {
-		Logger.Error("New Magline Connection Pool Error!")
+		utils.Logger.Error("New Magline Connection Pool Error!")
 		return
 	}
 	return
@@ -90,12 +91,12 @@ func (svr *Server) Init(maxConns int) (err error) {
 
 //ListenAndServe is server's listen and serve
 func (svr *Server) ListenAndServe() error {
-	Logger.Debug("ListenAndServe with addr %s", svr.Addr)
+	utils.Logger.Debug("ListenAndServe with addr %s", svr.Addr)
 	addr, err := ParseAddr(svr.Addr)
 	if err != nil {
 		return err
 	}
-	Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
+	utils.Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
 	if addr.Network == "tcp" {
 		ln, err := net.Listen("tcp", addr.IPPort)
 		if err != nil {
@@ -139,7 +140,7 @@ func (svr *Server) listenAndServeTCP(l *net.TCPListener, kpal bool) error {
 				if max := 1 * time.Second; tempDelay > max {
 					tempDelay = max
 				}
-				Logger.Error("[TCP]: Accept error: %v; retrying in %v", e, tempDelay)
+				utils.Logger.Error("[TCP]: Accept error: %v; retrying in %v", e, tempDelay)
 				time.Sleep(tempDelay)
 				continue
 			}

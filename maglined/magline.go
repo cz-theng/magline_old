@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/cz-it/magline/maglined/utils"
 	"os"
 )
 
@@ -20,7 +21,7 @@ func Start() {
 	agentMgr, err := NewAgentMgr(Config.MaxConns)
 	if err != nil {
 		fmt.Println("Create Agent Manager Error")
-		Logger.Error("Create Agent Manager Error")
+		utils.Logger.Error("Create Agent Manager Error")
 		exit()
 	}
 	backend := &BackendServer{
@@ -30,7 +31,7 @@ func Start() {
 	err = backend.Listen()
 	if err != nil {
 		fmt.Println("Start Magline Backend Server error with s", err.Error())
-		Logger.Error("Start Magline Backend Server error with s", err.Error())
+		utils.Logger.Error("Start Magline Backend Server error with s", err.Error())
 		exit()
 	}
 
@@ -43,7 +44,7 @@ func Start() {
 	err = svr.ListenAndServe()
 	if err != nil {
 		fmt.Println("Start Magline Server error with s", err.Error())
-		Logger.Error("Start Magline Server error with s", err.Error())
+		utils.Logger.Error("Start Magline Server error with s", err.Error())
 		exit()
 	}
 }

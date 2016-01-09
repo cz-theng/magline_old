@@ -5,11 +5,11 @@
 package main
 
 import (
-	"github.com/cz-it/magline/maglined/proto"
-	"io"
+	//"github.com/cz-it/magline/maglined/proto"
+	//"io"
 	"net"
 	"sync"
-	"time"
+	//"time"
 )
 
 const (
@@ -36,13 +36,15 @@ func (l *Lane) AddAgent(agent *Agent) (err error) {
 
 //SendNewAgent send a new agent's request
 func (l *Lane) SendNewAgent(id uint32) (err error) {
-	Logger.Info("Get New Agent with ID:%d", id)
-	msg := &proto.KnotMessage{}
-	msg.CMD = proto.MKCMDReqNewAgent
-	msg.Length = 0
-	msg.AgentID = id
-	msg.Seq = l.tickSeq()
-	msg.PackAndSend(nil, l.RWC)
+	/*
+		Logger.Info("Get New Agent with ID:%d", id)
+		msg := &proto.KnotMessage{}
+		msg.CMD = proto.MKCMDReqNewAgent
+		msg.Length = 0
+		msg.AgentID = id
+		msg.Seq = l.tickSeq()
+		msg.PackAndSend(nil, l.RWC)
+	*/
 	return
 }
 
@@ -55,6 +57,7 @@ func (l *Lane) Init() (err error) {
 }
 
 //ReadMsg read a message
+/*
 func (l *Lane) ReadMsg() (msg *proto.KnotMessage, err error) {
 	msg = &proto.KnotMessage{ReadBuf: l.ReadBuf}
 	err = msg.RecvAndUnpack(l.RWC)
@@ -64,6 +67,7 @@ func (l *Lane) ReadMsg() (msg *proto.KnotMessage, err error) {
 	}
 	return
 }
+*/
 
 func (l *Lane) tickSeq() uint32 {
 	l.mtx.Lock()
@@ -73,6 +77,7 @@ func (l *Lane) tickSeq() uint32 {
 }
 
 //DealConnReq deal a request
+/*
 func (l *Lane) DealConnReq(msg *proto.KnotMessage) (err error) {
 	Logger.Info("Lane dipatch a new Connection Request from Knot[]")
 	rsp := &proto.KnotMessage{}
@@ -82,7 +87,9 @@ func (l *Lane) DealConnReq(msg *proto.KnotMessage) (err error) {
 	rsp.PackAndSend(nil, l.RWC)
 	return
 }
+*/
 
+/*
 //DealNewAgentRsp deal a new agent's response
 func (l *Lane) DealNewAgentRsp(msg *proto.KnotMessage) (err error) {
 	Logger.Info("New Agent success , Reponse with agent id:%d", msg.AgentID)
@@ -94,7 +101,8 @@ func (l *Lane) DealNewAgentRsp(msg *proto.KnotMessage) (err error) {
 	agent.DealNewAgentRsp()
 	return
 }
-
+*/
+/*
 //DealMsgK2N deal message from knot to node
 func (l *Lane) DealMsgK2N(msg *proto.KnotMessage) (err error) {
 	Logger.Debug("Send Message to Node by agent : %d", msg.AgentID)
@@ -106,17 +114,20 @@ func (l *Lane) DealMsgK2N(msg *proto.KnotMessage) (err error) {
 	err = agent.Send2Node(msg.Body())
 	return
 }
+*/
 
 //SendNodeMsg send message to node
 func (l *Lane) SendNodeMsg(id uint32, data []byte) (err error) {
-	Logger.Debug("Get Message form Node by agent id:%d", id)
-	msg := &proto.KnotMessage{}
-	msg.CMD = proto.MKCMDMsgN2K
-	msg.Length = uint32(len(data))
-	msg.Seq = l.tickSeq()
-	msg.AgentID = id
-	msg.PackAndSend(data, l.RWC)
-	Logger.Debug("send node msg with length %d,data:%s", msg.Length, string(data))
+	/*
+		Logger.Debug("Get Message form Node by agent id:%d", id)
+		msg := &proto.KnotMessage{}
+		msg.CMD = proto.MKCMDMsgN2K
+		msg.Length = uint32(len(data))
+		msg.Seq = l.tickSeq()
+		msg.AgentID = id
+		msg.PackAndSend(data, l.RWC)
+		Logger.Debug("send node msg with length %d,data:%s", msg.Length, string(data))
+	*/
 	return
 
 }
@@ -125,23 +136,25 @@ func (l *Lane) SendNodeMsg(id uint32, data []byte) (err error) {
 func (l *Lane) Serve() {
 	for {
 		// deal timeout
-		msg, err := l.ReadMsg()
-		if err != nil {
-			time.Sleep(200 * time.Millisecond)
-			if err != io.EOF {
-				Logger.Error("Connection Read Request Error:%s", err.Error())
+		/*
+			msg, err := l.ReadMsg()
+			if err != nil {
+				time.Sleep(200 * time.Millisecond)
+				if err != io.EOF {
+					Logger.Error("Connection Read Request Error:%s", err.Error())
+				}
+				continue
 			}
-			continue
-		}
-		if msg.CMD == proto.MKCMDReqConn {
-			l.DealConnReq(msg)
-		} else if msg.CMD == proto.MKCMDRspNewAgent {
-			l.DealNewAgentRsp(msg)
-		} else if msg.CMD == proto.MKCMDMsgK2N {
-			l.DealMsgK2N(msg)
-		} else {
+			if msg.CMD == proto.MKCMDReqConn {
+				l.DealConnReq(msg)
+			} else if msg.CMD == proto.MKCMDRspNewAgent {
+				l.DealNewAgentRsp(msg)
+			} else if msg.CMD == proto.MKCMDMsgK2N {
+				l.DealMsgK2N(msg)
+			} else {
 
-		}
-		Logger.Debug("get message: %v", msg.CMD)
+			}
+			Logger.Debug("get message: %v", msg.CMD)
+		*/
 	}
 }

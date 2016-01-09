@@ -5,8 +5,11 @@
 package main
 
 import (
+	"bytes"
 	"container/list"
 	"github.com/cz-it/magline/maglined/proto"
+	"github.com/cz-it/magline/maglined/proto/node"
+	"github.com/cz-it/magline/maglined/utils"
 	"io"
 	"net"
 	"time"
@@ -20,7 +23,7 @@ const (
 //Connection is connection object
 type Connection struct {
 	RWC     *net.TCPConn
-	ReadBuf []byte
+	ReadBuf *bytes.Buffer
 	ID      int
 	Elem    *list.Element
 	AgentID uint32
@@ -29,26 +32,74 @@ type Connection struct {
 
 //Init is initialize
 func (conn *Connection) Init() error {
-	conn.ReadBuf = make([]byte, ReadBufSize)
+	buf := make([]byte, ReadBufSize)
+	if buf == nil {
+		return ErrNewBuffer
+	}
+	conn.ReadBuf = bytes.NewBuffer(buf)
 	return nil
 }
 
-//RecvRequest Recv a request
-func (conn *Connection) RecvRequest() (req proto.Requester, err error) {
-	Logger.Debug("RecvRequest with request and readbuf cap is %d", cap(conn.ReadBuf))
-	err = proto.RecvAndUnpack(conn.RWC)
+//RecvMessage Recv a request message
+func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, err error) {
+	var frameHead *proto.FrameHead
+	priBufLen := conn.ReadBuf.Len()
+	if priBufLen <= proto.MLFrameHeadLen {
+		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(proto.MLFrameHeadLen-priBufLen))
+		if err != nil {
+			utils.Logger.Error("CopyN Error with %s", err.Error())
+		}
+		if err != nil {
+			utils.Logger.Error("Head not complete")
+			return
+		}
+	}
+	frameHead, err = proto.UnpackFrameHead(conn.ReadBuf.Bytes()[:proto.MLFrameHeadLen])
 	if err != nil {
-		req = nil
+		print(frameHead)
+	}
+	if priBufLen > proto.MLFrameHeadLen {
+		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen)))
+	} else {
+		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length))
+	}
+	if err != nil {
+		utils.Logger.Error("CopyN with body error")
 		return
 	}
-	req = &Request{
-		CMD:     protoData.CMD,
-		AgentID: protoData.AgentID,
-		Body:    protoData.Body(),
+	msg, err = proto.UnpackFrameBody(conn.ReadBuf.Bytes()[proto.MLFrameHeadLen:frameHead.Length])
+	if err != nil {
+		utils.Logger.Error("UnpackFrameBody Error")
+		return
+	}
+	conn.ReadBuf.Reset()
+	utils.Logger.Debug("read one message success!")
+	return
+}
+
+// DealMessage deal a message from connection
+func (conn *Connection) DealMessage(msg proto.Messager) (err error) {
+	if msg == nil {
+		err = ErrArg
+		return
+	}
+	switch head := msg.Head().(type) {
+	case *node.SYNHead:
+		utils.Logger.Info("Get A SYN Message")
+		err = conn.DealSYN(head)
+	default:
+		utils.Logger.Error("Unknown Message type")
 	}
 	return
 }
 
+//DealSYN deal SYN Message
+func (conn *Connection) DealSYN(syn *node.SYNHead) (err error) {
+	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", syn.Protobuf, syn.Key, syn.Crypto)
+	return
+}
+
+/*
 //SendResponse Send a response
 func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	protoData := new(proto.NodeProto)
@@ -59,12 +110,14 @@ func (conn *Connection) SendResponse(rsp *Response) (err error) {
 	err = protoData.PackAndSend(conn.RWC)
 	return
 }
+*/
 
 //Close close connection
 func (conn *Connection) Close() error {
 	return nil
 }
 
+/*
 //DealNewAgent deal a new agent
 func (conn *Connection) DealNewAgent(req proto.Requester) {
 	Logger.Debug("DealNewAgent with req %v", req)
@@ -80,7 +133,9 @@ func (conn *Connection) DealNewAgent(req proto.Requester) {
 	}
 	agent.DealRequest(req)
 }
+*/
 
+/*
 //DealSendReq deal send request
 func (conn *Connection) DealSendReq(req proto.Requester) {
 	Logger.Debug("Deal Send Req with req:%d ", req.AgentID)
@@ -97,28 +152,24 @@ func (conn *Connection) DealSendReq(req proto.Requester) {
 	Logger.Debug("message req data  len is %d and data is %s", len(req.Body), string(req.Body))
 	ag.DealRequest(req)
 }
+*/
 
 //Serve serve a server
 func (conn *Connection) Serve() {
 	for {
 		// deal timeout
-		req, err := conn.RecvRequest()
+		msg, err := conn.RecvMessage(5 * time.Second)
 		if err != nil {
 			if err != io.EOF {
-				Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
+				utils.Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
 				time.Sleep(200 * time.Millisecond)
 				continue
 			}
 			break
 		}
-		cmd := req.CMD
-		Logger.Debug("Cmd is ", cmd)
-		if cmd == proto.MNCMDReqConn {
-			conn.DealNewAgent(req)
-		} else if cmd == proto.MNCMDMsgNode {
-			conn.DealSendReq(req)
-		} else {
-			Logger.Error("Unknow CMD %d", cmd)
+		err = conn.DealMessage(msg)
+		if err != nil {
+			utils.Logger.Error("DealMessage error with %s", err.Error())
 		}
 	}
 }

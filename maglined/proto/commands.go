@@ -4,8 +4,8 @@
 
 package proto
 
-//MLFrameHeadLen is frame head length : 16byte
-const MLFrameHeadLen = 16
+//MLFrameHeadLen is frame head length : 12byte
+const MLFrameHeadLen = 12
 
 const (
 	// MLMagic magnode's magic

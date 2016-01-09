@@ -6,7 +6,7 @@
 package main
 
 import (
-	"github.com/cz-it/magline/maglined/proto"
+	//	"github.com/cz-it/magline/maglined/proto"
 	"github.com/cz-it/magline/maglined/utils"
 )
 
@@ -22,6 +22,7 @@ func (ag *Agent) ID() uint32 {
 	return ag.id
 }
 
+/*
 //DealConnReq deal connnection reqeuest
 func (ag *Agent) DealConnReq(req proto.Requester) (err error) {
 	utils.Logger.Info("Deal New Agent[%d]'s Connection ", ag.id)
@@ -33,6 +34,7 @@ func (ag *Agent) DealConnReq(req proto.Requester) (err error) {
 	ag.lane.SendNewAgent(ag.id)
 	return
 }
+*/
 
 //DealNewAgentRsp deal a new agent's response for knot
 func (ag *Agent) DealNewAgentRsp() (err error) {
@@ -41,7 +43,7 @@ func (ag *Agent) DealNewAgentRsp() (err error) {
 	rsp.Init()
 	rsp.CMD = 1 //proto.MNCMDRspConn
 	rsp.AgentID = ag.id
-	ag.conn.SendResponse(rsp)
+	//ag.conn.SendResponse(rsp)
 	return
 }
 
@@ -65,14 +67,14 @@ func (ag *Agent) Send2Node(data []byte) (err error) {
 	rsp.CMD = 1 //proto.MNCMDMsgKnot
 	rsp.AgentID = ag.id
 	rsp.Body = data
-	ag.conn.SendResponse(rsp)
+	//ag.conn.SendResponse(rsp)
 	return
 }
 
+/*
 // DealRequest deal a client's request
 func (ag *Agent) DealRequest(req proto.Requester) (err error) {
 	utils.Logger.Info("Deal a Client Request! with cmd %d", req.CMD)
-	/*
 		if req.CMD == node.MNCMDReqConn {
 			err = ag.DealConnReq(req)
 		} else if req.CMD == proto.MNCMDMsgNode {
@@ -81,6 +83,6 @@ func (ag *Agent) DealRequest(req proto.Requester) (err error) {
 		if err != nil {
 			utils.Logger.Error("Deal Request Error %v", req)
 		}
-	*/
 	return
 }
+*/

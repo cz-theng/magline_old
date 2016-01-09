@@ -8,8 +8,8 @@ import (
 	"math"
 	"sync"
 
-	"github.com/cz-it/magline/maglined/proto"
-	"github.com/cz-it/magline/maglined/utils"
+	//	"github.com/cz-it/magline/maglined/proto"
+	//	"github.com/cz-it/magline/maglined/utils"
 )
 
 //AgentMgr is agent manager
@@ -43,6 +43,7 @@ func (am *AgentMgr) FindAgent(id uint32) (agent *Agent, err error) {
 	return
 }
 
+/*
 //DealNewAgent deal a new agent
 func DealNewAgent(conn *Connection, req proto.Requester) (err error) {
 	utils.Logger.Info("Deal a New Agent")
@@ -52,9 +53,10 @@ func DealNewAgent(conn *Connection, req proto.Requester) (err error) {
 		AgentID: uint32(agt.ID()),
 		Body:    nil,
 	}
-	conn.SendResponse(rsp)
+	//conn.SendResponse(rsp)
 	return nil
 }
+*/
 
 //Init agnet manager's initialize
 func (am *AgentMgr) Init(maxAgents int) error {

@@ -17,6 +17,9 @@ var (
 	//ErrURL is Invaliad URL
 	ErrURL = errors.New("Invaliad URL!")
 
+	//ErrNewBuffer is New a Buffer Error
+	ErrNewBuffer = errors.New("New a Buffer Error")
+
 	//ErrNetworkType is Unknown Network Type error
 	ErrNetworkType = errors.New("Unknown Network Type!")
 )

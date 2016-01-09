@@ -4,8 +4,8 @@
 
 package node
 
-//MNFrameHeadLen is frame head length : 16byte
-const MNFrameHeadLen = 16
+//MNFrameHeadLen is frame head length : 12byte
+const MNFrameHeadLen = 12
 
 //ChannelType is channel type
 type ChannelType uint16
