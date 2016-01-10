@@ -215,6 +215,7 @@ int mn_net_connect(struct mn_socket *sfd, const char *url, uint64_t timeout)
     if (NET_TCP == addr.proto) {
         int ret = connect_timeout(sfd, timeout);
         if (ret) {
+            mn_socket_close(sfd);
             return ret;
         }
     }

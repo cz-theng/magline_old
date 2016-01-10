@@ -12,10 +12,13 @@
 #include <stdio.h>
 #include <stdint.h>
 
+// we all use little endian
+
 enum {
     MN_MAX_MSG_LEN = 1024,
     MN_MAX_SENDBUF_SIZE = 10*1024,
     MN_MAX_RECVBUF_SIZE = 10*1024,
+    MN_MAX_PROTO_SIZE = 10*1024,
     MN_MAX_TIMEOUT = 1000*1000,
     
     MN_MAGIC = 0x7f,
@@ -25,23 +28,8 @@ enum {
 enum MN_CMD {
     MN_CMD_UNKNOWN  = 0x0000,
     
-    MN_CMD_REQ_CONN = 0x0001,
-    MN_CMD_RSP_CONN = 0x0002,
-    
-    MN_CMD_REQ_SEND = 0x0003,
-    MN_CMD_RSP_SEND = 0x0004,
-
-    MN_CMD_REQ_RECV = 0x0005,
-    MN_CMD_RSP_RECV = 0x0006,
-    
-    MN_CMD_REQ_CLOSE = 0x0007,
-    MN_CMD_RSP_CLOSE = 0x0008,
-    
-    MN_CMD_REQ_RECONN = 0x0009,
-    MN_CMD_RSPREQCONN = 0x000a,
-    
-    MN_CMD_MSG_NODE  = 0x000b,
-    MN_CMD_MSG_KNOT = 0x000c,
+    MN_CMD_SYN      = 0x0001,
+    MN_CMD_ACK      = 0x0002,
 
 };
 
@@ -65,8 +53,6 @@ typedef struct mn_nodemsg_head_t {
 int parse2mem(mn_nodemsg_head *head, const void *body, size_t body_len, void *buf, size_t *buflen);
 
 int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void *buf);
-
-uint64_t tick_seq();
 
 int is_invalied_head(mn_nodemsg_head *head);
 #endif /* proto_h */

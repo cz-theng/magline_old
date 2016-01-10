@@ -51,7 +51,7 @@ int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void
     if (NULL == head || NULL == buf) {
         return MN_EARG;
     }
-    MN_NODEMSG_HEAD_INIT(head, MN_CMD_UNKNOWN, 0);
+    //MN_NODEMSG_HEAD_INIT(head, MN_CMD_UNKNOWN, 0);
     
     head->magic =*(uint8_t *)((char *)buf+idx);
     idx++;
@@ -74,11 +74,7 @@ int parse_from_mem(mn_nodemsg_head *head, const void *body,size_t *bodylen, void
     return 0;
 }
 
-uint64_t tick_seq()
-{
-    static uint32_t seq = 0;
-    return seq++;
-}
+
 
 int is_invalied_head(mn_nodemsg_head *head) {
     if (NULL == head) {

@@ -62,7 +62,8 @@ int mn_socket_send(struct mn_socket *fd, const void *buf, size_t *len, int flags
     while (task >0) {
         struct timeval et;
         gettimeofday(&et, NULL);
-        long rtimeout = timeout - timeval_min_usec(&et, &bt) > 0 ? timeout - timeval_min_usec(&et, &bt): 0;
+        long rtimeout = timeout - timeval_min_usec(&et, &bt);
+        rtimeout = rtimeout > 0 ? rtimeout : 0;
         if (0 == timeout) {
             rtimeout = 0;
         }
@@ -129,7 +130,8 @@ int mn_socket_recv(struct mn_socket *fd, void *buf, size_t *len, int flags, uint
     while (task > 0) {
         struct timeval et;
         gettimeofday(&et, NULL);
-        long rtimeout = timeout - timeval_min_usec(&et, &bt) > 0 ? timeout - timeval_min_usec(&et, &bt) : 0;
+        long rtimeout = timeout - timeval_min_usec(&et, &bt);
+        rtimeout = rtimeout> 0 ? rtimeout : 0;
         if (0 == timeout) {
             rtimeout = 0;
         }

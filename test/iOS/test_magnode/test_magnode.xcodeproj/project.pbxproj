@@ -17,7 +17,6 @@
 		F08EE42F1BCFD67A00797F43 /* os.c in Sources */ = {isa = PBXBuildFile; fileRef = F08EE42C1BCFD67A00797F43 /* os.c */; };
 		F08EE44F1BD0D1C700797F43 /* proto.c in Sources */ = {isa = PBXBuildFile; fileRef = F08EE44D1BD0D1C700797F43 /* proto.c */; };
 		F0DBD6A61C02FBD900C2EC20 /* magnode_uinty.c in Sources */ = {isa = PBXBuildFile; fileRef = F0DBD6A41C02FBD900C2EC20 /* magnode_uinty.c */; };
-		F0E45B771BB2E04800C50E18 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B761BB2E04800C50E18 /* main.m */; };
 		F0E45B921BB2E06300C50E18 /* magnode.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B811BB2E06300C50E18 /* magnode.c */; };
 		F0E45B931BB2E06300C50E18 /* magnode_errcode.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E45B821BB2E06300C50E18 /* magnode_errcode.c */; };
 /* End PBXBuildFile section */
@@ -56,7 +55,6 @@
 		F0DBD6A41C02FBD900C2EC20 /* magnode_uinty.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = magnode_uinty.c; path = ../magnode_uinty.c; sourceTree = "<group>"; };
 		F0DBD6A51C02FBD900C2EC20 /* magnode_uinty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = magnode_uinty.h; path = ../magnode_uinty.h; sourceTree = "<group>"; };
 		F0E45B731BB2E04800C50E18 /* test_magnode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = test_magnode; sourceTree = BUILT_PRODUCTS_DIR; };
-		F0E45B761BB2E04800C50E18 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F0E45B7E1BB2E06300C50E18 /* magnode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode.h; sourceTree = "<group>"; };
 		F0E45B7F1BB2E06300C50E18 /* magnode_errcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magnode_errcode.h; sourceTree = "<group>"; };
 		F0E45B811BB2E06300C50E18 /* magnode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = magnode.c; sourceTree = "<group>"; };
@@ -106,7 +104,6 @@
 		F0E45B751BB2E04800C50E18 /* test_magnode */ = {
 			isa = PBXGroup;
 			children = (
-				F0E45B761BB2E04800C50E18 /* main.m */,
 			);
 			path = test_magnode;
 			sourceTree = "<group>";
@@ -223,7 +220,6 @@
 				F08EE44F1BD0D1C700797F43 /* proto.c in Sources */,
 				F08EE4251BCFD66E00797F43 /* poll.c in Sources */,
 				F0DBD6A61C02FBD900C2EC20 /* magnode_uinty.c in Sources */,
-				F0E45B771BB2E04800C50E18 /* main.m in Sources */,
 				F08EE42E1BCFD67A00797F43 /* log.c in Sources */,
 				F08EE4281BCFD66E00797F43 /* socket.c in Sources */,
 				F08EE4291BCFD66E00797F43 /* utils.c in Sources */,

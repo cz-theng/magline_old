@@ -51,3 +51,8 @@ test/iOS/test_magnode/test_magnode.xcodeproj/xcuserdata/
 magknot/log/
 maglined/maglined
 maglined/app/log/
+
+
+magnode/build/Android/obj/
+magnode/build/MacOS/magnode/build/
+magnode/build/iOS/magnode/build/
