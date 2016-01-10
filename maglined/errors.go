@@ -30,6 +30,9 @@ var (
 )
 
 var (
+	//ErrClose is Close Connection
+	ErrClose = errors.New("Close Connection")
+
 	//ErrNewConn is New Connection Error
 	ErrNewConn = errors.New("New Connection Error!")
 )

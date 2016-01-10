@@ -1,6 +1,6 @@
 TARGET := maglined
 
-SRC_FILES := $(shell find ..  -name "*.go" )
+SRC_FILES := $(shell find .  -name "*.go" )
 #SRC_FILES += main.go flag.go config.go
 
 .DEFAULT:all

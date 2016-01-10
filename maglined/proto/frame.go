@@ -5,6 +5,7 @@
 package proto
 
 import (
+	"bytes"
 	"encoding/binary"
 	"github.com/cz-it/magline/maglined/utils"
 )
@@ -19,7 +20,7 @@ type FrameHead struct {
 }
 
 //Init is initionlize
-func (fh *FrameHead) Init(buf []byte) {
+func (fh *FrameHead) Init() {
 	fh.Magic = MLMagic
 	fh.Version = MLVersion
 	fh.CMD = MLCMDUnknown
@@ -41,30 +42,30 @@ func (fh *FrameHead) Unpack(framehead []byte) (err error) {
 	}
 	fh.Magic = framehead[0]
 	fh.Version = framehead[1]
-	fh.CMD = binary.BigEndian.Uint16(framehead[2:4])
-	fh.Seq = binary.BigEndian.Uint32(framehead[4:8])
-	fh.Length = binary.BigEndian.Uint32(framehead[8:12])
-
+	fh.CMD = binary.LittleEndian.Uint16(framehead[2:4])
+	fh.Seq = binary.LittleEndian.Uint32(framehead[4:8])
+	fh.Length = binary.LittleEndian.Uint32(framehead[8:12])
 	return
 }
 
 //Pack  pack frame head
-func (fh *FrameHead) Pack(framehead []byte) (err error) {
-	if framehead == nil {
+func (fh *FrameHead) Pack(buf *bytes.Buffer) (length int, err error) {
+	if buf == nil {
 		err = ErrFrameHeadBufNil
 		utils.Logger.Error("Pack error :%s", err.Error())
 		return
 	}
-	if cap(framehead) != MLFrameHeadLen {
+	if buf.Cap()-buf.Len() < MLFrameHeadLen {
 		err = ErrFameHeadBufLen
 		utils.Logger.Error("Pack error :%s", err.Error())
 		return
 	}
-	framehead[0] = fh.Magic
-	framehead[1] = fh.Version
-	binary.BigEndian.PutUint16(framehead[2:4], fh.CMD)
-	binary.BigEndian.PutUint32(framehead[4:8], fh.Seq)
-	binary.BigEndian.PutUint32(framehead[8:12], fh.Length)
+	buf.WriteByte(fh.Magic)
+	buf.WriteByte(fh.Version)
+	binary.Write(buf, binary.LittleEndian, fh.CMD)
+	binary.Write(buf, binary.LittleEndian, fh.Seq)
+	binary.Write(buf, binary.LittleEndian, fh.Length)
+	length = ACKLen
 	return
 }
 
@@ -74,12 +75,37 @@ type Frame struct {
 	Body Messager
 }
 
+// Pack pack a frame message
+func (frame *Frame) Pack(buf *bytes.Buffer) (length int, err error) {
+	offset, err := frame.Head.Pack(buf)
+	length += offset
+	if err != nil {
+		return
+	}
+	offset, err = frame.Body.Pack(buf)
+	length += offset
+	binary.LittleEndian.PutUint16(buf.Bytes()[buf.Len()-offset-4:buf.Len()-offset], uint16(offset))
+	if err != nil {
+		return
+	}
+	return
+}
+
 //UnpackFrameHead upack frame head from bytes.buffer
 func UnpackFrameHead(buf []byte) (head *FrameHead, err error) {
+	head = new(FrameHead)
+	head.Init()
+	err = head.Unpack(buf)
 	return
 }
 
 //UnpackFrameBody recv a frame from reader r and unpack it
-func UnpackFrameBody(buf []byte) (body Messager, err error) {
+func UnpackFrameBody(cmd uint16, buf []byte) (body Messager, err error) {
+	switch cmd {
+	case MNCMDSYN:
+		body, err = UnpackSYN(buf)
+	default:
+		err = ErrUnknownCMD
+	}
 	return
 }

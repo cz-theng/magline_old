@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"container/list"
 	"github.com/cz-it/magline/maglined/proto"
-	"github.com/cz-it/magline/maglined/proto/node"
 	"github.com/cz-it/magline/maglined/utils"
 	"io"
 	"net"
@@ -18,25 +17,36 @@ import (
 const (
 	//ReadBufSize is read buffer size
 	ReadBufSize = 10 * 1024
+
+	//WriteBufSize is write buffer size
+	WriteBufSize = 10 * 1024
 )
 
 //Connection is connection object
 type Connection struct {
-	RWC     *net.TCPConn
-	ReadBuf *bytes.Buffer
-	ID      int
-	Elem    *list.Element
-	AgentID uint32
-	Server  *Server
+	RWC      *net.TCPConn
+	ReadBuf  *bytes.Buffer
+	WriteBuf *bytes.Buffer
+	ID       int
+	Elem     *list.Element
+	AgentID  uint32
+	Server   *Server
 }
 
 //Init is initialize
 func (conn *Connection) Init() error {
-	buf := make([]byte, ReadBufSize)
-	if buf == nil {
+	rbuf := make([]byte, ReadBufSize)
+	if rbuf == nil {
 		return ErrNewBuffer
 	}
-	conn.ReadBuf = bytes.NewBuffer(buf)
+	wbuf := make([]byte, WriteBufSize)
+	if wbuf == nil {
+		return ErrNewBuffer
+	}
+	conn.ReadBuf = bytes.NewBuffer(rbuf)
+	conn.ReadBuf.Reset()
+	conn.WriteBuf = bytes.NewBuffer(wbuf)
+	conn.WriteBuf.Reset()
 	return nil
 }
 
@@ -44,30 +54,36 @@ func (conn *Connection) Init() error {
 func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, err error) {
 	var frameHead *proto.FrameHead
 	priBufLen := conn.ReadBuf.Len()
+	utils.Logger.Debug("priBufLen is %d", priBufLen)
 	if priBufLen <= proto.MLFrameHeadLen {
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(proto.MLFrameHeadLen-priBufLen))
 		if err != nil {
-			utils.Logger.Error("CopyN Error with %s", err.Error())
-		}
-		if err != nil {
-			utils.Logger.Error("Head not complete")
+			if err == io.EOF {
+				err = ErrClose
+			}
+			utils.Logger.Error("CopyN error in head with %s", err.Error())
 			return
 		}
 	}
 	frameHead, err = proto.UnpackFrameHead(conn.ReadBuf.Bytes()[:proto.MLFrameHeadLen])
 	if err != nil {
-		print(frameHead)
+		// unpack errro
+		utils.Logger.Error("Unpack Header with %s", err.Error())
 	}
+	utils.Logger.Info("Get FrameHead %v", frameHead)
 	if priBufLen > proto.MLFrameHeadLen {
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen)))
 	} else {
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length))
 	}
 	if err != nil {
-		utils.Logger.Error("CopyN with body error")
+		if err == io.EOF {
+			err = ErrClose
+		}
+		utils.Logger.Error("CopyN with body error with %s", err.Error())
 		return
 	}
-	msg, err = proto.UnpackFrameBody(conn.ReadBuf.Bytes()[proto.MLFrameHeadLen:frameHead.Length])
+	msg, err = proto.UnpackFrameBody(frameHead.CMD, conn.ReadBuf.Bytes()[proto.MLFrameHeadLen:proto.MLFrameHeadLen+frameHead.Length])
 	if err != nil {
 		utils.Logger.Error("UnpackFrameBody Error")
 		return
@@ -84,7 +100,7 @@ func (conn *Connection) DealMessage(msg proto.Messager) (err error) {
 		return
 	}
 	switch head := msg.Head().(type) {
-	case *node.SYNHead:
+	case *proto.SYNHead:
 		utils.Logger.Info("Get A SYN Message")
 		err = conn.DealSYN(head)
 	default:
@@ -94,8 +110,47 @@ func (conn *Connection) DealMessage(msg proto.Messager) (err error) {
 }
 
 //DealSYN deal SYN Message
-func (conn *Connection) DealSYN(syn *node.SYNHead) (err error) {
-	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", syn.Protobuf, syn.Key, syn.Crypto)
+func (conn *Connection) DealSYN(syn *proto.SYNHead) (err error) {
+	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", syn.Protobuf, syn.Channel, syn.Crypto)
+	ack := proto.NewACK(1, 1)
+	err = conn.SendMessage(ack, 5*time.Second)
+	return
+}
+
+// SendMessage send a message frame
+func (conn *Connection) SendMessage(msg proto.Messager, timeout time.Duration) (err error) {
+	// Send residual data
+	priBufLen := conn.WriteBuf.Len()
+	if priBufLen > 0 {
+		_, err = io.CopyN(conn.RWC, conn.WriteBuf, int64(conn.WriteBuf.Len()))
+	}
+	if err != nil {
+		utils.Logger.Error("Send residual data error with %s", err.Error())
+		return
+	}
+
+	// Pack data
+	head := new(proto.FrameHead)
+	head.Init()
+	head.Seq = 2
+	head.CMD = proto.MNCMDACK
+
+	frame := proto.Frame{
+		Head: head,
+		Body: msg,
+	}
+	_, err = frame.Pack(conn.WriteBuf)
+	if err != nil {
+		utils.Logger.Error("Pack frame with error %s", err.Error())
+		return
+	}
+
+	// Send current package
+	_, err = io.CopyN(conn.RWC, conn.WriteBuf, int64(conn.WriteBuf.Len()))
+	if err != nil {
+		utils.Logger.Error("Send  current packge data error with %s", err.Error())
+		return
+	}
 	return
 }
 
@@ -160,12 +215,14 @@ func (conn *Connection) Serve() {
 		// deal timeout
 		msg, err := conn.RecvMessage(5 * time.Second)
 		if err != nil {
-			if err != io.EOF {
+			if err == ErrClose {
+				utils.Logger.Info("Client Close Connection")
+				break
+			} else {
 				utils.Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
 				time.Sleep(200 * time.Millisecond)
 				continue
 			}
-			break
 		}
 		err = conn.DealMessage(msg)
 		if err != nil {
