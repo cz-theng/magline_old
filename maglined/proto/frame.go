@@ -104,6 +104,8 @@ func UnpackFrameBody(cmd uint16, buf []byte) (body Messager, err error) {
 	switch cmd {
 	case MNCMDSYN:
 		body, err = UnpackSYN(buf)
+	case MNCMDSeesionReq:
+		body, err = UnpackSessionReq(buf)
 	default:
 		err = ErrUnknownCMD
 	}

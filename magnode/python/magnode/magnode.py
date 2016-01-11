@@ -28,5 +28,8 @@ class MagNode(object):
         ack  = struct.unpack("HH", buf)
         print ack
 
+        sfd.send(struct.pack("BBHII", 0x7f, 101, 0x03, 2, 0))
+        time.sleep(3)
+
 
 

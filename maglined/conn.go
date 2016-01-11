@@ -31,6 +31,11 @@ type Connection struct {
 	Elem     *list.Element
 	AgentID  uint32
 	Server   *Server
+
+	seq      uint32
+	protobuf uint16
+	channel  uint16
+	crypto   uint16
 }
 
 //Init is initialize
@@ -47,6 +52,10 @@ func (conn *Connection) Init() error {
 	conn.ReadBuf.Reset()
 	conn.WriteBuf = bytes.NewBuffer(wbuf)
 	conn.WriteBuf.Reset()
+	conn.seq = 0
+	conn.protobuf = 0
+	conn.channel = 0
+	conn.crypto = 0
 	return nil
 }
 
@@ -85,7 +94,7 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, 
 	}
 	msg, err = proto.UnpackFrameBody(frameHead.CMD, conn.ReadBuf.Bytes()[proto.MLFrameHeadLen:proto.MLFrameHeadLen+frameHead.Length])
 	if err != nil {
-		utils.Logger.Error("UnpackFrameBody Error")
+		utils.Logger.Error("UnpackFrameBody Error with %s", err.Error())
 		return
 	}
 	conn.ReadBuf.Reset()
@@ -102,19 +111,33 @@ func (conn *Connection) DealMessage(msg proto.Messager) (err error) {
 	switch head := msg.Head().(type) {
 	case *proto.SYNHead:
 		utils.Logger.Info("Get A SYN Message")
-		err = conn.DealSYN(head)
+		err = conn.dealSYN(head)
+	case *proto.SessionReqHead:
+		utils.Logger.Info("Get SessionReq ")
+		err = conn.dealSessionReq(head)
 	default:
 		utils.Logger.Error("Unknown Message type")
 	}
 	return
 }
 
-//DealSYN deal SYN Message
-func (conn *Connection) DealSYN(syn *proto.SYNHead) (err error) {
+func (conn *Connection) dealSessionReq(sq *proto.SessionReqHead) (err error) {
+	return
+}
+
+func (conn *Connection) dealSYN(syn *proto.SYNHead) (err error) {
 	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", syn.Protobuf, syn.Channel, syn.Crypto)
-	ack := proto.NewACK(1, 1)
+	conn.protobuf = syn.Protobuf
+	conn.channel = syn.Channel
+	conn.crypto = syn.Crypto
+	ack := proto.NewACK(conn.channel, conn.crypto)
 	err = conn.SendMessage(ack, 5*time.Second)
 	return
+}
+
+func (conn *Connection) tickSeq() uint32 {
+	conn.seq++
+	return conn.seq
 }
 
 // SendMessage send a message frame
@@ -132,9 +155,14 @@ func (conn *Connection) SendMessage(msg proto.Messager, timeout time.Duration) (
 	// Pack data
 	head := new(proto.FrameHead)
 	head.Init()
-	head.Seq = 2
-	head.CMD = proto.MNCMDACK
+	head.Seq = conn.tickSeq()
+	switch msg.(type) {
+	case *proto.ACK:
+		head.CMD = proto.MNCMDACK
+	default:
+		head.CMD = proto.MNCMDUnknown
 
+	}
 	frame := proto.Frame{
 		Head: head,
 		Body: msg,
@@ -154,60 +182,10 @@ func (conn *Connection) SendMessage(msg proto.Messager, timeout time.Duration) (
 	return
 }
 
-/*
-//SendResponse Send a response
-func (conn *Connection) SendResponse(rsp *Response) (err error) {
-	protoData := new(proto.NodeProto)
-	protoData.Init(rsp.Body)
-	protoData.CMD = rsp.CMD
-	protoData.Length = uint32(len(rsp.Body))
-	protoData.AgentID = rsp.AgentID
-	err = protoData.PackAndSend(conn.RWC)
-	return
-}
-*/
-
 //Close close connection
 func (conn *Connection) Close() error {
 	return nil
 }
-
-/*
-//DealNewAgent deal a new agent
-func (conn *Connection) DealNewAgent(req proto.Requester) {
-	Logger.Debug("DealNewAgent with req %v", req)
-	agent, err := conn.Server.AgentMgr.Alloc()
-	if err != nil {
-		Logger.Error("Alloc Agent Error")
-		return
-	}
-	agent.conn = conn
-	agent.lane, err = conn.Server.Backend.Dispatch()
-	if err != nil {
-		return
-	}
-	agent.DealRequest(req)
-}
-*/
-
-/*
-//DealSendReq deal send request
-func (conn *Connection) DealSendReq(req proto.Requester) {
-	Logger.Debug("Deal Send Req with req:%d ", req.AgentID)
-	ag, err := conn.Server.AgentMgr.FindAgent(req.AgentID)
-	if err != nil {
-		Logger.Error("Find Agent Error %s", err.Error())
-		if ag == nil {
-			// timeout or something
-		}
-		// otherwith close conn
-		Logger.Error("Close Connection of Agent %d", req.AgentID)
-		conn.Close()
-	}
-	Logger.Debug("message req data  len is %d and data is %s", len(req.Body), string(req.Body))
-	ag.DealRequest(req)
-}
-*/
 
 //Serve serve a server
 func (conn *Connection) Serve() {
