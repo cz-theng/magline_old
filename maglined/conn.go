@@ -122,6 +122,14 @@ func (conn *Connection) DealMessage(msg proto.Messager) (err error) {
 }
 
 func (conn *Connection) dealSessionReq(sq *proto.SessionReqHead) (err error) {
+	utils.Logger.Info("Deal a SessionReq Message")
+	agent, err := conn.Server.AgentMgr.Alloc()
+	if err != nil {
+		utils.Logger.Error("AgentManager create agent error!")
+		return
+	}
+	rsp := proto.NewSessionRsp(agent.ID())
+	err = conn.SendMessage(rsp, 5*time.Second)
 	return
 }
 
