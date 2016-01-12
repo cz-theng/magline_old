@@ -6,7 +6,6 @@ package magknot
 
 import (
 	"container/list"
-	"github.com/cz-it/magline/maglined/proto"
 	"net"
 	"sync"
 )
@@ -53,19 +52,21 @@ func (ag *Agent) popMessage() (msg *Message, err error) {
 
 //Send will send data
 func (ag *Agent) Send(buf []byte) (err error) {
-	msg := proto.KnotMessage{
-		Magic:   0x01,
-		Version: 0x01,
-		CMD:     proto.MKCMDMsgK2N,
-		Seq:     0x01,
-		AgentID: ag.ID,
-		Length:  uint32(len(buf)),
-	}
-	err = msg.PackAndSend(buf, ag.conn)
-	if err != nil {
-		println("Send And Pack Error")
-		return
-	}
+	/*
+		msg := proto.KnotMessage{
+			Magic:   0x01,
+			Version: 0x01,
+			CMD:     proto.MKCMDMsgK2N,
+			Seq:     0x01,
+			AgentID: ag.ID,
+			Length:  uint32(len(buf)),
+		}
+		err = msg.PackAndSend(buf, ag.conn)
+		if err != nil {
+			println("Send And Pack Error")
+			return
+		}
+	*/
 	return
 }
 
