@@ -1,0 +1,10 @@
+package knot;
+
+message NewAgentReq{
+    optional bytes uuid = 1;
+}
+
+
+message NewAgentRsp {
+
+}
