@@ -2,7 +2,7 @@
 .DEFAULT:all
 
 all : 
-	cd maglined/app; make	
+	cd maglined; make	
 	cd magknot; make
 
 
