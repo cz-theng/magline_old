@@ -1,14 +1,14 @@
-//Package maglined is a daemon process for connection layer
+//Package magline is a daemon process for connection layer
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package main
+package magline
 
 import (
 	"bytes"
 	"container/list"
-	"github.com/cz-it/magline/maglined/proto"
-	"github.com/cz-it/magline/maglined/utils"
+	"github.com/cz-it/magline/proto"
+	"github.com/cz-it/magline/utils"
 	"io"
 	"net"
 	"time"

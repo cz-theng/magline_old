@@ -1,13 +1,11 @@
-//Package maglined is a daemon process for connection layer
-
+//Package magline is a daemon process for connection layer
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package main
+package magline
 
 import (
-	//	"github.com/cz-it/magline/maglined/proto"
-	"github.com/cz-it/magline/maglined/utils"
+	"github.com/cz-it/magline/utils"
 )
 
 //Agent is a client object
@@ -39,11 +37,13 @@ func (ag *Agent) DealConnReq(req proto.Requester) (err error) {
 //DealNewAgentRsp deal a new agent's response for knot
 func (ag *Agent) DealNewAgentRsp() (err error) {
 	utils.Logger.Info("Agent Confirm New Agent ID: %d", ag.id)
-	rsp := &Response{}
-	rsp.Init()
-	rsp.CMD = 1 //proto.MNCMDRspConn
-	rsp.AgentID = ag.id
-	//ag.conn.SendResponse(rsp)
+	/*
+		rsp := nil // &Response{}
+		rsp.Init()
+		rsp.CMD = 1 //proto.MNCMDRspConn
+		rsp.AgentID = ag.id
+		//ag.conn.SendResponse(rsp)
+	*/
 	return
 }
 
@@ -62,12 +62,14 @@ func (ag *Agent) DealNodeMsg(data []byte) (err error) {
 //Send2Node send message to node
 func (ag *Agent) Send2Node(data []byte) (err error) {
 	utils.Logger.Debug("Send data %s to node %d", string(data), ag.id)
-	rsp := &Response{}
-	rsp.Init()
-	rsp.CMD = 1 //proto.MNCMDMsgKnot
-	rsp.AgentID = ag.id
-	rsp.Body = data
-	//ag.conn.SendResponse(rsp)
+	/*
+		rsp := &Response{}
+		rsp.Init()
+		rsp.CMD = 1 //proto.MNCMDMsgKnot
+		rsp.AgentID = ag.id
+		rsp.Body = data
+		//ag.conn.SendResponse(rsp)
+	*/
 	return
 }
 

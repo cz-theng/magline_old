@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"github.com/cz-it/golangutils/daemon"
+	"github.com/cz-it/magline"
 )
 
 func main() {
 	if Flag.Version {
-		fmt.Println("Cur Version:%s", Version())
+		fmt.Println("Cur Version:%s", magline.Version())
 		return
 	}
 
@@ -25,10 +25,10 @@ func main() {
 
 	if Flag.Daemon {
 		daemon.Boot("/tmp/magline.lock", "/tmp/magline.pid", func() {
-			Start()
+			magline.Start()
 		})
 	} else {
-		Start()
+		magline.Start()
 	}
 
 	println("[Testing]:End")

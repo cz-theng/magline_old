@@ -1,8 +1,8 @@
-//Package maglined is a daemon process for connection layer
+//Package magline is a daemon process for connection layer
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package main
+package magline
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 
 const (
 	major = 0
-	minor = 0
-	patch = 2
+	minor = 1
+	patch = 0
 )
 
 // Version return maglined's version

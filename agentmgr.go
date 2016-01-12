@@ -1,15 +1,12 @@
-//Package maglined is a daemon process for connection layer
+//Package magline is a daemon process for connection layer
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package main
+package magline
 
 import (
 	"math"
 	"sync"
-
-	//	"github.com/cz-it/magline/maglined/proto"
-	//	"github.com/cz-it/magline/maglined/utils"
 )
 
 //AgentMgr is agent manager

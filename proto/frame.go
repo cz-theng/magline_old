@@ -7,7 +7,7 @@ package proto
 import (
 	"bytes"
 	"encoding/binary"
-	"github.com/cz-it/magline/maglined/utils"
+	"github.com/cz-it/magline/utils"
 )
 
 // FrameHead is frame head info

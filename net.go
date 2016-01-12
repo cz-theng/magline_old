@@ -1,8 +1,8 @@
-//Package maglined is a daemon process for connection layer
+//Package magline is a daemon process for connection layer
 /**
 * Author: CZ cz.theng@gmail.com
  */
-package main
+package magline
 
 /**
 * Net Utils
