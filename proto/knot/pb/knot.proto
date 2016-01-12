@@ -1,4 +1,4 @@
-package knot;
+package pb;
 
 message NewAgentReq{
     optional bytes uuid = 1;
