@@ -14,30 +14,28 @@ var (
 	Addr = "unix:///tmp/maglined"
 )
 
-func DealAgent(agent *Agent) {
-	fmt.Printf("Test a new Agent %d \n", agent.ID)
-	for {
-		msg, err := agent.Recv()
-		if err != nil {
-			if err == ErrEmptyMessage {
-				time.Sleep(time.Millisecond * 200)
-			}
-			continue
-		}
-		fmt.Println("Recv Message:", string(msg.Data))
-		err = agent.Send(msg.Data)
-		if err != nil {
-			fmt.Println("agent send error ", err.Error())
-			continue
-		}
-		fmt.Println("Send Message:", string(msg.Data))
-	}
-	agent.Close()
+type ServerHandler struct {
+}
+
+func (svr *ServerHandler) NewAgent(agent *Agent) {
+
+}
+func (svr *ServerHandler) RecvMsg(agent *Agent, data []byte) {
+
+}
+func (svr *ServerHandler) Quit(agent *Agent) {
+
+}
+func (svr *ServerHandler) Timeout() {
+
+}
+func (svr *ServerHandler) Close() {
+
 }
 
 func TestConnect(t *testing.T) {
 	t.Log("Test MagKnot")
-	knot := New()
+	knot := New(&ServerHandler{})
 	knot.Init()
 	err := knot.Connect(Addr, 5000*time.Millisecond)
 	if err != nil {
@@ -45,16 +43,5 @@ func TestConnect(t *testing.T) {
 		return
 	}
 	println("connected success!")
-	for {
-		agent, err := knot.AcceptAgent(func(id uint32) bool { return true })
-		if err != nil {
-			if err == ErrNoAgent {
-				time.Sleep(time.Millisecond * 200)
-			} else {
-				fmt.Println(err.Error())
-			}
-			continue
-		}
-		go DealAgent(agent)
-	}
+	knot.Serve()
 }
