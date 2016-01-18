@@ -17,19 +17,19 @@ var (
 type ServerHandler struct {
 }
 
-func (svr *ServerHandler) NewAgent(agent *Agent) {
+func (svr *ServerHandler) OnNewAgent(agent *Agent) {
 
 }
-func (svr *ServerHandler) RecvMsg(agent *Agent, data []byte) {
+func (svr *ServerHandler) OnRecvMsg(agent *Agent, data []byte) {
 
 }
-func (svr *ServerHandler) Quit(agent *Agent) {
+func (svr *ServerHandler) OnAgentQuit(agent *Agent) {
 
 }
-func (svr *ServerHandler) Timeout() {
+func (svr *ServerHandler) OnTimeout() {
 
 }
-func (svr *ServerHandler) Close() {
+func (svr *ServerHandler) OnClose() {
 
 }
 

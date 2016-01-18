@@ -1,0 +1,116 @@
+/**
+* Author: CZ cz.theng@gmail.com
+ */
+
+package frame
+
+import (
+	"bytes"
+	"encoding/binary"
+	"github.com/cz-it/magline/proto"
+	"github.com/cz-it/magline/proto/message"
+	"github.com/cz-it/magline/proto/message/node"
+	"github.com/cz-it/magline/utils"
+)
+
+// Head is frame head info
+type Head struct {
+	Magic   uint8
+	Version uint8
+	CMD     uint16
+	Seq     uint32
+	Length  uint32
+}
+
+//Init is initionlize
+func (fh *Head) Init() {
+	fh.Magic = proto.MLMagic
+	fh.Version = proto.MLVersion
+	fh.CMD = proto.MLCMDUnknown
+	fh.Seq = 0
+	fh.Length = 0
+}
+
+//Unpack unpack framehead
+func (fh *Head) Unpack(buf *bytes.Buffer) (err error) {
+	if buf == nil {
+		err = proto.ErrFrameHeadBufNil
+		utils.Logger.Error("Unpack error :%s", err.Error())
+		return
+	}
+	if buf.Len() < proto.MLFrameHeadLen {
+		err = proto.ErrFameHeadBufLen
+		utils.Logger.Error("Unpack error :%s", err.Error())
+		return
+	}
+	fh.Magic, err = buf.ReadByte()
+	fh.Version, err = buf.ReadByte()
+	binary.Read(buf, binary.LittleEndian, &fh.CMD)
+	binary.Read(buf, binary.LittleEndian, &fh.Seq)
+	binary.Read(buf, binary.LittleEndian, &fh.Length)
+	return
+}
+
+//Pack  pack frame head
+func (fh *Head) Pack(buf *bytes.Buffer) (err error) {
+	if buf == nil {
+		err = proto.ErrFrameHeadBufNil
+		utils.Logger.Error("Pack error :%s", err.Error())
+		return
+	}
+	if buf.Cap()-buf.Len() < proto.MLFrameHeadLen {
+		err = proto.ErrFameHeadBufLen
+		utils.Logger.Error("Pack error :%s", err.Error())
+		return
+	}
+	buf.WriteByte(fh.Magic)
+	buf.WriteByte(fh.Version)
+	binary.Write(buf, binary.LittleEndian, fh.CMD)
+	binary.Write(buf, binary.LittleEndian, fh.Seq)
+	binary.Write(buf, binary.LittleEndian, fh.Length)
+	return
+}
+
+//Frame is a proto message
+type Frame struct {
+	Head *Head
+	Body message.Messager
+}
+
+// Pack pack a frame message
+func (frame *Frame) Pack(buf *bytes.Buffer) (err error) {
+	idx := buf.Len()
+	err = frame.Head.Pack(buf)
+	if err != nil {
+		return
+	}
+	err = frame.Body.Pack(buf)
+	binary.LittleEndian.PutUint16(buf.Bytes()[idx+8:idx+proto.MLFrameHeadLen], uint16(buf.Len()-idx-proto.MLFrameHeadLen))
+	if err != nil {
+		return
+	}
+	return
+}
+
+//UnpackHead upack frame head from bytes.buffer
+func UnpackHead(buf *bytes.Buffer) (head *Head, err error) {
+	head = new(Head)
+	head.Init()
+	err = head.Unpack(buf)
+	return
+}
+
+//UnpackBody unpack a specific
+func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error) {
+	switch cmd {
+	case proto.MNCMDSYN:
+		body = node.NewSYN(proto.BufProtoBin, proto.ChanNone, proto.CryptoNone)
+		err = body.Unpack(buf)
+	case proto.MNCMDSeesionReq:
+		body = node.NewSessionReq()
+		err = body.Unpack(buf)
+	default:
+		err = proto.ErrUnknownCMD
+	}
+	return
+}

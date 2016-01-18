@@ -8,6 +8,9 @@ import (
 	"bytes"
 	"container/list"
 	"github.com/cz-it/magline/proto"
+	"github.com/cz-it/magline/proto/frame"
+	"github.com/cz-it/magline/proto/message"
+	"github.com/cz-it/magline/proto/message/node"
 	"github.com/cz-it/magline/utils"
 	"io"
 	"net"
@@ -60,8 +63,8 @@ func (conn *Connection) Init() error {
 }
 
 //RecvMessage Recv a request message
-func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, err error) {
-	var frameHead *proto.FrameHead
+func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager, err error) {
+	var frameHead *frame.Head
 	priBufLen := conn.ReadBuf.Len()
 	utils.Logger.Debug("priBufLen is %d", priBufLen)
 	if priBufLen <= proto.MLFrameHeadLen {
@@ -74,7 +77,7 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, 
 			return
 		}
 	}
-	frameHead, err = proto.UnpackFrameHead(conn.ReadBuf.Bytes()[:proto.MLFrameHeadLen])
+	frameHead, err = frame.UnpackHead(conn.ReadBuf)
 	if err != nil {
 		// unpack errro
 		utils.Logger.Error("Unpack Header with %s", err.Error())
@@ -92,7 +95,7 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, 
 		utils.Logger.Error("CopyN with body error with %s", err.Error())
 		return
 	}
-	msg, err = proto.UnpackFrameBody(frameHead.CMD, conn.ReadBuf.Bytes()[proto.MLFrameHeadLen:proto.MLFrameHeadLen+frameHead.Length])
+	msg, err = frame.UnpackBody(frameHead.CMD, conn.ReadBuf)
 	if err != nil {
 		utils.Logger.Error("UnpackFrameBody Error with %s", err.Error())
 		return
@@ -103,42 +106,43 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg proto.Messager, 
 }
 
 // DealMessage deal a message from connection
-func (conn *Connection) DealMessage(msg proto.Messager) (err error) {
+func (conn *Connection) DealMessage(msg message.Messager) (err error) {
 	if msg == nil {
 		err = ErrArg
 		return
 	}
-	switch head := msg.Head().(type) {
-	case *proto.SYNHead:
+	switch m := msg.(type) {
+	case *node.SYN:
 		utils.Logger.Info("Get A SYN Message")
-		err = conn.dealSYN(head)
-	case *proto.SessionReqHead:
+		err = conn.dealSYN(m)
+	case *node.SessionReq:
 		utils.Logger.Info("Get SessionReq ")
-		err = conn.dealSessionReq(head)
+		err = conn.dealSessionReq(m)
 	default:
 		utils.Logger.Error("Unknown Message type")
 	}
 	return
 }
 
-func (conn *Connection) dealSessionReq(sq *proto.SessionReqHead) (err error) {
+func (conn *Connection) dealSessionReq(sq *node.SessionReq) (err error) {
 	utils.Logger.Info("Deal a SessionReq Message")
 	agent, err := conn.Server.AgentMgr.Alloc()
 	if err != nil {
 		utils.Logger.Error("AgentManager create agent error!")
 		return
 	}
-	rsp := proto.NewSessionRsp(agent.ID())
+	rsp := node.NewSessionRsp(agent.ID())
 	err = conn.SendMessage(rsp, 5*time.Second)
 	return
 }
 
-func (conn *Connection) dealSYN(syn *proto.SYNHead) (err error) {
-	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", syn.Protobuf, syn.Channel, syn.Crypto)
-	conn.protobuf = syn.Protobuf
-	conn.channel = syn.Channel
-	conn.crypto = syn.Crypto
-	ack := proto.NewACK(conn.channel, conn.crypto)
+func (conn *Connection) dealSYN(syn *node.SYN) (err error) {
+	head := syn.Head.(*node.SYNHead)
+	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", head.Protobuf, head.Channel, head.Crypto)
+	conn.protobuf = head.Protobuf
+	conn.channel = head.Channel
+	conn.crypto = head.Crypto
+	ack := node.NewACK(conn.channel, conn.crypto)
 	err = conn.SendMessage(ack, 5*time.Second)
 	return
 }
@@ -149,7 +153,7 @@ func (conn *Connection) tickSeq() uint32 {
 }
 
 // SendMessage send a message frame
-func (conn *Connection) SendMessage(msg proto.Messager, timeout time.Duration) (err error) {
+func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration) (err error) {
 	// Send residual data
 	priBufLen := conn.WriteBuf.Len()
 	if priBufLen > 0 {
@@ -161,21 +165,21 @@ func (conn *Connection) SendMessage(msg proto.Messager, timeout time.Duration) (
 	}
 
 	// Pack data
-	head := new(proto.FrameHead)
+	head := new(frame.Head)
 	head.Init()
 	head.Seq = conn.tickSeq()
 	switch msg.(type) {
-	case *proto.ACK:
+	case *node.ACK:
 		head.CMD = proto.MNCMDACK
 	default:
 		head.CMD = proto.MNCMDUnknown
 
 	}
-	frame := proto.Frame{
+	frame := frame.Frame{
 		Head: head,
 		Body: msg,
 	}
-	_, err = frame.Pack(conn.WriteBuf)
+	err = frame.Pack(conn.WriteBuf)
 	if err != nil {
 		utils.Logger.Error("Pack frame with error %s", err.Error())
 		return

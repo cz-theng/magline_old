@@ -1,0 +1,17 @@
+package pb;
+
+message ConnReq {
+    optional bytes AccessKey = 1;
+}
+
+message ConnRsp {
+
+}
+
+message NewAgentReq{
+    optional bytes UUID = 1;
+}
+
+message NewAgentRsp {
+
+}
