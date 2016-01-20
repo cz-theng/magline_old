@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"github.com/cz-it/magline/proto"
 	"github.com/cz-it/magline/proto/message"
+	"github.com/cz-it/magline/proto/message/knot"
 	"github.com/cz-it/magline/proto/message/node"
 	"github.com/cz-it/magline/utils"
 )
@@ -108,6 +109,9 @@ func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error
 		err = body.Unpack(buf)
 	case proto.MNCMDSeesionReq:
 		body = node.NewSessionReq()
+		err = body.Unpack(buf)
+	case proto.MKCMDConnReq:
+		body = knot.NewConnReq(nil)
 		err = body.Unpack(buf)
 	default:
 		err = proto.ErrUnknownCMD

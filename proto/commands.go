@@ -73,3 +73,16 @@ const (
 	// MNCMDConfirm is message from magknot
 	MNCMDConfirm = uint16(0x0008)
 )
+
+// MagKnotCMD is Knot's cmd type
+type MagKnotCMD uint16
+
+const (
+	//MKCMDUnknown is unknown commands
+	MKCMDUnknown = uint16(0x0000)
+
+	//MKCMDConnReq is ConnReq cmd
+	MKCMDConnReq = uint16(0x1001)
+	//MKCMDConnRsp is ConnRsp cmd
+	MKCMDConnRsp = uint16(0x1002)
+)

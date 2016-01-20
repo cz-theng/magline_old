@@ -5,11 +5,16 @@
 package magline
 
 import (
-	//"github.com/cz-it/magline/maglined/proto"
-	//"io"
+	"bytes"
+	"github.com/cz-it/magline/proto"
+	"github.com/cz-it/magline/proto/frame"
+	"github.com/cz-it/magline/proto/message"
+	"github.com/cz-it/magline/proto/message/node"
+	"github.com/cz-it/magline/utils"
+	"io"
 	"net"
 	"sync"
-	//"time"
+	"time"
 )
 
 const (
@@ -21,11 +26,12 @@ const (
 
 //Lane is backend agent
 type Lane struct {
-	RWC     *net.UnixConn
-	agents  map[uint32]*Agent
-	ReadBuf []byte
-	seq     uint32
-	mtx     sync.Mutex
+	RWC      *net.UnixConn
+	ReadBuf  *bytes.Buffer
+	WriteBuf *bytes.Buffer
+	agents   map[uint32]*Agent
+	seq      uint32
+	mtx      sync.Mutex
 }
 
 //AddAgent add a new agent
@@ -34,40 +40,119 @@ func (l *Lane) AddAgent(agent *Agent) (err error) {
 	return
 }
 
-//SendNewAgent send a new agent's request
-func (l *Lane) SendNewAgent(id uint32) (err error) {
-	/*
-		Logger.Info("Get New Agent with ID:%d", id)
-		msg := &proto.KnotMessage{}
-		msg.CMD = proto.MKCMDReqNewAgent
-		msg.Length = 0
-		msg.AgentID = id
-		msg.Seq = l.tickSeq()
-		msg.PackAndSend(nil, l.RWC)
-	*/
-	return
-}
-
 //Init is initialize
 func (l *Lane) Init() (err error) {
-	l.ReadBuf = make([]byte, LaneReadBufLen)
+	rbuf := make([]byte, ReadBufSize)
+	if rbuf == nil {
+		return ErrNewBuffer
+	}
+	wbuf := make([]byte, WriteBufSize)
+	if wbuf == nil {
+		return ErrNewBuffer
+	}
+	l.ReadBuf = bytes.NewBuffer(rbuf)
+	l.ReadBuf.Reset()
+	l.WriteBuf = bytes.NewBuffer(wbuf)
+	l.WriteBuf.Reset()
 	l.seq = 0
 	l.agents = make(map[uint32]*Agent)
 	return
 }
 
-//ReadMsg read a message
-/*
-func (l *Lane) ReadMsg() (msg *proto.KnotMessage, err error) {
-	msg = &proto.KnotMessage{ReadBuf: l.ReadBuf}
-	err = msg.RecvAndUnpack(l.RWC)
-	if err != nil && err != io.EOF {
-		msg = nil
+// SendMessage send a message frame
+func (l *Lane) SendMessage(msg message.Messager, timeout time.Duration) (err error) {
+	// Send residual data
+	priBufLen := l.WriteBuf.Len()
+	if priBufLen > 0 {
+		_, err = io.CopyN(l.RWC, l.WriteBuf, int64(l.WriteBuf.Len()))
+	}
+	if err != nil {
+		utils.Logger.Error("Send residual data error with %s", err.Error())
+		return
+	}
+
+	// Pack data
+	head := new(frame.Head)
+	head.Init()
+	head.Seq = l.tickSeq()
+	switch msg.(type) {
+	case *node.ACK:
+		head.CMD = proto.MNCMDACK
+	default:
+		head.CMD = proto.MNCMDUnknown
+
+	}
+	frame := frame.Frame{
+		Head: head,
+		Body: msg,
+	}
+	err = frame.Pack(l.WriteBuf)
+	if err != nil {
+		utils.Logger.Error("Pack frame with error %s", err.Error())
+		return
+	}
+
+	// Send current package
+	_, err = io.CopyN(l.RWC, l.WriteBuf, int64(l.WriteBuf.Len()))
+	if err != nil {
+		utils.Logger.Error("Send  current packge data error with %s", err.Error())
 		return
 	}
 	return
 }
-*/
+
+//RecvMessage Recv a request message
+func (l *Lane) RecvMessage(timeout time.Duration) (msg message.Messager, err error) {
+	var frameHead *frame.Head
+	priBufLen := l.ReadBuf.Len()
+	utils.Logger.Debug("priBufLen is %d", priBufLen)
+	if priBufLen <= proto.MLFrameHeadLen {
+		_, err = io.CopyN(l.ReadBuf, l.RWC, int64(proto.MLFrameHeadLen-priBufLen))
+		if err != nil {
+			if err == io.EOF {
+				err = ErrClose
+			}
+			utils.Logger.Error("CopyN error in head with %s", err.Error())
+			return
+		}
+	}
+	frameHead, err = frame.UnpackHead(l.ReadBuf)
+	if err != nil {
+		// unpack errro
+		utils.Logger.Error("Unpack Header with %s", err.Error())
+	}
+	utils.Logger.Info("Get FrameHead %v", frameHead)
+	if priBufLen > proto.MLFrameHeadLen {
+		_, err = io.CopyN(l.ReadBuf, l.RWC, int64(frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen)))
+	} else {
+		_, err = io.CopyN(l.ReadBuf, l.RWC, int64(frameHead.Length))
+	}
+	if err != nil {
+		if err == io.EOF {
+			err = ErrClose
+		}
+		utils.Logger.Error("CopyN with body error with %s", err.Error())
+		return
+	}
+	msg, err = frame.UnpackBody(frameHead.CMD, l.ReadBuf)
+	if err != nil {
+		utils.Logger.Error("UnpackFrameBody Error with %s", err.Error())
+		return
+	}
+	l.ReadBuf.Reset()
+	utils.Logger.Debug("read one message success!")
+	return
+}
+
+// DealMessage deal a message from connection
+func (l *Lane) DealMessage(msg message.Messager) (err error) {
+	if msg == nil {
+		err = ErrArg
+		return
+	}
+	utils.Logger.Info("Deal Message")
+	return
+}
 
 func (l *Lane) tickSeq() uint32 {
 	l.mtx.Lock()
@@ -76,32 +161,6 @@ func (l *Lane) tickSeq() uint32 {
 	return l.seq
 }
 
-//DealConnReq deal a request
-/*
-func (l *Lane) DealConnReq(msg *proto.KnotMessage) (err error) {
-	Logger.Info("Lane dipatch a new Connection Request from Knot[]")
-	rsp := &proto.KnotMessage{}
-	rsp.CMD = proto.MKCMDRspConn
-	rsp.Length = 0
-	rsp.Seq = l.tickSeq()
-	rsp.PackAndSend(nil, l.RWC)
-	return
-}
-*/
-
-/*
-//DealNewAgentRsp deal a new agent's response
-func (l *Lane) DealNewAgentRsp(msg *proto.KnotMessage) (err error) {
-	Logger.Info("New Agent success , Reponse with agent id:%d", msg.AgentID)
-	agent, ok := l.agents[msg.AgentID]
-	if !ok {
-		Logger.Error("Cant find agent %d in lane", msg.AgentID)
-		return
-	}
-	agent.DealNewAgentRsp()
-	return
-}
-*/
 /*
 //DealMsgK2N deal message from knot to node
 func (l *Lane) DealMsgK2N(msg *proto.KnotMessage) (err error) {
@@ -135,26 +194,20 @@ func (l *Lane) SendNodeMsg(id uint32, data []byte) (err error) {
 //Serve server the server
 func (l *Lane) Serve() {
 	for {
-		// deal timeout
-		/*
-			msg, err := l.ReadMsg()
-			if err != nil {
+		msg, err := l.RecvMessage(5 * time.Second)
+		if err != nil {
+			if err == ErrClose {
+				utils.Logger.Info("Knot Close Connection")
+				break
+			} else {
+				utils.Logger.Error("Connection[%v] Read Request Error:%s", l, err.Error())
 				time.Sleep(200 * time.Millisecond)
-				if err != io.EOF {
-					Logger.Error("Connection Read Request Error:%s", err.Error())
-				}
 				continue
 			}
-			if msg.CMD == proto.MKCMDReqConn {
-				l.DealConnReq(msg)
-			} else if msg.CMD == proto.MKCMDRspNewAgent {
-				l.DealNewAgentRsp(msg)
-			} else if msg.CMD == proto.MKCMDMsgK2N {
-				l.DealMsgK2N(msg)
-			} else {
-
-			}
-			Logger.Debug("get message: %v", msg.CMD)
-		*/
+		}
+		err = l.DealMessage(msg)
+		if err != nil {
+			utils.Logger.Error("DealMessage error with %s", err.Error())
+		}
 	}
 }
