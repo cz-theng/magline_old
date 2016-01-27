@@ -52,9 +52,6 @@ const (
 type MagNodeCMD uint16
 
 const (
-	//MNCMDUnknown is unknown commands
-	MNCMDUnknown = uint16(0x0000)
-
 	//MNCMDSYN is connect reqeust
 	MNCMDSYN = uint16(0x0001)
 	//MNCMDACK is connect response
@@ -78,9 +75,6 @@ const (
 type MagKnotCMD uint16
 
 const (
-	//MKCMDUnknown is unknown commands
-	MKCMDUnknown = uint16(0x0000)
-
 	//MKCMDConnReq is ConnReq cmd
 	MKCMDConnReq = uint16(0x1001)
 	//MKCMDConnRsp is ConnRsp cmd

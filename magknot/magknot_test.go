@@ -39,7 +39,7 @@ func TestConnect(t *testing.T) {
 	knot.Init()
 	err := knot.Connect(Addr, 5000*time.Millisecond)
 	if err != nil {
-		fmt.Println("Connect error")
+		fmt.Println("Connect error:%s", err.Error())
 		return
 	}
 	println("connected success!")

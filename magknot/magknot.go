@@ -6,6 +6,7 @@ package magknot
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/cz-it/magline"
 	"github.com/cz-it/magline/proto"
 	"github.com/cz-it/magline/proto/frame"
@@ -74,7 +75,10 @@ func (knot *MagKnot) RecvMessage(timeout time.Duration) (msg message.Messager, e
 		}
 	}
 	frameHead, err = frame.UnpackHead(knot.ReadBuf)
+	fmt.Println("framehead is ", frameHead)
 	if err != nil {
+		fmt.Println("framehead is ", frameHead)
+		fmt.Println("err is ", err)
 		// unpack errro
 	}
 	if priBufLen > proto.MLFrameHeadLen {
@@ -90,6 +94,7 @@ func (knot *MagKnot) RecvMessage(timeout time.Duration) (msg message.Messager, e
 	}
 	msg, err = frame.UnpackBody(frameHead.CMD, knot.ReadBuf)
 	if err != nil {
+		fmt.Println("unpackbody error ", err)
 		return
 	}
 	knot.ReadBuf.Reset()
@@ -115,7 +120,7 @@ func (knot *MagKnot) SendMessage(msg message.Messager, timeout time.Duration) (e
 	case *knotproto.ConnReq:
 		head.CMD = proto.MKCMDConnReq
 	default:
-		head.CMD = proto.MNCMDUnknown
+		head.CMD = proto.MLCMDUnknown
 
 	}
 	frame := frame.Frame{
@@ -164,7 +169,7 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 	}
 	switch m := msg.(type) {
 	case *knotproto.ConnRsp:
-		print(m)
+		fmt.Println(m)
 	default:
 		err = ErrUnknownCMD
 	}

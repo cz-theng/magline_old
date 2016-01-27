@@ -8,7 +8,6 @@ import (
 	"bytes"
 	//"encoding/binary"
 	//"github.com/cz-it/magline/proto"
-	"fmt"
 	"github.com/cz-it/magline/proto/message"
 	"github.com/cz-it/magline/proto/message/knot/pb"
 	protobuf "github.com/golang/protobuf/proto"
@@ -21,15 +20,11 @@ type ConnReqHead struct {
 
 // Pack is implement of MessageHeader
 func (h *ConnReqHead) Pack(buf *bytes.Buffer) (err error) {
-	println("befor buf len is ", buf.Len())
-	fmt.Println("key is :", string(h.ConnReq.AccessKey))
 	buffer, err := protobuf.Marshal(&h.ConnReq)
 	if err != nil {
-		println("pb marshal err:", err.Error())
 		return
 	}
 	_, err = buf.Write(buffer)
-	println("pack len is ", buf.Len())
 	return
 }
 

@@ -113,6 +113,9 @@ func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error
 	case proto.MKCMDConnReq:
 		body = knot.NewConnReq(nil)
 		err = body.Unpack(buf)
+	case proto.MKCMDConnRsp:
+		body = knot.NewConnRsp(nil)
+		err = body.Unpack(buf)
 	default:
 		err = proto.ErrUnknownCMD
 	}

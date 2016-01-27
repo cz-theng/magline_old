@@ -6,48 +6,44 @@ package magline
 
 import (
 	"bytes"
-	"container/list"
 	"github.com/cz-it/magline/proto"
 	"github.com/cz-it/magline/proto/frame"
 	"github.com/cz-it/magline/proto/message"
+	"github.com/cz-it/magline/proto/message/knot"
 	"github.com/cz-it/magline/proto/message/node"
 	"github.com/cz-it/magline/utils"
 	"io"
-	"net"
+	"sync"
 	"time"
 )
 
-const (
-	//ReadBufSize is read buffer size
-	ReadBufSize = 10 * 1024
-
-	//WriteBufSize is write buffer size
-	WriteBufSize = 10 * 1024
-)
+//Connectioner is connection API
+type Connectioner interface {
+	// DealMessage deal a message from connection
+	DealMessage(msg message.Messager) (err error)
+}
 
 //Connection is connection object
 type Connection struct {
-	RWC      *net.TCPConn
-	ReadBuf  *bytes.Buffer
-	WriteBuf *bytes.Buffer
-	ID       int
-	Elem     *list.Element
-	AgentID  uint32
-	Server   *Server
-
-	seq      uint32
-	protobuf uint16
-	channel  uint16
-	crypto   uint16
+	RWC         io.ReadWriter
+	ReadBuf     *bytes.Buffer
+	WriteBuf    *bytes.Buffer
+	Server      *Server
+	seq         uint32
+	recvChan    chan message.Messager
+	Agent       *Agent
+	wg          sync.WaitGroup
+	recvable    chan bool
+	dealMessage func(message.Messager) error
 }
 
 //Init is initialize
-func (conn *Connection) Init() error {
-	rbuf := make([]byte, ReadBufSize)
+func (conn *Connection) Init(rbs, wbs int) error {
+	rbuf := make([]byte, rbs)
 	if rbuf == nil {
 		return ErrNewBuffer
 	}
-	wbuf := make([]byte, WriteBufSize)
+	wbuf := make([]byte, wbs)
 	if wbuf == nil {
 		return ErrNewBuffer
 	}
@@ -56,9 +52,8 @@ func (conn *Connection) Init() error {
 	conn.WriteBuf = bytes.NewBuffer(wbuf)
 	conn.WriteBuf.Reset()
 	conn.seq = 0
-	conn.protobuf = 0
-	conn.channel = 0
-	conn.crypto = 0
+	conn.recvable = make(chan bool)
+	conn.recvChan = make(chan message.Messager)
 	return nil
 }
 
@@ -66,23 +61,22 @@ func (conn *Connection) Init() error {
 func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager, err error) {
 	var frameHead *frame.Head
 	priBufLen := conn.ReadBuf.Len()
-	utils.Logger.Debug("priBufLen is %d", priBufLen)
 	if priBufLen <= proto.MLFrameHeadLen {
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(proto.MLFrameHeadLen-priBufLen))
 		if err != nil {
 			if err == io.EOF {
-				err = ErrClose
+				//err = ErrClose
 			}
-			utils.Logger.Error("CopyN error in head with %s", err.Error())
+			//utils.Logger.Error("CopyN error in head with %s", err.Error())
 			return
 		}
 	}
 	frameHead, err = frame.UnpackHead(conn.ReadBuf)
 	if err != nil {
-		// unpack errro
 		utils.Logger.Error("Unpack Header with %s", err.Error())
+		return
 	}
-	utils.Logger.Info("Get FrameHead %v", frameHead)
+	utils.Logger.Debug("Get FrameHead %v", frameHead)
 	if priBufLen > proto.MLFrameHeadLen {
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen)))
 	} else {
@@ -101,49 +95,6 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager
 		return
 	}
 	conn.ReadBuf.Reset()
-	utils.Logger.Debug("read one message success!")
-	return
-}
-
-// DealMessage deal a message from connection
-func (conn *Connection) DealMessage(msg message.Messager) (err error) {
-	if msg == nil {
-		err = ErrArg
-		return
-	}
-	switch m := msg.(type) {
-	case *node.SYN:
-		utils.Logger.Info("Get A SYN Message")
-		err = conn.dealSYN(m)
-	case *node.SessionReq:
-		utils.Logger.Info("Get SessionReq ")
-		err = conn.dealSessionReq(m)
-	default:
-		utils.Logger.Error("Unknown Message type")
-	}
-	return
-}
-
-func (conn *Connection) dealSessionReq(sq *node.SessionReq) (err error) {
-	utils.Logger.Info("Deal a SessionReq Message")
-	agent, err := conn.Server.AgentMgr.Alloc()
-	if err != nil {
-		utils.Logger.Error("AgentManager create agent error!")
-		return
-	}
-	rsp := node.NewSessionRsp(agent.ID())
-	err = conn.SendMessage(rsp, 5*time.Second)
-	return
-}
-
-func (conn *Connection) dealSYN(syn *node.SYN) (err error) {
-	head := syn.Head.(*node.SYNHead)
-	utils.Logger.Info("Deal SYN with protobuf: %d, key: %d, crypto: %d", head.Protobuf, head.Channel, head.Crypto)
-	conn.protobuf = head.Protobuf
-	conn.channel = head.Channel
-	conn.crypto = head.Crypto
-	ack := node.NewACK(conn.channel, conn.crypto)
-	err = conn.SendMessage(ack, 5*time.Second)
 	return
 }
 
@@ -171,8 +122,10 @@ func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration)
 	switch msg.(type) {
 	case *node.ACK:
 		head.CMD = proto.MNCMDACK
+	case *knot.ConnRsp:
+		head.CMD = proto.MKCMDConnRsp
 	default:
-		head.CMD = proto.MNCMDUnknown
+		head.CMD = proto.MLCMDUnknown
 
 	}
 	frame := frame.Frame{
@@ -199,24 +152,59 @@ func (conn *Connection) Close() error {
 	return nil
 }
 
-//Serve serve a server
-func (conn *Connection) Serve() {
+func (conn *Connection) recvRoutine() {
 	for {
-		// deal timeout
-		msg, err := conn.RecvMessage(5 * time.Second)
-		if err != nil {
-			if err == ErrClose {
-				utils.Logger.Info("Client Close Connection")
-				break
-			} else {
-				utils.Logger.Error("Connection[%v] Read Request Error:%s", conn, err.Error())
-				time.Sleep(200 * time.Millisecond)
-				continue
+		select {
+		case r := <-conn.recvable:
+			if r {
+				conn.wg.Done()
+				return
 			}
+		default:
 		}
-		err = conn.DealMessage(msg)
+		msg, err := conn.RecvMessage(5 * time.Second)
+		//utils.Logger.Debug("Recv Message %v", msg)
 		if err != nil {
-			utils.Logger.Error("DealMessage error with %s", err.Error())
+			/*
+				if err == ErrClose {
+					utils.Logger.Info("Client Close Connection")
+					conn.recvChan <- nil
+				} else {
+					utils.Logger.Error("RecvMessage with error %s", err.Error())
+				}
+			*/
+		} else {
+			utils.Logger.Debug("send msg to recvChan channel")
+			conn.recvChan <- msg
 		}
 	}
+}
+
+//Serve serve a server
+func (conn *Connection) Serve() {
+	conn.wg.Add(1)
+	go conn.recvRoutine()
+	for {
+		var msg message.Messager
+		select {
+		case msg = <-conn.recvChan:
+			utils.Logger.Debug("Recv Message %v", msg)
+			if msg == nil {
+				utils.Logger.Info("Client Close Connection")
+				conn.recvable <- false
+				break
+			}
+			utils.Logger.Debug("Recv Message %v", msg)
+			err := conn.dealMessage(msg)
+			if err != nil {
+				utils.Logger.Error("DealMessage error with %s", err.Error())
+			}
+			utils.Logger.Info("after deal message")
+			/*
+				case msg = <-conn.Agent.nodeMsgChan:
+					conn.SendMessage(msg, 5*time.Second)
+			*/
+		}
+	}
+	conn.wg.Wait()
 }

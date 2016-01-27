@@ -13,19 +13,19 @@ import (
 
 //BackendServer is backend server
 type BackendServer struct {
-	Addr   string
-	Bridge *Bridge
+	Addr    string
+	RopeMgr *RopeMgr
 }
 
 //Dispatch Dispatch a lane
-func (bs *BackendServer) Dispatch() (lane *Lane, err error) {
-	lane, err = bs.Bridge.Dispatch()
+func (bs *BackendServer) Dispatch() (rope *Rope, err error) {
+	rope, err = bs.RopeMgr.Dispatch()
 	return
 }
 
 //Init is initionlize
 func (bs *BackendServer) Init() (err error) {
-	bs.Bridge = &Bridge{}
+	bs.RopeMgr, err = NewMKRopeMgr(1)
 	return
 }
 
@@ -36,12 +36,12 @@ func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
 		if err != nil {
 			return
 		}
-		lane, err := bs.Bridge.Alloc(rw)
-		lane.Init()
+		rope, err := bs.RopeMgr.Alloc(rw)
+		rope.Init()
 		if err != nil {
 			return
 		}
-		go lane.Serve()
+		go rope.Serve()
 	}
 }
 
@@ -74,14 +74,14 @@ func (bs *BackendServer) Listen() (err error) {
 //Server is frontend server
 type Server struct {
 	Addr     string
-	ConnPool *ConnPool
+	LineMgr  *LineMgr
 	AgentMgr *AgentMgr
 	Backend  *BackendServer
 }
 
 //Init is server's init
 func (svr *Server) Init(maxConns int) (err error) {
-	svr.ConnPool, err = NewMLConnPool(maxConns)
+	svr.LineMgr, err = NewMLLineMgr(maxConns)
 	if err != nil {
 		utils.Logger.Error("New Magline Connection Pool Error!")
 		return
@@ -108,13 +108,13 @@ func (svr *Server) ListenAndServe() error {
 	return nil
 }
 
-func (svr *Server) newConn(rwc *net.TCPConn) (conn *Connection, err error) {
-	conn, err = svr.ConnPool.Alloc()
+func (svr *Server) newConn(rwc *net.TCPConn) (line *Line, err error) {
+	line, err = svr.LineMgr.Alloc()
 	if err != nil {
 		return
 	}
-	conn.RWC = rwc
-	conn.Server = svr
+	line.RWC = rwc
+	line.Server = svr
 
 	return
 }

@@ -18,7 +18,7 @@ type ConnRspHead struct {
 
 // Pack is implement of MessageHeader
 func (h *ConnRspHead) Pack(buf *bytes.Buffer) (err error) {
-	buffer, err := protobuf.Marshal(h)
+	buffer, err := protobuf.Marshal(&h.ConnRsp)
 	if err != nil {
 		return
 	}
@@ -29,7 +29,7 @@ func (h *ConnRspHead) Pack(buf *bytes.Buffer) (err error) {
 // Unpack is implement of MessageHeader
 func (h *ConnRspHead) Unpack(buf *bytes.Buffer) (err error) {
 	buffer := buf.Next(buf.Len())
-	err = protobuf.Unmarshal(buffer, h)
+	err = protobuf.Unmarshal(buffer, &h.ConnRsp)
 	return
 }
 
