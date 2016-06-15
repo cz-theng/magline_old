@@ -5,5 +5,5 @@ install:
     - go get github.com/cz-it/golangutils/daemon
     - go get github.com/cz-it/golangutils/log
 script:
-    - make
+    - cd maglined && make
 
