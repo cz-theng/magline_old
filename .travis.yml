@@ -4,6 +4,7 @@ go:
 install:
     - go get github.com/cz-it/golangutils/daemon
     - go get github.com/cz-it/golangutils/log
+    - go get github.com/golang/protobuf/proto
 script:
     - cd maglined && make
 
