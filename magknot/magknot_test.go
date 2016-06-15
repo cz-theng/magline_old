@@ -5,7 +5,9 @@
 package magknot
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/cz-it/magline/proto"
 	"testing"
 	"time"
 )
@@ -14,34 +16,31 @@ var (
 	Addr = "unix:///tmp/maglined"
 )
 
-type ServerHandler struct {
+type TestDelegate struct {
+	magknot *MagKnot
 }
 
-func (svr *ServerHandler) OnNewAgent(agent *Agent) {
-
+func (td *TestDelegate) OnAgentConnect(agentID uint32, result chan<- proto.MagKnotAgentStatus) {
+	fmt.Printf("Agent %d is connected", agentID)
+	result <- proto.MKASAccepted
 }
-func (svr *ServerHandler) OnRecvMsg(agent *Agent, data []byte) {
-
+func (td *TestDelegate) OnMessageArrive(agentID uint32, data *bytes.Buffer) {
+	fmt.Printf("Got Agent %d's Message", agentID)
+	td.magknot.SendMessage(agentID, data, 5*time.Second)
 }
-func (svr *ServerHandler) OnAgentQuit(agent *Agent) {
-
-}
-func (svr *ServerHandler) OnTimeout() {
-
-}
-func (svr *ServerHandler) OnClose() {
-
+func (td *TestDelegate) OnAgentDisconnect(agentID uint32) {
+	fmt.Printf("Agent %d is disconnect", agentID)
 }
 
 func TestConnect(t *testing.T) {
 	t.Log("Test MagKnot")
-	knot := New(&ServerHandler{})
-	knot.Init()
+	dlgt := &TestDelegate{}
+	knot := New()
+	knot.Init(dlgt)
 	err := knot.Connect(Addr, 5000*time.Millisecond)
 	if err != nil {
 		fmt.Println("Connect error:%s", err.Error())
 		return
 	}
 	println("connected success!")
-	knot.Serve()
 }

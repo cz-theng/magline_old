@@ -17,7 +17,6 @@ import (
 	"time"
 )
 
-//
 const (
 	//ReadBufSize is read buffer size
 	ReadBufSize = 10240
@@ -25,26 +24,30 @@ const (
 	WriteBufSize = 10240
 )
 
-// Handler is handler
-type Handler interface {
-	OnNewAgent(agent *Agent)
-	OnRecvMsg(agent *Agent, data []byte)
-	OnAgentQuit(agent *Agent)
-	OnTimeout()
-	OnClose()
+//Delegate is delegate for a knot
+type Delegate interface {
+	OnAgentConnect(agentID uint32, result chan<- proto.MagKnotAgentStatus)
+	OnMessageArrive(agentID uint32, data *bytes.Buffer)
+	OnAgentDisconnect(agentID uint32)
 }
 
 //MagKnot is magknot
 type MagKnot struct {
-	hdl      Handler
 	seq      uint32
 	conn     *net.UnixConn
 	ReadBuf  *bytes.Buffer
 	WriteBuf *bytes.Buffer
+	delegate Delegate
+}
+
+//New create a magknot
+func New() (knot *MagKnot) {
+	knot = new(MagKnot)
+	return
 }
 
 //Init is init
-func (knot *MagKnot) Init() (err error) {
+func (knot *MagKnot) Init(delegate Delegate) (err error) {
 	rbuf := make([]byte, ReadBufSize)
 	if rbuf == nil {
 		return ErrNewBuffer
@@ -58,11 +61,27 @@ func (knot *MagKnot) Init() (err error) {
 	knot.WriteBuf = bytes.NewBuffer(wbuf)
 	knot.WriteBuf.Reset()
 	knot.seq = 0
+	knot.delegate = delegate
 	return
 }
 
-//RecvMessage Recv a request message
-func (knot *MagKnot) RecvMessage(timeout time.Duration) (msg message.Messager, err error) {
+//Connect connect to maglined
+func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) {
+	err = knot.connect(address, timeout)
+	return
+}
+
+//SendMessage send a message to agent with agentID
+func (knot *MagKnot) SendMessage(agentID uint32, data *bytes.Buffer, timeout time.Duration) (err error) {
+	return
+}
+
+//Kickoff kick an agent with agnetID off
+func (knot *MagKnot) Kickoff(agentID uint32) (err error) {
+	return
+}
+
+func (knot *MagKnot) recvMessage(timeout time.Duration) (msg message.Messager, err error) {
 	var frameHead *frame.Head
 	priBufLen := knot.ReadBuf.Len()
 	if priBufLen <= proto.MLFrameHeadLen {
@@ -101,8 +120,7 @@ func (knot *MagKnot) RecvMessage(timeout time.Duration) (msg message.Messager, e
 	return
 }
 
-//SendMessage send a message
-func (knot *MagKnot) SendMessage(msg message.Messager, timeout time.Duration) (err error) {
+func (knot *MagKnot) sendMessage(msg message.Messager, timeout time.Duration) (err error) {
 	// Send residual data
 	priBufLen := knot.WriteBuf.Len()
 	if priBufLen > 0 {
@@ -140,8 +158,7 @@ func (knot *MagKnot) SendMessage(msg message.Messager, timeout time.Duration) (e
 	return
 }
 
-//Connect connect to maglined
-func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) {
+func (knot *MagKnot) connect(address string, timeout time.Duration) (err error) {
 	addr, err := magline.ParseAddr(address)
 	if err != nil {
 		//fmt.Println(err.Error())
@@ -159,11 +176,11 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 	}
 
 	connreq := knotproto.NewConnReq([]byte("abcdefghijklmn"))
-	err = knot.SendMessage(connreq, 5*time.Second)
+	err = knot.sendMessage(connreq, 5*time.Second)
 	if err != nil {
 		return
 	}
-	msg, err := knot.RecvMessage(5 * time.Second)
+	msg, err := knot.recvMessage(5 * time.Second)
 	if err != nil {
 		return
 	}
@@ -174,26 +191,6 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 		err = ErrUnknownCMD
 	}
 
-	return
-}
-
-// Serve is main routine
-func (knot *MagKnot) Serve() {
-
-}
-
-// ServeAsync is main routine
-func (knot *MagKnot) ServeAsync() {
-	go knot.Serve()
-}
-
-//New create a magknot
-func New(hdl Handler) (knot *MagKnot) {
-	if hdl == nil {
-		return nil
-	}
-	knot = new(MagKnot)
-	knot.hdl = hdl
 	return
 }
 

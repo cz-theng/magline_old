@@ -80,3 +80,14 @@ const (
 	//MKCMDConnRsp is ConnRsp cmd
 	MKCMDConnRsp = uint16(0x1002)
 )
+
+// MagKnotAgentStatus is Agent's status
+type MagKnotAgentStatus uint16
+
+const (
+	//MKASAccepted accept the new agent
+	MKASAccepted MagKnotAgentStatus = MagKnotAgentStatus(0x2001)
+
+	//MKASRefused refuse the new agent
+	MKASRefused MagKnotAgentStatus = MagKnotAgentStatus(0x2002)
+)
