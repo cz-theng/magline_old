@@ -13,5 +13,5 @@ message NewAgentReq{
 }
 
 message NewAgentRsp {
-
+    optional int32 errno = 1;
 }

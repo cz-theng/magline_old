@@ -21,11 +21,13 @@ type ChannelType uint16
 
 const (
 	// ChanNone is channel none
-	ChanNone = uint16(0x01)
+	ChanNone ChannelType = ChannelType(0x01)
+
 	// ChanSalt is channel salt
-	ChanSalt = uint16(0x01 << 1)
+	ChanSalt ChannelType = ChannelType(0x01 << 1)
+
 	// ChanDH is channel dh
-	ChanDH = uint16(0x01 << 2)
+	ChanDH ChannelType = ChannelType(0x01 << 2)
 )
 
 //CryptoType is crypto's type
@@ -33,9 +35,10 @@ type CryptoType uint16
 
 const (
 	//CryptoNone is none crypto
-	CryptoNone = uint16(0x01)
+	CryptoNone CryptoType = CryptoType(0x01)
+
 	//CryptoAES128 is aes128 crypto
-	CryptoAES128 = uint16(0x01 << 2)
+	CryptoAES128 CryptoType = CryptoType(0x01 << 2)
 )
 
 //BufSeqType is buffer sequence type

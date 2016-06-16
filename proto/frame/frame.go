@@ -105,7 +105,7 @@ func UnpackHead(buf *bytes.Buffer) (head *Head, err error) {
 func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error) {
 	switch cmd {
 	case proto.MNCMDSYN:
-		body = node.NewSYN(proto.BufProtoBin, proto.ChanNone, proto.CryptoNone)
+		body = node.NewSYN(proto.BufProtoBin, uint16(proto.ChanNone), uint16(proto.CryptoNone))
 		err = body.Unpack(buf)
 	case proto.MNCMDSeesionReq:
 		body = node.NewSessionReq()

@@ -41,10 +41,12 @@ type Connection struct {
 func (conn *Connection) Init(rbs, wbs int) error {
 	rbuf := make([]byte, rbs)
 	if rbuf == nil {
+		utils.Logger.Error("make bytes error")
 		return ErrNewBuffer
 	}
 	wbuf := make([]byte, wbs)
 	if wbuf == nil {
+		utils.Logger.Error("make bytes error")
 		return ErrNewBuffer
 	}
 	conn.ReadBuf = bytes.NewBuffer(rbuf)
@@ -61,7 +63,7 @@ func (conn *Connection) Init(rbs, wbs int) error {
 func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager, err error) {
 	var frameHead *frame.Head
 	priBufLen := conn.ReadBuf.Len()
-	if priBufLen <= proto.MLFrameHeadLen {
+	if priBufLen <= proto.MLFrameHeadLen { // havn't got a complete framehead
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(proto.MLFrameHeadLen-priBufLen))
 		if err != nil {
 			if err == io.EOF {
@@ -77,7 +79,7 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager
 		return
 	}
 	utils.Logger.Debug("Get FrameHead %v", frameHead)
-	if priBufLen > proto.MLFrameHeadLen {
+	if priBufLen > proto.MLFrameHeadLen { // have some body but not complete
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen)))
 	} else {
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length))
@@ -96,11 +98,6 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager
 	}
 	conn.ReadBuf.Reset()
 	return
-}
-
-func (conn *Connection) tickSeq() uint32 {
-	conn.seq++
-	return conn.seq
 }
 
 // SendMessage send a message frame
@@ -207,4 +204,9 @@ func (conn *Connection) Serve() {
 		}
 	}
 	conn.wg.Wait()
+}
+
+func (conn *Connection) tickSeq() uint32 {
+	conn.seq++
+	return conn.seq
 }

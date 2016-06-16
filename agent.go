@@ -11,7 +11,7 @@ import (
 
 //Agent is a client object
 type Agent struct {
-	conn        *Connection
+	line        *Line
 	id          uint32
 	rope        *Rope
 	nodeMsgChan chan message.Messager
@@ -19,12 +19,12 @@ type Agent struct {
 }
 
 //Init init a agent
-func (ag *Agent) Init(conn *Connection, rope *Rope, id uint32) {
-	ag.conn = conn
-	ag.id = id
+func (ag *Agent) Init(line *Line, rope *Rope) error {
+	ag.line = line
 	ag.rope = rope
 	ag.nodeMsgChan = make(chan message.Messager)
 	ag.knotMsgChan = make(chan message.Messager)
+	return nil
 }
 
 // ID return's agent's id

@@ -17,7 +17,7 @@ type BackendServer struct {
 	RopeMgr *RopeMgr
 }
 
-//Dispatch Dispatch a lane
+//Dispatch Dispatch a rope
 func (bs *BackendServer) Dispatch() (rope *Rope, err error) {
 	rope, err = bs.RopeMgr.Dispatch()
 	return
@@ -34,11 +34,17 @@ func (bs *BackendServer) AcceptAndServe(ln *net.UnixListener) {
 	for {
 		rw, err := ln.AcceptUnix()
 		if err != nil {
+			utils.Logger.Debug("ln.AcceptUnix error with %s", err.Error())
 			return
 		}
 		rope, err := bs.RopeMgr.Alloc(rw)
-		rope.Init()
 		if err != nil {
+			utils.Logger.Debug("RopeMgr.Alloc with error %s", err.Error())
+			return
+		}
+		err = rope.Init()
+		if err != nil {
+			utils.Logger.Debug("rope.Init error with %s", err.Error())
 			return
 		}
 		go rope.Serve()
@@ -53,7 +59,7 @@ func (bs *BackendServer) Listen() (err error) {
 	if err != nil {
 		return err
 	}
-	utils.Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
+	utils.Logger.Info("net is %s and ipport %s", addr.Network, addr.IPPort)
 
 	if addr.Network != "unix" {
 		utils.Logger.Error("Error Inner Address, Should be unix://")
@@ -91,12 +97,12 @@ func (svr *Server) Init(maxConns int) (err error) {
 
 //ListenAndServe is server's listen and serve
 func (svr *Server) ListenAndServe() error {
-	utils.Logger.Debug("ListenAndServe with addr %s", svr.Addr)
+	utils.Logger.Info("ListenAndServe with addr %s", svr.Addr)
 	addr, err := ParseAddr(svr.Addr)
 	if err != nil {
 		return err
 	}
-	utils.Logger.Debug("net is %s and ipport %s", addr.Network, addr.IPPort)
+	utils.Logger.Info("net is %s and ipport %s", addr.Network, addr.IPPort)
 	if addr.Network == "tcp" {
 		ln, err := net.Listen("tcp", addr.IPPort)
 		if err != nil {
@@ -111,6 +117,12 @@ func (svr *Server) ListenAndServe() error {
 func (svr *Server) newConn(rwc *net.TCPConn) (line *Line, err error) {
 	line, err = svr.LineMgr.Alloc()
 	if err != nil {
+		utils.Logger.Error("LineMgr.Alloc error with %s", err.Error())
+		return
+	}
+	err = line.Init(svr)
+	if err != nil {
+		utils.Logger.Error("line.Init error with %s", err.Error())
 		return
 	}
 	line.RWC = rwc

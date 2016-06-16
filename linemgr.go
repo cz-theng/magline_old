@@ -6,6 +6,7 @@ package magline
 
 import (
 	"container/list"
+	"github.com/cz-it/magline/utils"
 	"sync"
 )
 
@@ -28,10 +29,7 @@ func (lm *LineMgr) Alloc() (line *Line, err error) {
 	defer lm.mtx.Unlock()
 	line, err = NewLine()
 	if err != nil {
-		return
-	}
-	err = line.Init()
-	if err != nil {
+		utils.Logger.Error("NewLine Error with %s", err.Error())
 		return
 	}
 	lm.lines.PushBack(line)
@@ -40,6 +38,8 @@ func (lm *LineMgr) Alloc() (line *Line, err error) {
 
 //Release will reuse a connection
 func (lm *LineMgr) Release(line *Line) (err error) {
+	lm.mtx.Lock()
+	defer lm.mtx.Unlock()
 	lm.lines.Remove(line.Elem)
 	err = nil
 	return

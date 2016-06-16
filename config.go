@@ -4,7 +4,9 @@
  */
 package magline
 
-import ()
+import (
+	"github.com/cz-it/magline/proto"
+)
 
 //Config is config info
 var Config ConfigInfo
@@ -14,4 +16,6 @@ type ConfigInfo struct {
 	OuterAddr string
 	InnerAddr string
 	MaxConns  int
+	Crypto    proto.CryptoType
+	Channel   proto.ChannelType
 }

@@ -6,14 +6,12 @@ package knot
 
 import (
 	"bytes"
-	//"encoding/binary"
-	//"github.com/cz-it/magline/proto"
 	"github.com/cz-it/magline/proto/message"
 	"github.com/cz-it/magline/proto/message/knot/pb"
 	protobuf "github.com/golang/protobuf/proto"
 )
 
-//ConnReqHead is head of message SYN
+//ConnReqHead is head of message
 type ConnReqHead struct {
 	pb.ConnReq
 }
