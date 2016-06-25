@@ -80,8 +80,15 @@ type MagKnotCMD uint16
 const (
 	//MKCMDConnReq is ConnReq cmd
 	MKCMDConnReq = uint16(0x1001)
+
 	//MKCMDConnRsp is ConnRsp cmd
 	MKCMDConnRsp = uint16(0x1002)
+
+	//MKCMDAgentArriveReq is new agent request
+	MKCMDAgentArriveReq = uint16(0x1003)
+
+	// MKCMDAgentArriveRsp is new agent response
+	MKCMDAgentArriveRsp = uint16(0x1004)
 )
 
 // MagKnotAgentStatus is Agent's status
@@ -93,4 +100,12 @@ const (
 
 	//MKASRefused refuse the new agent
 	MKASRefused MagKnotAgentStatus = MagKnotAgentStatus(0x2002)
+)
+
+// ErrNO is proto's error number
+type ErrNO int32
+
+const (
+	//NewAgentSucc is a new agent
+	NewAgentSucc = ErrNO(0)
 )

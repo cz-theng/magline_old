@@ -13,11 +13,25 @@ import (
 
 //ConnReqHead is head of message
 type ConnReqHead struct {
-	pb.ConnReq
 }
 
 // Pack is implement of MessageHeader
 func (h *ConnReqHead) Pack(buf *bytes.Buffer) (err error) {
+	return
+}
+
+// Unpack is implement of MessageHeader
+func (h *ConnReqHead) Unpack(buf *bytes.Buffer) (err error) {
+	return
+}
+
+//ConnReqBody is body of message SYN
+type ConnReqBody struct {
+	pb.ConnReq
+}
+
+// Pack is implement of MessageBodyer
+func (h *ConnReqBody) Pack(buf *bytes.Buffer) (err error) {
 	buffer, err := protobuf.Marshal(&h.ConnReq)
 	if err != nil {
 		return
@@ -26,25 +40,11 @@ func (h *ConnReqHead) Pack(buf *bytes.Buffer) (err error) {
 	return
 }
 
-// Unpack is implement of MessageHeader
-func (h *ConnReqHead) Unpack(buf *bytes.Buffer) (err error) {
+// Unpack is implement of MessageBodyer
+func (h *ConnReqBody) Unpack(buf *bytes.Buffer) (err error) {
 	buffer := buf.Next(buf.Len())
 	err = protobuf.Unmarshal(buffer, &h.ConnReq)
 	return
-}
-
-//ConnReqBody is body of message SYN
-type ConnReqBody struct {
-}
-
-// Pack is implement of MessageBodyer
-func (h *ConnReqBody) Pack(buf *bytes.Buffer) (err error) {
-	return
-}
-
-// Unpack is implement of MessageBodyer
-func (h *ConnReqBody) Unpack(buf *bytes.Buffer) error {
-	return nil
 }
 
 // ConnReq is ConnReq Message from knot
@@ -54,12 +54,12 @@ type ConnReq struct {
 
 //NewConnReq new and init a ConnReq message
 func NewConnReq(accessKey []byte) (msg *ConnReq) {
-	head := &ConnReqHead{
+	head := &ConnReqHead{}
+	body := &ConnReqBody{
 		pb.ConnReq{
 			AccessKey: accessKey,
 		},
 	}
-	body := &ConnReqBody{}
 	msg = &ConnReq{
 		message.Message{
 			Head: head,

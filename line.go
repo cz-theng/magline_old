@@ -6,6 +6,7 @@ package magline
 
 import (
 	"container/list"
+	"github.com/cz-it/magline/proto"
 	"github.com/cz-it/magline/proto/message"
 	"github.com/cz-it/magline/proto/message/node"
 	"github.com/cz-it/magline/utils"
@@ -57,6 +58,16 @@ func NewLine() (l *Line, err error) {
 	return
 }
 
+// SendConfirm send a confirm message to client
+func (l *Line) SendConfirm(errno int32) (err error) {
+	msg := node.NewConfirm(proto.ErrNO(errno))
+	err = l.SendMessage(msg, 5*time.Second)
+	if err != nil {
+		utils.Logger.Error("Send confirm error %s", err.Error())
+	}
+	return
+}
+
 //DealMessage implementation of Connectioner
 func (l *Line) DealMessage(msg message.Messager) (err error) {
 	if msg == nil {
@@ -100,20 +111,27 @@ func (l *Line) dealSessionReq(sq *node.SessionReq) (err error) {
 		// should return send an error message
 		return
 	}
+	err = rope.AddAgent(agent)
+	if err != nil {
+		utils.Logger.Error("Add Agent Error %s", err.Error())
+		return
+	}
 	err = agent.Init(l, rope)
 	if err != nil {
 		utils.Logger.Error("Agent init error with %s", err.Error())
 		// should send an error message
 		return
 	}
+	err = agent.Arrive()
+	if err != nil {
+		utils.Logger.Error("rope[%v] send agent arrive error ", rope, err.Error())
+	}
+
 	rsp := node.NewSessionRsp(agent.ID())
 	err = l.SendMessage(rsp, 5*time.Second)
 	if err != nil {
 		utils.Logger.Error("l.SendMessage error with %s", err.Error())
 		return
 	}
-
-	//knotrsp := knot.NewAgentReq()
-	//err = rope.SendMessage(knotrsp, 5*time.Second)
 	return
 }

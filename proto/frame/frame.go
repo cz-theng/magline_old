@@ -106,18 +106,22 @@ func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error
 	switch cmd {
 	case proto.MNCMDSYN:
 		body = node.NewSYN(proto.BufProtoBin, uint16(proto.ChanNone), uint16(proto.CryptoNone))
-		err = body.Unpack(buf)
 	case proto.MNCMDSeesionReq:
 		body = node.NewSessionReq()
-		err = body.Unpack(buf)
 	case proto.MKCMDConnReq:
 		body = knot.NewConnReq(nil)
-		err = body.Unpack(buf)
 	case proto.MKCMDConnRsp:
 		body = knot.NewConnRsp(nil)
-		err = body.Unpack(buf)
+	case proto.MKCMDAgentArriveReq:
+		body = knot.NewAgentArriveReq(0)
+	case proto.MKCMDAgentArriveRsp:
+		body = knot.NewAgentArriveRsp(0, 0)
 	default:
+		utils.Logger.Error("proto.ErrUnknownCMD: %d", cmd)
 		err = proto.ErrUnknownCMD
+	}
+	if err == nil {
+		err = body.Unpack(buf)
 	}
 	return
 }

@@ -32,6 +32,18 @@ func (ag *Agent) ID() uint32 {
 	return ag.id
 }
 
+// Confirm send a confirm message to client
+func (ag *Agent) Confirm(errno int32) (err error) {
+	err = ag.line.SendConfirm(errno)
+	return
+}
+
+// Arrive send a arrive message to rope
+func (ag *Agent) Arrive() (err error) {
+	err = ag.rope.SendArrive(ag.ID())
+	return
+}
+
 // Serve run a agent context
 func (ag *Agent) Serve() {
 	for {

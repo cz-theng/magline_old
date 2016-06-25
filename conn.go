@@ -119,8 +119,14 @@ func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration)
 	switch msg.(type) {
 	case *node.ACK:
 		head.CMD = proto.MNCMDACK
+	case *node.SessionRsp:
+		head.CMD = proto.MNCMDSessionRsp
 	case *knot.ConnRsp:
 		head.CMD = proto.MKCMDConnRsp
+	case *knot.AgentArriveReq:
+		head.CMD = proto.MKCMDAgentArriveReq
+	case *node.Confirm:
+		head.CMD = proto.MNCMDConfirm
 	default:
 		head.CMD = proto.MLCMDUnknown
 

@@ -24,20 +24,21 @@ const (
 	WriteBufSize = 10240
 )
 
-//Delegate is delegate for a knot
-type Delegate interface {
-	OnAgentConnect(agentID uint32, result chan<- proto.MagKnotAgentStatus)
-	OnMessageArrive(agentID uint32, data *bytes.Buffer)
-	OnAgentDisconnect(agentID uint32)
+// Message is buffer with agent's ID
+type Message struct {
+	AgentID uint32
+	data    *bytes.Buffer
 }
 
-//MagKnot is magknot
+// MagKnot is magknot
 type MagKnot struct {
-	seq      uint32
-	conn     *net.UnixConn
-	ReadBuf  *bytes.Buffer
-	WriteBuf *bytes.Buffer
-	delegate Delegate
+	seq                 uint32
+	conn                *net.UnixConn
+	ReadBuf             *bytes.Buffer
+	WriteBuf            *bytes.Buffer
+	AgentArriveChan     chan uint32
+	AgentDisconnectChan chan uint32
+	MessageArriveChan   chan Message
 }
 
 //New create a magknot
@@ -47,7 +48,7 @@ func New() (knot *MagKnot) {
 }
 
 //Init is init
-func (knot *MagKnot) Init(delegate Delegate) (err error) {
+func (knot *MagKnot) Init() (err error) {
 	rbuf := make([]byte, ReadBufSize)
 	if rbuf == nil {
 		return ErrNewBuffer
@@ -61,7 +62,9 @@ func (knot *MagKnot) Init(delegate Delegate) (err error) {
 	knot.WriteBuf = bytes.NewBuffer(wbuf)
 	knot.WriteBuf.Reset()
 	knot.seq = 0
-	knot.delegate = delegate
+	knot.AgentArriveChan = make(chan uint32)
+	knot.AgentDisconnectChan = make(chan uint32)
+	knot.MessageArriveChan = make(chan Message)
 	return
 }
 
@@ -69,6 +72,18 @@ func (knot *MagKnot) Init(delegate Delegate) (err error) {
 func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) {
 	err = knot.connect(address, timeout)
 	return
+}
+
+// Accept accept a new arriving agent
+func (knot *MagKnot) Accept(agentID uint32, errno proto.ErrNO) (err error) {
+	msg := knotproto.NewAgentArriveRsp(agentID, int32(errno))
+	err = knot.sendMessage(msg, 5*time.Second)
+	return
+}
+
+// Go serve asynchronoursly
+func (knot *MagKnot) Go() {
+	go knot.reciver()
 }
 
 //SendMessage send a message to agent with agentID
@@ -137,9 +152,10 @@ func (knot *MagKnot) sendMessage(msg message.Messager, timeout time.Duration) (e
 	switch msg.(type) {
 	case *knotproto.ConnReq:
 		head.CMD = proto.MKCMDConnReq
+	case *knotproto.AgentArriveRsp:
+		head.CMD = proto.MKCMDAgentArriveRsp
 	default:
 		head.CMD = proto.MLCMDUnknown
-
 	}
 	frame := frame.Frame{
 		Head: head,
@@ -186,12 +202,41 @@ func (knot *MagKnot) connect(address string, timeout time.Duration) (err error) 
 	}
 	switch m := msg.(type) {
 	case *knotproto.ConnRsp:
-		fmt.Println(m)
+		fmt.Printf("Get Conn Response \n")
+		knot.dealConnRsp(m)
 	default:
 		err = ErrUnknownCMD
 	}
 
 	return
+}
+
+func (knot *MagKnot) dealConnRsp(connRsp *knotproto.ConnRsp) error {
+	return nil
+}
+
+func (knot *MagKnot) reciver() {
+	for {
+		msg, err := knot.recvMessage(5 * time.Second)
+		if err != nil {
+			fmt.Errorf("recv message with error %s", err.Error())
+			return
+		}
+		switch m := msg.(type) {
+		case *knotproto.AgentArriveReq:
+			pbm := m.Body.(*knotproto.AgentArriveReqBody)
+			fmt.Printf("Get New Agent with ID %d\n", *pbm.AgentID)
+			knot.dealNewAgent(pbm)
+		default:
+			err = ErrUnknownCMD
+		}
+
+	}
+}
+
+func (knot *MagKnot) dealNewAgent(agentArriveReq *knotproto.AgentArriveReqBody) error {
+	knot.AgentArriveChan <- *agentArriveReq.AgentID
+	return nil
 }
 
 func (knot *MagKnot) tickSeq() uint32 {

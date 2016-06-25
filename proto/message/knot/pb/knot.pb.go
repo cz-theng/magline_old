@@ -11,8 +11,13 @@ It is generated from these files:
 It has these top-level messages:
 	ConnReq
 	ConnRsp
-	NewAgentReq
-	NewAgentRsp
+	AgentArriveReq
+	AgentArriveRsp
+	DisconnReq
+	DisconnRsp
+	MessageArrive
+	MessageSending
+	AgentQuit
 */
 package pb
 
@@ -25,6 +30,8 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+// *
+// Connect to Maglined
 type ConnReq struct {
 	AccessKey        []byte `protobuf:"bytes,1,opt,name=AccessKey" json:"AccessKey,omitempty"`
 	XXX_unrecognized []byte `json:"-"`
@@ -51,55 +58,126 @@ func (m *ConnRsp) String() string            { return proto.CompactTextString(m)
 func (*ConnRsp) ProtoMessage()               {}
 func (*ConnRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-type NewAgentReq struct {
-	UUID             []byte `protobuf:"bytes,1,opt,name=UUID" json:"UUID,omitempty"`
-	XXX_unrecognized []byte `json:"-"`
+// *
+// New Agent from Maglined
+type AgentArriveReq struct {
+	AgentID          *uint32 `protobuf:"varint,1,opt,name=AgentID" json:"AgentID,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *NewAgentReq) Reset()                    { *m = NewAgentReq{} }
-func (m *NewAgentReq) String() string            { return proto.CompactTextString(m) }
-func (*NewAgentReq) ProtoMessage()               {}
-func (*NewAgentReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (m *AgentArriveReq) Reset()                    { *m = AgentArriveReq{} }
+func (m *AgentArriveReq) String() string            { return proto.CompactTextString(m) }
+func (*AgentArriveReq) ProtoMessage()               {}
+func (*AgentArriveReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
-func (m *NewAgentReq) GetUUID() []byte {
-	if m != nil {
-		return m.UUID
+func (m *AgentArriveReq) GetAgentID() uint32 {
+	if m != nil && m.AgentID != nil {
+		return *m.AgentID
 	}
-	return nil
+	return 0
 }
 
-type NewAgentRsp struct {
-	Errno            *int32 `protobuf:"varint,1,opt,name=errno" json:"errno,omitempty"`
-	XXX_unrecognized []byte `json:"-"`
+type AgentArriveRsp struct {
+	AgentID          *uint32 `protobuf:"varint,1,opt,name=AgentID" json:"AgentID,omitempty"`
+	Errno            *int32  `protobuf:"varint,2,opt,name=errno" json:"errno,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
-func (m *NewAgentRsp) Reset()                    { *m = NewAgentRsp{} }
-func (m *NewAgentRsp) String() string            { return proto.CompactTextString(m) }
-func (*NewAgentRsp) ProtoMessage()               {}
-func (*NewAgentRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (m *AgentArriveRsp) Reset()                    { *m = AgentArriveRsp{} }
+func (m *AgentArriveRsp) String() string            { return proto.CompactTextString(m) }
+func (*AgentArriveRsp) ProtoMessage()               {}
+func (*AgentArriveRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
 
-func (m *NewAgentRsp) GetErrno() int32 {
+func (m *AgentArriveRsp) GetAgentID() uint32 {
+	if m != nil && m.AgentID != nil {
+		return *m.AgentID
+	}
+	return 0
+}
+
+func (m *AgentArriveRsp) GetErrno() int32 {
 	if m != nil && m.Errno != nil {
 		return *m.Errno
 	}
 	return 0
 }
 
+// *
+// Disconnect from Maglined
+type DisconnReq struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *DisconnReq) Reset()                    { *m = DisconnReq{} }
+func (m *DisconnReq) String() string            { return proto.CompactTextString(m) }
+func (*DisconnReq) ProtoMessage()               {}
+func (*DisconnReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+type DisconnRsp struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *DisconnRsp) Reset()                    { *m = DisconnRsp{} }
+func (m *DisconnRsp) String() string            { return proto.CompactTextString(m) }
+func (*DisconnRsp) ProtoMessage()               {}
+func (*DisconnRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+// *
+// Message from Agent on Maglined
+type MessageArrive struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *MessageArrive) Reset()                    { *m = MessageArrive{} }
+func (m *MessageArrive) String() string            { return proto.CompactTextString(m) }
+func (*MessageArrive) ProtoMessage()               {}
+func (*MessageArrive) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+
+// *
+// Send Message to Agent on Maglined
+type MessageSending struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *MessageSending) Reset()                    { *m = MessageSending{} }
+func (m *MessageSending) String() string            { return proto.CompactTextString(m) }
+func (*MessageSending) ProtoMessage()               {}
+func (*MessageSending) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+
+// *
+// Agent Quit from Maglined
+type AgentQuit struct {
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *AgentQuit) Reset()                    { *m = AgentQuit{} }
+func (m *AgentQuit) String() string            { return proto.CompactTextString(m) }
+func (*AgentQuit) ProtoMessage()               {}
+func (*AgentQuit) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
 func init() {
 	proto.RegisterType((*ConnReq)(nil), "pb.ConnReq")
 	proto.RegisterType((*ConnRsp)(nil), "pb.ConnRsp")
-	proto.RegisterType((*NewAgentReq)(nil), "pb.NewAgentReq")
-	proto.RegisterType((*NewAgentRsp)(nil), "pb.NewAgentRsp")
+	proto.RegisterType((*AgentArriveReq)(nil), "pb.AgentArriveReq")
+	proto.RegisterType((*AgentArriveRsp)(nil), "pb.AgentArriveRsp")
+	proto.RegisterType((*DisconnReq)(nil), "pb.DisconnReq")
+	proto.RegisterType((*DisconnRsp)(nil), "pb.DisconnRsp")
+	proto.RegisterType((*MessageArrive)(nil), "pb.MessageArrive")
+	proto.RegisterType((*MessageSending)(nil), "pb.MessageSending")
+	proto.RegisterType((*AgentQuit)(nil), "pb.AgentQuit")
 }
 
 var fileDescriptor0 = []byte{
-	// 116 bytes of a gzipped FileDescriptorProto
+	// 174 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0xca, 0xce, 0xcb, 0x2f,
 	0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2a, 0x48, 0x52, 0x92, 0xe1, 0x62, 0x77, 0xce,
 	0xcf, 0xcb, 0x0b, 0x4a, 0x2d, 0x14, 0x12, 0xe4, 0xe2, 0x74, 0x4c, 0x4e, 0x4e, 0x2d, 0x2e, 0xf6,
-	0x4e, 0xad, 0x94, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x51, 0xe2, 0x84, 0xca, 0x16, 0x17, 0x28, 0x49,
-	0x73, 0x71, 0xfb, 0xa5, 0x96, 0x3b, 0xa6, 0xa7, 0xe6, 0x95, 0x80, 0x14, 0xf3, 0x70, 0xb1, 0x84,
-	0x86, 0x7a, 0xba, 0x40, 0xd5, 0xc9, 0x20, 0x49, 0x16, 0x17, 0x08, 0xf1, 0x72, 0xb1, 0xa6, 0x16,
-	0x15, 0xe5, 0xe5, 0x83, 0x65, 0x59, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x9c, 0xd4, 0xe8, 0x54,
-	0x74, 0x00, 0x00, 0x00,
+	0x4e, 0xad, 0x94, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x51, 0xe2, 0x84, 0xca, 0x16, 0x17, 0x28, 0x29,
+	0x72, 0xf1, 0x39, 0xa6, 0xa7, 0xe6, 0x95, 0x38, 0x16, 0x15, 0x65, 0x96, 0xa5, 0x82, 0xd4, 0xf3,
+	0x73, 0xb1, 0x83, 0x45, 0x3c, 0x5d, 0xc0, 0xaa, 0x79, 0x95, 0x0c, 0x50, 0x95, 0x14, 0x17, 0x60,
+	0x28, 0x11, 0xe2, 0xe5, 0x62, 0x4d, 0x2d, 0x2a, 0xca, 0xcb, 0x97, 0x60, 0x02, 0x72, 0x59, 0x95,
+	0x78, 0xb8, 0xb8, 0x5c, 0x32, 0x8b, 0x93, 0x21, 0x0e, 0x40, 0xe6, 0x01, 0x2d, 0xe4, 0xe7, 0xe2,
+	0xf5, 0x05, 0x3a, 0x26, 0x31, 0x3d, 0x15, 0x62, 0x9e, 0x92, 0x00, 0x17, 0x1f, 0x54, 0x20, 0x38,
+	0x35, 0x2f, 0x25, 0x33, 0x2f, 0x5d, 0x89, 0x1b, 0xe8, 0x62, 0x90, 0xf1, 0x81, 0xa5, 0x99, 0x25,
+	0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x78, 0x43, 0xf9, 0xa5, 0xda, 0x00, 0x00, 0x00,
 }

@@ -45,12 +45,53 @@ func (r *Rope) Init() (err error) {
 
 //DealMessage implementation of Connectioner
 func (r *Rope) DealMessage(msg message.Messager) (err error) {
-	utils.Logger.Info("Deal Message")
 	if msg == nil {
 		err = ErrArg
 		return
 	}
+	switch m := msg.(type) {
+	case *knot.ConnReq:
+		utils.Logger.Info("Get A Conn Request Message")
+		err = r.dealConnReq(m)
+		if err != nil {
+			utils.Logger.Error("deal ConnReq error %s", err.Error())
+		}
+
+	case *knot.AgentArriveRsp:
+		pbm := m.Body.(*knot.AgentArriveRspBody)
+		utils.Logger.Debug("Got a AgentArriveRsp ")
+		err = r.dealAgentArriveRsp(pbm)
+		if err != nil {
+			utils.Logger.Error("deal AgentArriveRsp error %s", err.Error())
+		}
+	default:
+		utils.Logger.Error("Unknown Message type")
+	}
+	return
+}
+
+// SendArrive got a new agent
+func (r *Rope) SendArrive(agentID uint32) (err error) {
+	msg := knot.NewAgentArriveReq(agentID)
+	err = r.SendMessage(msg, 5*time.Second)
+	return
+}
+
+func (r *Rope) dealConnReq(connreq *knot.ConnReq) (err error) {
 	rsp := knot.NewConnRsp([]byte("Lane"))
-	r.SendMessage(rsp, 5*time.Second)
+	err = r.SendMessage(rsp, 5*time.Second)
+	return
+}
+
+func (r *Rope) dealAgentArriveRsp(agentArriveRsp *knot.AgentArriveRspBody) (err error) {
+	if agentArriveRsp == nil {
+		utils.Logger.Error("agentArriveRsp is null")
+		return ErrArg
+	}
+	if agent, ok := r.agents[*agentArriveRsp.AgentID]; ok {
+		err = agent.Confirm(*agentArriveRsp.Errno)
+	} else {
+		err = ErrArg
+	}
 	return
 }
