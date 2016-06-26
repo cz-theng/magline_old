@@ -32,21 +32,21 @@ func TestConnect(t *testing.T) {
 	knot.Go()
 	for {
 		select {
-		case agentID := <-knot.AgentArriveChan:
-			fmt.Printf("Agent %d is connected", agentID)
-			err := knot.Accept(agentID, proto.NewAgentSucc)
+		case agent := <-knot.AgentArriveChan:
+			fmt.Printf("Agent %d is connected", agent.ID)
+			err := knot.Accept(agent, proto.NewAgentSucc)
 			if err != nil {
-				fmt.Errorf("Accept Agent[%d] error %s", agentID, err.Error())
+				fmt.Errorf("Accept Agent[%d] error %s", agent.ID, err.Error())
 			}
 		case msg := <-knot.MessageArriveChan:
-			fmt.Printf("Agent %d send message with length %d", msg.AgentID, msg.data.Len())
-			err := knot.SendMessage(msg.AgentID, msg.data, 5*time.Second)
+			fmt.Printf("Agent %d send message with length %d", msg.Agent.ID, msg.data.Len())
+			err := knot.SendMessage(msg.Agent, msg.data, 5*time.Second)
 			if err != nil {
 				fmt.Errorf("Send Message with error %s", err.Error())
 			}
 			fmt.Println("Send Back Echo Message Success ")
-		case agentID := <-knot.AgentDisconnectChan:
-			fmt.Printf("Agent %d is disconnect", agentID)
+		case agent := <-knot.AgentDisconnectChan:
+			fmt.Printf("Agent %d is disconnect", agent.ID)
 
 		}
 	}

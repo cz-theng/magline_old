@@ -20,14 +20,20 @@ import (
 const (
 	//ReadBufSize is read buffer size
 	ReadBufSize = 10240
+
 	// WriteBufSize is write buffer size
 	WriteBufSize = 10240
 )
 
 // Message is buffer with agent's ID
 type Message struct {
-	AgentID uint32
-	data    *bytes.Buffer
+	Agent *Agent
+	data  *bytes.Buffer
+}
+
+// Agent is a client agent
+type Agent struct {
+	ID uint32
 }
 
 // MagKnot is magknot
@@ -36,9 +42,10 @@ type MagKnot struct {
 	conn                *net.UnixConn
 	ReadBuf             *bytes.Buffer
 	WriteBuf            *bytes.Buffer
-	AgentArriveChan     chan uint32
-	AgentDisconnectChan chan uint32
+	AgentArriveChan     chan *Agent
+	AgentDisconnectChan chan *Agent
 	MessageArriveChan   chan Message
+	agents              map[uint32]*Agent
 }
 
 //New create a magknot
@@ -62,9 +69,10 @@ func (knot *MagKnot) Init() (err error) {
 	knot.WriteBuf = bytes.NewBuffer(wbuf)
 	knot.WriteBuf.Reset()
 	knot.seq = 0
-	knot.AgentArriveChan = make(chan uint32)
-	knot.AgentDisconnectChan = make(chan uint32)
+	knot.AgentArriveChan = make(chan *Agent)
+	knot.AgentDisconnectChan = make(chan *Agent)
 	knot.MessageArriveChan = make(chan Message)
+	knot.agents = make(map[uint32]*Agent)
 	return
 }
 
@@ -75,8 +83,8 @@ func (knot *MagKnot) Connect(address string, timeout time.Duration) (err error) 
 }
 
 // Accept accept a new arriving agent
-func (knot *MagKnot) Accept(agentID uint32, errno proto.ErrNO) (err error) {
-	msg := knotproto.NewAgentArriveRsp(agentID, int32(errno))
+func (knot *MagKnot) Accept(agent *Agent, errno proto.ErrNO) (err error) {
+	msg := knotproto.NewAgentArriveRsp(agent.ID, int32(errno))
 	err = knot.sendMessage(msg, 5*time.Second)
 	return
 }
@@ -87,12 +95,12 @@ func (knot *MagKnot) Go() {
 }
 
 //SendMessage send a message to agent with agentID
-func (knot *MagKnot) SendMessage(agentID uint32, data *bytes.Buffer, timeout time.Duration) (err error) {
+func (knot *MagKnot) SendMessage(agent *Agent, data *bytes.Buffer, timeout time.Duration) (err error) {
 	return
 }
 
 //Kickoff kick an agent with agnetID off
-func (knot *MagKnot) Kickoff(agentID uint32) (err error) {
+func (knot *MagKnot) Kickoff(agent *Agent) (err error) {
 	return
 }
 
@@ -235,7 +243,11 @@ func (knot *MagKnot) reciver() {
 }
 
 func (knot *MagKnot) dealNewAgent(agentArriveReq *knotproto.AgentArriveReqBody) error {
-	knot.AgentArriveChan <- *agentArriveReq.AgentID
+	agent := &Agent{
+		ID: *agentArriveReq.AgentID,
+	}
+	knot.agents[*agentArriveReq.AgentID] = agent
+	knot.AgentArriveChan <- agent
 	return nil
 }
 
