@@ -25,7 +25,6 @@ func logHooker(log string) {
 
 func TestConnect(t *testing.T) {
 	t.Log("Test MagKnot")
-	SetLogHooker(logHooker)
 	knot := New()
 	knot.Init()
 	err := knot.Connect(Addr, 5000*time.Millisecond)
@@ -38,20 +37,20 @@ func TestConnect(t *testing.T) {
 	for {
 		select {
 		case agent := <-knot.AgentArriveChan:
-			fmt.Printf("Agent %d is connected", agent.ID)
+			fmt.Printf("Agent %d is connected \n", agent.ID)
 			err := knot.Accept(agent, proto.NewAgentSucc)
 			if err != nil {
-				fmt.Errorf("Accept Agent[%d] error %s", agent.ID, err.Error())
+				fmt.Errorf("Accept Agent[%d] error %s \n", agent.ID, err.Error())
 			}
 		case msg := <-knot.MessageArriveChan:
-			fmt.Printf("Agent %d send message with length %d", msg.Agent.ID, msg.data.Len())
-			err := knot.SendMessage(msg.Agent, msg.data, 5*time.Second)
+			fmt.Printf("Agent %d send message[%s] with length %d \n", msg.Agent.ID, string(msg.Data.Bytes()), msg.Data.Len())
+			err := knot.SendMessage(msg.Agent, msg.Data, 5*time.Second)
 			if err != nil {
-				fmt.Errorf("Send Message with error %s", err.Error())
+				fmt.Errorf("Send Message with error %s \n", err.Error())
 			}
 			fmt.Println("Send Back Echo Message Success ")
 		case agent := <-knot.AgentDisconnectChan:
-			fmt.Printf("Agent %d is disconnect", agent.ID)
+			fmt.Printf("Agent %d is disconnect\n", agent.ID)
 
 		}
 	}

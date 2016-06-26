@@ -39,14 +39,15 @@ message DisconnRsp {
 /**
 * Message from Agent on Maglined
 */
-message MessageArrive {
-
+message NodeMsg{
+    optional uint32 AgentID = 1;
+    optional bytes payload = 2;
 }
 
 /**
 * Send Message to Agent on Maglined
 */
-message MessageSending {
+message KnotMsg{
 
 }
 

@@ -146,7 +146,7 @@ func (l *logger) getTime() string {
 }
 
 func (l *logger) getFileLine() string {
-	_, file, line, ok := runtime.Caller(3)
+	_, file, line, ok := runtime.Caller(2)
 	if !ok {
 		file = "???"
 		line = 0

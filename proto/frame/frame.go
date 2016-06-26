@@ -103,6 +103,7 @@ func UnpackHead(buf *bytes.Buffer) (head *Head, err error) {
 
 //UnpackBody unpack a specific
 func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error) {
+	utils.Logger.Debug("upack body with cmd %d", cmd)
 	switch cmd {
 	case proto.MNCMDSYN:
 		body = node.NewSYN(proto.BufProtoBin, uint16(proto.ChanNone), uint16(proto.CryptoNone))
@@ -116,6 +117,10 @@ func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error
 		body = knot.NewAgentArriveReq(0)
 	case proto.MKCMDAgentArriveRsp:
 		body = knot.NewAgentArriveRsp(0, 0)
+	case proto.MNCMDNodeMsg:
+		body = node.NewNodeMsg(nil)
+	case proto.MKCMDNodeMsg:
+		body = knot.NewNodeMsg(0, nil)
 	default:
 		utils.Logger.Error("proto.ErrUnknownCMD: %d", cmd)
 		err = proto.ErrUnknownCMD

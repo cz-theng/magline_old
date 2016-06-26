@@ -44,6 +44,12 @@ func (ag *Agent) Arrive() (err error) {
 	return
 }
 
+// DealNodeMessage deal message from a magnode
+func (ag *Agent) DealNodeMessage(data []byte) (err error) {
+	err = ag.rope.SendNodeMessage(ag.ID(), data)
+	return
+}
+
 // Serve run a agent context
 func (ag *Agent) Serve() {
 	for {

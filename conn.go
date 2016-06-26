@@ -80,8 +80,10 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager
 	}
 	utils.Logger.Debug("Get FrameHead %v", frameHead)
 	if priBufLen > proto.MLFrameHeadLen { // have some body but not complete
+		utils.Logger.Debug("Have some body but not complete %d", frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen))
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length-uint32(priBufLen-proto.MLFrameHeadLen)))
 	} else {
+		utils.Logger.Debug("Get Data %d", frameHead.Length)
 		_, err = io.CopyN(conn.ReadBuf, conn.RWC, int64(frameHead.Length))
 	}
 	if err != nil {
@@ -127,6 +129,8 @@ func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration)
 		head.CMD = proto.MKCMDAgentArriveReq
 	case *node.Confirm:
 		head.CMD = proto.MNCMDConfirm
+	case *knot.NodeMsg:
+		head.CMD = proto.MKCMDNodeMsg
 	default:
 		head.CMD = proto.MLCMDUnknown
 

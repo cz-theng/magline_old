@@ -27,7 +27,7 @@ const (
 // Message is buffer with agent's ID
 type Message struct {
 	Agent *Agent
-	data  *bytes.Buffer
+	Data  *bytes.Buffer
 }
 
 // Agent is a client agent
@@ -231,11 +231,25 @@ func (knot *MagKnot) reciver() {
 			pbm := m.Body.(*knotproto.AgentArriveReqBody)
 			logcat.Debug("Get New Agent with ID %d\n", *pbm.AgentID)
 			knot.dealNewAgent(pbm)
+		case *knotproto.NodeMsg:
+			pbm := m.Body.(*knotproto.NodeMsgBody)
+			logcat.Debug("Get a message from Agent %d ", pbm.AgentID)
+			knot.dealMessage(pbm)
 		default:
 			err = ErrUnknownCMD
 		}
 
 	}
+}
+
+func (knot *MagKnot) dealMessage(nodeMsg *knotproto.NodeMsgBody) (err error) {
+	logcat.Debug("deal message from node %v", nodeMsg)
+	msg := Message{
+		Agent: knot.agents[*nodeMsg.AgentID],
+		Data:  bytes.NewBuffer(nodeMsg.Payload),
+	}
+	knot.MessageArriveChan <- msg
+	return
 }
 
 func (knot *MagKnot) dealNewAgent(agentArriveReq *knotproto.AgentArriveReqBody) error {

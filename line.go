@@ -28,6 +28,7 @@ type Line struct {
 	ID      int
 	Elem    *list.Element
 	AgentID uint32
+	agent   *Agent
 
 	protobuf uint16
 	channel  uint16
@@ -81,9 +82,18 @@ func (l *Line) DealMessage(msg message.Messager) (err error) {
 	case *node.SessionReq:
 		utils.Logger.Info("Get SessionReq ")
 		err = l.dealSessionReq(m)
+	case *node.NodeMsg:
+		utils.Logger.Info("Get a Message from Agent")
+		err = l.dealNodeMessage(m)
 	default:
 		utils.Logger.Error("Unknown Message type")
 	}
+	return
+}
+
+func (l *Line) dealNodeMessage(msg *node.NodeMsg) (err error) {
+	body := msg.Body.(*node.NodeMsgBody)
+	err = l.agent.DealNodeMessage(body.Payload)
 	return
 }
 
@@ -122,6 +132,7 @@ func (l *Line) dealSessionReq(sq *node.SessionReq) (err error) {
 		// should send an error message
 		return
 	}
+	l.agent = agent
 	err = agent.Arrive()
 	if err != nil {
 		utils.Logger.Error("rope[%v] send agent arrive error ", rope, err.Error())

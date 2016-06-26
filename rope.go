@@ -43,6 +43,13 @@ func (r *Rope) Init() (err error) {
 	return
 }
 
+// SendNodeMessage send a magnode's message to magknot
+func (r *Rope) SendNodeMessage(agentID uint32, data []byte) (err error) {
+	msg := knot.NewNodeMsg(agentID, data)
+	err = r.SendMessage(msg, 5*time.Second)
+	return
+}
+
 //DealMessage implementation of Connectioner
 func (r *Rope) DealMessage(msg message.Messager) (err error) {
 	if msg == nil {

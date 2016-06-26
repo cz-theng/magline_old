@@ -72,6 +72,12 @@ const (
 
 	// MNCMDConfirm is message from magknot
 	MNCMDConfirm = uint16(0x0008)
+
+	//MNCMDNodeMsg is message from magnode
+	MNCMDNodeMsg = uint16(0x0009)
+
+	//MNCMDKnotMsg is message from magknot
+	MNCMDKnotMsg = uint16(0x000A)
 )
 
 // MagKnotCMD is Knot's cmd type
@@ -89,6 +95,12 @@ const (
 
 	// MKCMDAgentArriveRsp is new agent response
 	MKCMDAgentArriveRsp = uint16(0x1004)
+
+	//MKCMDNodeMsg is message from magnode
+	MKCMDNodeMsg = uint16(0x1009)
+
+	//MKCMDKnotMsg is message from magknot
+	MKCMDKnotMsg = uint16(0x100A)
 )
 
 // MagKnotAgentStatus is Agent's status
