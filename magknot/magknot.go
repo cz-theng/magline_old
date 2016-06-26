@@ -6,7 +6,6 @@ package magknot
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/cz-it/magline"
 	"github.com/cz-it/magline/proto"
 	"github.com/cz-it/magline/proto/frame"
@@ -117,10 +116,10 @@ func (knot *MagKnot) recvMessage(timeout time.Duration) (msg message.Messager, e
 		}
 	}
 	frameHead, err = frame.UnpackHead(knot.ReadBuf)
-	fmt.Println("framehead is ", frameHead)
+	logcat.Debug("framehead is %v", frameHead)
 	if err != nil {
-		fmt.Println("framehead is ", frameHead)
-		fmt.Println("err is ", err)
+		logcat.Debug("framehead is %v", frameHead)
+		logcat.Error("unpack head err is %s", err.Error())
 		// unpack errro
 	}
 	if priBufLen > proto.MLFrameHeadLen {
@@ -136,7 +135,7 @@ func (knot *MagKnot) recvMessage(timeout time.Duration) (msg message.Messager, e
 	}
 	msg, err = frame.UnpackBody(frameHead.CMD, knot.ReadBuf)
 	if err != nil {
-		fmt.Println("unpackbody error ", err)
+		logcat.Error("unpackbody error %s", err.Error())
 		return
 	}
 	knot.ReadBuf.Reset()
@@ -185,17 +184,14 @@ func (knot *MagKnot) sendMessage(msg message.Messager, timeout time.Duration) (e
 func (knot *MagKnot) connect(address string, timeout time.Duration) (err error) {
 	addr, err := magline.ParseAddr(address)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return
 	}
 	conn, err := net.Dial("unix", addr.IPPort)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return
 	}
 	knot.conn = conn.(*net.UnixConn)
 	if err != nil {
-		//fmt.Println(err.Error())
 		return
 	}
 
@@ -210,7 +206,7 @@ func (knot *MagKnot) connect(address string, timeout time.Duration) (err error) 
 	}
 	switch m := msg.(type) {
 	case *knotproto.ConnRsp:
-		fmt.Printf("Get Conn Response \n")
+		logcat.Debug("Get Conn Response \n")
 		knot.dealConnRsp(m)
 	default:
 		err = ErrUnknownCMD
@@ -227,13 +223,13 @@ func (knot *MagKnot) reciver() {
 	for {
 		msg, err := knot.recvMessage(5 * time.Second)
 		if err != nil {
-			fmt.Errorf("recv message with error %s", err.Error())
+			logcat.Error("recv message with error %s", err.Error())
 			return
 		}
 		switch m := msg.(type) {
 		case *knotproto.AgentArriveReq:
 			pbm := m.Body.(*knotproto.AgentArriveReqBody)
-			fmt.Printf("Get New Agent with ID %d\n", *pbm.AgentID)
+			logcat.Debug("Get New Agent with ID %d\n", *pbm.AgentID)
 			knot.dealNewAgent(pbm)
 		default:
 			err = ErrUnknownCMD

@@ -19,8 +19,13 @@ type TestDelegate struct {
 	magknot *MagKnot
 }
 
+func logHooker(log string) {
+
+}
+
 func TestConnect(t *testing.T) {
 	t.Log("Test MagKnot")
+	SetLogHooker(logHooker)
 	knot := New()
 	knot.Init()
 	err := knot.Connect(Addr, 5000*time.Millisecond)
