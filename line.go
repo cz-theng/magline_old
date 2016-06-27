@@ -69,6 +69,18 @@ func (l *Line) SendConfirm(errno int32) (err error) {
 	return
 }
 
+// SendKnotMessage send a knot message to magnode
+func (l *Line) SendKnotMessage(data []byte) (err error) {
+	utils.Logger.Debug("send a knot message %s", string(data))
+	msg := node.NewKnotMsg(data)
+	err = l.SendMessage(msg, 5*time.Second)
+	if err != nil {
+		utils.Logger.Error("send KnotMessage error %s", err.Error())
+	}
+	utils.Logger.Debug("send a knot message %s", string(data))
+	return
+}
+
 //DealMessage implementation of Connectioner
 func (l *Line) DealMessage(msg message.Messager) (err error) {
 	if msg == nil {

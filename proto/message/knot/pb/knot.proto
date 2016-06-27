@@ -48,7 +48,8 @@ message NodeMsg{
 * Send Message to Agent on Maglined
 */
 message KnotMsg{
-
+    optional uint32 AgentID = 1;
+    optional bytes payload = 2;
 }
 
 /** 

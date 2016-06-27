@@ -131,6 +131,8 @@ func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration)
 		head.CMD = proto.MNCMDConfirm
 	case *knot.NodeMsg:
 		head.CMD = proto.MKCMDNodeMsg
+	case *node.KnotMsg:
+		head.CMD = proto.MNCMDKnotMsg
 	default:
 		head.CMD = proto.MLCMDUnknown
 
@@ -139,18 +141,21 @@ func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration)
 		Head: head,
 		Body: msg,
 	}
+	utils.Logger.Debug("before pack buf is %d", conn.WriteBuf.Len())
 	err = frame.Pack(conn.WriteBuf)
+	utils.Logger.Debug("after pack buf is %d", conn.WriteBuf.Len())
 	if err != nil {
 		utils.Logger.Error("Pack frame with error %s", err.Error())
 		return
 	}
 
 	// Send current package
-	_, err = io.CopyN(conn.RWC, conn.WriteBuf, int64(conn.WriteBuf.Len()))
+	s, err := io.CopyN(conn.RWC, conn.WriteBuf, int64(conn.WriteBuf.Len()))
 	if err != nil {
 		utils.Logger.Error("Send  current packge data error with %s", err.Error())
 		return
 	}
+	utils.Logger.Debug("CopyN with %d", s)
 	return
 }
 
@@ -207,10 +212,6 @@ func (conn *Connection) Serve() {
 				utils.Logger.Error("DealMessage error with %s", err.Error())
 			}
 			utils.Logger.Info("after deal message")
-			/*
-				case msg = <-conn.Agent.nodeMsgChan:
-					conn.SendMessage(msg, 5*time.Second)
-			*/
 		}
 	}
 	conn.wg.Wait()

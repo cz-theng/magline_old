@@ -71,6 +71,13 @@ func (r *Rope) DealMessage(msg message.Messager) (err error) {
 		if err != nil {
 			utils.Logger.Error("deal AgentArriveRsp error %s", err.Error())
 		}
+	case *knot.KnotMsg:
+		pbm := m.Body.(*knot.KnotMsgBody)
+		utils.Logger.Debug("Got a Knot Message")
+		err = r.dealKnotMsg(pbm)
+		if err != nil {
+			utils.Logger.Error("deal KnotMsg error %s", err.Error())
+		}
 	default:
 		utils.Logger.Error("Unknown Message type")
 	}
@@ -81,6 +88,15 @@ func (r *Rope) DealMessage(msg message.Messager) (err error) {
 func (r *Rope) SendArrive(agentID uint32) (err error) {
 	msg := knot.NewAgentArriveReq(agentID)
 	err = r.SendMessage(msg, 5*time.Second)
+	return
+}
+
+func (r *Rope) dealKnotMsg(msg *knot.KnotMsgBody) (err error) {
+	if agent, ok := r.agents[*msg.AgentID]; ok {
+		err = agent.DealKnotMessage(msg.Payload)
+	} else {
+		err = ErrArg
+	}
 	return
 }
 

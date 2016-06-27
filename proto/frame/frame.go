@@ -11,7 +11,6 @@ import (
 	"github.com/cz-it/magline/proto/message"
 	"github.com/cz-it/magline/proto/message/knot"
 	"github.com/cz-it/magline/proto/message/node"
-	"github.com/cz-it/magline/utils"
 )
 
 // Head is frame head info
@@ -36,12 +35,10 @@ func (fh *Head) Init() {
 func (fh *Head) Unpack(buf *bytes.Buffer) (err error) {
 	if buf == nil {
 		err = proto.ErrFrameHeadBufNil
-		utils.Logger.Error("Unpack error :%s", err.Error())
 		return
 	}
 	if buf.Len() < proto.MLFrameHeadLen {
 		err = proto.ErrFameHeadBufLen
-		utils.Logger.Error("Unpack error :%s", err.Error())
 		return
 	}
 	fh.Magic, err = buf.ReadByte()
@@ -56,12 +53,10 @@ func (fh *Head) Unpack(buf *bytes.Buffer) (err error) {
 func (fh *Head) Pack(buf *bytes.Buffer) (err error) {
 	if buf == nil {
 		err = proto.ErrFrameHeadBufNil
-		utils.Logger.Error("Pack error :%s", err.Error())
 		return
 	}
 	if buf.Cap()-buf.Len() < proto.MLFrameHeadLen {
 		err = proto.ErrFameHeadBufLen
-		utils.Logger.Error("Pack error :%s", err.Error())
 		return
 	}
 	buf.WriteByte(fh.Magic)
@@ -103,7 +98,6 @@ func UnpackHead(buf *bytes.Buffer) (head *Head, err error) {
 
 //UnpackBody unpack a specific
 func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error) {
-	utils.Logger.Debug("upack body with cmd %d", cmd)
 	switch cmd {
 	case proto.MNCMDSYN:
 		body = node.NewSYN(proto.BufProtoBin, uint16(proto.ChanNone), uint16(proto.CryptoNone))
@@ -121,8 +115,9 @@ func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error
 		body = node.NewNodeMsg(nil)
 	case proto.MKCMDNodeMsg:
 		body = knot.NewNodeMsg(0, nil)
+	case proto.MKCMDKnotMsg:
+		body = knot.NewKnotMsg(0, nil)
 	default:
-		utils.Logger.Error("proto.ErrUnknownCMD: %d", cmd)
 		err = proto.ErrUnknownCMD
 	}
 	if err == nil {

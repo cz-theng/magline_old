@@ -95,6 +95,8 @@ func (knot *MagKnot) Go() {
 
 //SendMessage send a message to agent with agentID
 func (knot *MagKnot) SendMessage(agent *Agent, data *bytes.Buffer, timeout time.Duration) (err error) {
+	msg := knotproto.NewKnotMsg(agent.ID, data.Bytes())
+	err = knot.sendMessage(msg, timeout)
 	return
 }
 
@@ -161,6 +163,8 @@ func (knot *MagKnot) sendMessage(msg message.Messager, timeout time.Duration) (e
 		head.CMD = proto.MKCMDConnReq
 	case *knotproto.AgentArriveRsp:
 		head.CMD = proto.MKCMDAgentArriveRsp
+	case *knotproto.KnotMsg:
+		head.CMD = proto.MKCMDKnotMsg
 	default:
 		head.CMD = proto.MLCMDUnknown
 	}

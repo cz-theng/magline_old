@@ -50,6 +50,12 @@ func (ag *Agent) DealNodeMessage(data []byte) (err error) {
 	return
 }
 
+// DealKnotMessage deal messgae from a magknot
+func (ag *Agent) DealKnotMessage(data []byte) (err error) {
+	err = ag.line.SendKnotMessage(data)
+	return
+}
+
 // Serve run a agent context
 func (ag *Agent) Serve() {
 	for {
