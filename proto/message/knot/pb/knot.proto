@@ -56,6 +56,15 @@ message KnotMsg{
 * Agent Quit from Maglined
 */
 message AgentQuit {
-
+    optional uint32 AgentID = 1;
 }
+
+/**
+* Discard a agent
+*/
+message DiscardAgent {
+    optional uint32 AgentID = 1;
+}
+
+
 

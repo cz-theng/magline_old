@@ -117,6 +117,12 @@ func UnpackBody(cmd uint16, buf *bytes.Buffer) (body message.Messager, err error
 		body = knot.NewNodeMsg(0, nil)
 	case proto.MKCMDKnotMsg:
 		body = knot.NewKnotMsg(0, nil)
+	case proto.MNCMDDisconnReq:
+		body = node.NewDisconnReq()
+	case proto.MKCMDAgentQuit:
+		body = knot.NewAgentQuit(0)
+	case proto.MKCMDDiscardAgent:
+		body = knot.NewDiscardAgent(0)
 	default:
 		err = proto.ErrUnknownCMD
 	}

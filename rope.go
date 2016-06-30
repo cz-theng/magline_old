@@ -43,6 +43,13 @@ func (r *Rope) Init() (err error) {
 	return
 }
 
+// SendQuit send a quitrequest to magknot
+func (r *Rope) SendQuit(agentID uint32) (err error) {
+	msg := knot.NewAgentQuit(agentID)
+	err = r.SendMessage(msg, 5*time.Second)
+	return
+}
+
 // SendNodeMessage send a magnode's message to magknot
 func (r *Rope) SendNodeMessage(agentID uint32, data []byte) (err error) {
 	msg := knot.NewNodeMsg(agentID, data)
@@ -78,6 +85,14 @@ func (r *Rope) DealMessage(msg message.Messager) (err error) {
 		if err != nil {
 			utils.Logger.Error("deal KnotMsg error %s", err.Error())
 		}
+	case *knot.DiscardAgent:
+		pbm := m.Body.(*knot.DiscardAgentBody)
+		utils.Logger.Debug("Got a DiscardAgent")
+		err = r.dealDiscardAgent(pbm)
+		if err != nil {
+			utils.Logger.Error("deal Discard error %s", err.Error())
+		}
+
 	default:
 		utils.Logger.Error("Unknown Message type")
 	}
@@ -88,6 +103,14 @@ func (r *Rope) DealMessage(msg message.Messager) (err error) {
 func (r *Rope) SendArrive(agentID uint32) (err error) {
 	msg := knot.NewAgentArriveReq(agentID)
 	err = r.SendMessage(msg, 5*time.Second)
+	return
+}
+func (r *Rope) dealDiscardAgent(msg *knot.DiscardAgentBody) (err error) {
+	if agent, ok := r.agents[*msg.AgentID]; ok {
+		err = agent.Discard()
+	} else {
+		err = ErrArg
+	}
 	return
 }
 

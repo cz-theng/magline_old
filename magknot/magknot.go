@@ -37,14 +37,14 @@ type Agent struct {
 
 // MagKnot is magknot
 type MagKnot struct {
-	seq                 uint32
-	conn                *net.UnixConn
-	ReadBuf             *bytes.Buffer
-	WriteBuf            *bytes.Buffer
-	AgentArriveChan     chan *Agent
-	AgentDisconnectChan chan *Agent
-	MessageArriveChan   chan Message
-	agents              map[uint32]*Agent
+	seq               uint32
+	conn              *net.UnixConn
+	ReadBuf           *bytes.Buffer
+	WriteBuf          *bytes.Buffer
+	AgentArriveChan   chan *Agent
+	AgentQuitChan     chan *Agent
+	MessageArriveChan chan Message
+	agents            map[uint32]*Agent
 }
 
 //New create a magknot
@@ -69,7 +69,7 @@ func (knot *MagKnot) Init() (err error) {
 	knot.WriteBuf.Reset()
 	knot.seq = 0
 	knot.AgentArriveChan = make(chan *Agent)
-	knot.AgentDisconnectChan = make(chan *Agent)
+	knot.AgentQuitChan = make(chan *Agent)
 	knot.MessageArriveChan = make(chan Message)
 	knot.agents = make(map[uint32]*Agent)
 	return
@@ -100,8 +100,10 @@ func (knot *MagKnot) SendMessage(agent *Agent, data *bytes.Buffer, timeout time.
 	return
 }
 
-//Kickoff kick an agent with agnetID off
-func (knot *MagKnot) Kickoff(agent *Agent) (err error) {
+// DiscardAgent kick an agent with agnetID off
+func (knot *MagKnot) DiscardAgent(agent *Agent) (err error) {
+	msg := knotproto.NewDiscardAgent(agent.ID)
+	err = knot.sendMessage(msg, 5*time.Second)
 	return
 }
 
@@ -165,6 +167,8 @@ func (knot *MagKnot) sendMessage(msg message.Messager, timeout time.Duration) (e
 		head.CMD = proto.MKCMDAgentArriveRsp
 	case *knotproto.KnotMsg:
 		head.CMD = proto.MKCMDKnotMsg
+	case *knotproto.DiscardAgent:
+		head.CMD = proto.MKCMDDiscardAgent
 	default:
 		head.CMD = proto.MLCMDUnknown
 	}
@@ -239,6 +243,10 @@ func (knot *MagKnot) reciver() {
 			pbm := m.Body.(*knotproto.NodeMsgBody)
 			logcat.Debug("Get a message from Agent %d ", pbm.AgentID)
 			knot.dealMessage(pbm)
+		case *knotproto.AgentQuit:
+			pbm := m.Body.(*knotproto.AgentQuitBody)
+			logcat.Debug("Get a Quit Message")
+			knot.dealAgentQuit(pbm)
 		default:
 			err = ErrUnknownCMD
 		}
@@ -246,6 +254,11 @@ func (knot *MagKnot) reciver() {
 	}
 }
 
+func (knot *MagKnot) dealAgentQuit(quitReq *knotproto.AgentQuitBody) (err error) {
+	agent := knot.agents[*quitReq.AgentID]
+	knot.AgentQuitChan <- agent
+	return
+}
 func (knot *MagKnot) dealMessage(nodeMsg *knotproto.NodeMsgBody) (err error) {
 	logcat.Debug("deal message from node %v", nodeMsg)
 	msg := Message{

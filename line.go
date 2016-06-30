@@ -59,12 +59,28 @@ func NewLine() (l *Line, err error) {
 	return
 }
 
-// SendConfirm send a confirm message to client
+// SendDiscard send a discard message to magnode
+func (l *Line) SendDiscard() (err error) {
+	msg := node.NewDiscard()
+	err = l.SendMessage(msg, 5*time.Second)
+	if err != nil {
+		utils.Logger.Error("Send confirm error %s", err.Error())
+	}
+	return
+}
+
+// SendConfirm send a confirm message to magnode
 func (l *Line) SendConfirm(errno int32) (err error) {
 	msg := node.NewConfirm(proto.ErrNO(errno))
 	err = l.SendMessage(msg, 5*time.Second)
 	if err != nil {
 		utils.Logger.Error("Send confirm error %s", err.Error())
+	}
+
+	errmsg := node.NewErrorMsg(proto.StatusSession, proto.ErrNO(0))
+	err = l.SendMessage(errmsg, 5*time.Second)
+	if err != nil {
+		utils.Logger.Error("Send error error %s", err.Error())
 	}
 	return
 }
@@ -89,17 +105,25 @@ func (l *Line) DealMessage(msg message.Messager) (err error) {
 	}
 	switch m := msg.(type) {
 	case *node.SYN:
-		utils.Logger.Info("Get A SYN Message")
+		utils.Logger.Debug("Get A SYN Message")
 		err = l.dealSYN(m)
 	case *node.SessionReq:
-		utils.Logger.Info("Get SessionReq ")
+		utils.Logger.Debug("Get SessionReq ")
 		err = l.dealSessionReq(m)
 	case *node.NodeMsg:
-		utils.Logger.Info("Get a Message from Agent")
+		utils.Logger.Debug("Get a Message from Agent")
 		err = l.dealNodeMessage(m)
+	case *node.DisconnReq:
+		utils.Logger.Debug("Got a Disconn Request")
+		err = l.dealDisconnReq(m)
 	default:
 		utils.Logger.Error("Unknown Message type")
 	}
+	return
+}
+
+func (l *Line) dealDisconnReq(msg *node.DisconnReq) (err error) {
+	err = l.agent.Disconnect()
 	return
 }
 

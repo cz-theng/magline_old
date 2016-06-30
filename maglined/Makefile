@@ -1,6 +1,7 @@
 TARGET := maglined
 
-SRC_FILES := $(shell ls ../*.go )
+#SRC_FILES := $(shell ls ../*.go )
+SRC_FILES := $(shell find .. -type  f | grep "\.go")
 SRC_FILES += main.go flag.go config_xml.go
 
 .DEFAULT:all

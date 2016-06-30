@@ -78,6 +78,15 @@ const (
 
 	//MNCMDKnotMsg is message from magknot
 	MNCMDKnotMsg = uint16(0x000A)
+
+	//MNCMDErrorMsg is error message
+	MNCMDErrorMsg = uint16(0x000D)
+
+	//MNCMDDisconnReq  is disconnect form a magnode
+	MNCMDDisconnReq = uint16(0x000E)
+
+	//MNCMDDiscard discard a magnode
+	MNCMDDiscard = uint16(0x000F)
 )
 
 // MagKnotCMD is Knot's cmd type
@@ -101,6 +110,12 @@ const (
 
 	//MKCMDKnotMsg is message from magknot
 	MKCMDKnotMsg = uint16(0x100A)
+
+	//MKCMDAgentQuit is agent quit request
+	MKCMDAgentQuit = uint16(0x100C)
+
+	//MKCMDDiscardAgent discar  a agent
+	MKCMDDiscardAgent = uint16(0x100E)
 )
 
 // MagKnotAgentStatus is Agent's status
@@ -120,4 +135,21 @@ type ErrNO int32
 const (
 	//NewAgentSucc is a new agent
 	NewAgentSucc = ErrNO(0)
+)
+
+// Status is magnode's status
+type Status int32
+
+const (
+	// StatusSYN is SYN status
+	StatusSYN = Status(0x1)
+
+	// StatusSession is session status
+	StatusSession = Status(0x2)
+
+	// StatusNodeMessage is recive node message status
+	StatusNodeMessage = Status(0x3)
+
+	// StatusKnotMessage is send knot message status
+	StatusKnotMessage = Status(0x4)
 )

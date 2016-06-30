@@ -18,6 +18,10 @@ type Agent struct {
 	knotMsgChan chan message.Messager
 }
 
+func (ag *Agent) deinit() {
+
+}
+
 //Init init a agent
 func (ag *Agent) Init(line *Line, rope *Rope) error {
 	ag.line = line
@@ -30,6 +34,20 @@ func (ag *Agent) Init(line *Line, rope *Rope) error {
 // ID return's agent's id
 func (ag *Agent) ID() uint32 {
 	return ag.id
+}
+
+// Discard discard an agent
+func (ag *Agent) Discard() (err error) {
+	err = ag.line.SendDiscard()
+	ag.deinit()
+	return
+}
+
+// Disconnect disconnect an agent
+func (ag *Agent) Disconnect() (err error) {
+	err = ag.rope.SendQuit(ag.ID())
+	ag.deinit()
+	return
 }
 
 // Confirm send a confirm message to client

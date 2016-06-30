@@ -133,6 +133,12 @@ func (conn *Connection) SendMessage(msg message.Messager, timeout time.Duration)
 		head.CMD = proto.MKCMDNodeMsg
 	case *node.KnotMsg:
 		head.CMD = proto.MNCMDKnotMsg
+	case *node.ErrorMsg:
+		head.CMD = proto.MNCMDErrorMsg
+	case *knot.AgentQuit:
+		head.CMD = proto.MKCMDAgentQuit
+	case *node.Discard:
+		head.CMD = proto.MNCMDDiscard
 	default:
 		head.CMD = proto.MLCMDUnknown
 
