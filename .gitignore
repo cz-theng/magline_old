@@ -56,3 +56,7 @@ maglined/log/
 magnode/build/Android/obj/
 magnode/build/MacOS/magnode/build/
 magnode/build/iOS/magnode/build/
+
+
+example/chatroom/chatroom
+example/echosvr/echosvr

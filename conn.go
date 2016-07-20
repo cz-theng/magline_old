@@ -69,7 +69,7 @@ func (conn *Connection) RecvMessage(timeout time.Duration) (msg message.Messager
 			if err == io.EOF {
 				//err = ErrClose
 			}
-			//utils.Logger.Error("CopyN error in head with %s", err.Error())
+			utils.Logger.Error("CopyN error in head with %s", err.Error())
 			return
 		}
 	}
@@ -181,16 +181,12 @@ func (conn *Connection) recvRoutine() {
 		default:
 		}
 		msg, err := conn.RecvMessage(5 * time.Second)
-		//utils.Logger.Debug("Recv Message %v", msg)
 		if err != nil {
-			/*
-				if err == ErrClose {
-					utils.Logger.Info("Client Close Connection")
-					conn.recvChan <- nil
-				} else {
-					utils.Logger.Error("RecvMessage with error %s", err.Error())
-				}
-			*/
+			if err == io.EOF {
+				utils.Logger.Info("Client Close Connection")
+				close(conn.recvChan)
+				break
+			}
 		} else {
 			utils.Logger.Debug("send msg to recvChan channel")
 			conn.recvChan <- msg
@@ -203,9 +199,13 @@ func (conn *Connection) Serve() {
 	conn.wg.Add(1)
 	go conn.recvRoutine()
 	for {
-		var msg message.Messager
 		select {
-		case msg = <-conn.recvChan:
+		case msg, ok := <-conn.recvChan:
+			if !ok {
+				utils.Logger.Info("Conn is close")
+				conn.recvable <- false
+				break
+			}
 			utils.Logger.Debug("Recv Message %v", msg)
 			if msg == nil {
 				utils.Logger.Info("Client Close Connection")

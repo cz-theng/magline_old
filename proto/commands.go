@@ -65,13 +65,8 @@ const (
 	//MNCMDSessionRsp is close response
 	MNCMDSessionRsp = uint16(0x0004)
 
-	//MNCMDAuthReq is reconnect request
-	MNCMDAuthReq = uint16(0x0005)
-	//MNCMDAuthRsp is reconnect response
-	MNCMDAuthRsp = uint16(0x0006)
-
 	// MNCMDConfirm is message from magknot
-	MNCMDConfirm = uint16(0x0008)
+	MNCMDConfirm = uint16(0x0006)
 
 	//MNCMDNodeMsg is message from magnode
 	MNCMDNodeMsg = uint16(0x0009)
