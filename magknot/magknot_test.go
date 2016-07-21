@@ -49,7 +49,7 @@ func TestConnect(t *testing.T) {
 				fmt.Errorf("Send Message with error %s \n", err.Error())
 			}
 			fmt.Println("Send Back Echo Message Success ")
-			knot.DiscardAgent(msg.Agent)
+			//knot.DiscardAgent(msg.Agent)
 		case agent := <-knot.AgentQuitChan:
 			fmt.Printf("Agent %d is disconnect\n", agent.ID)
 

@@ -77,11 +77,6 @@ func (l *Line) SendConfirm(errno int32) (err error) {
 		utils.Logger.Error("Send confirm error %s", err.Error())
 	}
 
-	errmsg := node.NewErrorMsg(proto.StatusSession, proto.ErrNO(0))
-	err = l.SendMessage(errmsg, 5*time.Second)
-	if err != nil {
-		utils.Logger.Error("Send error error %s", err.Error())
-	}
 	return
 }
 
