@@ -60,3 +60,6 @@ magnode/build/iOS/magnode/build/
 
 example/chatroom/chatroom
 example/echosvr/echosvr
+
+
+maglined/dist_*
