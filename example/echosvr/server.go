@@ -20,11 +20,16 @@ var echoServer server
 
 // Start a server
 func Start() {
-	echoServer.addr = config.Addr
 	echoServer.start()
 }
 
-func (s *server) Init() (err error) {
+// Init init a server
+func Init() {
+	echoServer.init()
+}
+
+func (s *server) init() (err error) {
+	s.addr = config.Addr
 	s.knot = magknot.New()
 	err = s.knot.Init()
 	if err != nil {

@@ -26,6 +26,7 @@ func main() {
 		println("Loading Config Error")
 		return
 	}
+	Init()
 	if Flag.Daemon {
 		daemon.Boot("/tmp/echosvr.lock", "/tmp/echosvr.pid", func() {
 			Start()
