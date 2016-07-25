@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/cz-it/golangutils/daemon"
 	"github.com/cz-it/magline"
+	"github.com/cz-it/serverkit/daemon"
 	"os"
 	"runtime/pprof"
 	"time"

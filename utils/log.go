@@ -6,7 +6,7 @@ package utils
 
 import (
 	"fmt"
-	"github.com/cz-it/golangutils/log"
+	"github.com/cz-it/serverkit/log"
 )
 
 //Logger is logcat used by all app

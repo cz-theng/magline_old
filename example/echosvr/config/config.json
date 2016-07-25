@@ -1,0 +1,5 @@
+{
+	"OuterAddr":"tcp://127.0.0.1:8083",
+	"Addr":"unix:///tmp/echosvr",
+    "MaxConns" :1024
+}
