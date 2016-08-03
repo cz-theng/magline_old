@@ -43,7 +43,7 @@ type MagKnot struct {
 	WriteBuf          *bytes.Buffer
 	AgentArriveChan   chan *Agent
 	AgentQuitChan     chan *Agent
-	MessageArriveChan chan Message
+	MessageArriveChan chan *Message
 	agents            map[uint32]*Agent
 }
 
@@ -70,7 +70,7 @@ func (knot *MagKnot) Init() (err error) {
 	knot.seq = 0
 	knot.AgentArriveChan = make(chan *Agent)
 	knot.AgentQuitChan = make(chan *Agent)
-	knot.MessageArriveChan = make(chan Message)
+	knot.MessageArriveChan = make(chan *Message)
 	knot.agents = make(map[uint32]*Agent)
 	return
 }
@@ -265,7 +265,7 @@ func (knot *MagKnot) dealMessage(nodeMsg *knotproto.NodeMsgBody) (err error) {
 		Agent: knot.agents[*nodeMsg.AgentID],
 		Data:  bytes.NewBuffer(nodeMsg.Payload),
 	}
-	knot.MessageArriveChan <- msg
+	knot.MessageArriveChan <- &msg
 	return
 }
 

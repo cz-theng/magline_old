@@ -1,0 +1,58 @@
+
+package proto;
+
+message EnterRoomReq {
+    optional string roomName= 1;
+    optional string nickName= 2;
+};
+
+message EnterRoomRsp {
+    optional int32 errno = 1;
+    optional uint32 ID = 2;
+};
+
+message MemberEnter {
+    optional uint32 ID = 1;
+    optional string nickName = 2;
+}
+
+message UpMessage {
+    optional bytes message = 1;
+    optional int32 length = 2;
+};
+
+message DownMessage {
+    optional bytes message = 1;
+    optional int32 length = 2;
+    optional string nickName = 3;
+};
+
+message ExitRoomReq {
+    optional string roomName= 1;
+    optional string nickName= 2;
+} 
+
+message ExitRoomRsp {
+    optional int32 errno = 1;
+}
+
+message Message {
+    enum MessageType {
+        ENTER_ROOM_REQ  = 1;
+        ENTER_ROOM_RSP  = 2;
+        MEMBER_ENTER    = 3;
+        UP_MESSAGE      = 4;
+        DOWN_MESSAGE    = 5;
+        EXIT_ROOM_REQ   = 6;
+        EXIT_ROOM_RSP   = 7;
+    };
+    optional MessageType type           = 1;
+    optional EnterRoomReq enterRoomReq  = 2;
+    optional EnterRoomRsp enterRoomRsp  = 3;
+    optional MemberEnter  memberEnter   = 4;
+    optional UpMessage    upMessage     = 5;
+    optional DownMessage  downMessage   = 6;
+    optional ExitRoomReq  exitRoomReq   = 7;
+    optional ExitRoomRsp  exitRoomRsp   = 8;
+}
+
