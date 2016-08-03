@@ -1,4 +1,4 @@
-##Maglined ![magline](./icon/magline_m_none.png)
+##Maglined ![magline](./icon/magline_m_none_128.png)
 
 [![Build Status](https://travis-ci.org/cz-it/magline.svg?branch=master)](https://travis-ci.org/cz-it/magline)  
 
