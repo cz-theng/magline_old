@@ -36,7 +36,30 @@ _testmain.go
 .xcuserdatad
 magnode/build/iOS/magnode/magnode.xcodeproj/xcuserdata/
 magnode/build/iOS/magnode/magnode.xcodeproj/project.xcworkspace
+magnode/build/MacOS/magnode/magnode.xcodeproj/project.xcworkspace
+magnode/build/MacOS/magnode/magnode.xcodeproj/xcuserdata
 
 
 test/iOS/test_magnode/test_magnode.xcodeproj/project.xcworkspace/
 test/iOS/test_magnode/test_magnode.xcodeproj/xcuserdata/
+
+# log files
+*.log
+*.error
+
+*/app/maglined
+magknot/log/
+maglined/maglined
+maglined/log/
+
+
+magnode/build/Android/obj/
+magnode/build/MacOS/magnode/build/
+magnode/build/iOS/magnode/build/
+
+
+example/chatroom/chatroom
+example/echosvr/echosvr
+
+
+maglined/dist_*

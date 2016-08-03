@@ -1,0 +1,70 @@
+package pb;
+
+/**
+* Connect to Maglined
+*/
+message ConnReq {
+    optional bytes AccessKey = 1;
+}
+
+message ConnRsp {
+
+}
+
+
+/** 
+* New Agent from Maglined
+*/
+message AgentArriveReq{
+    optional uint32 AgentID= 1;
+}
+
+message AgentArriveRsp {
+    optional uint32 AgentID = 1;
+    optional int32 errno = 2;
+}
+
+/**
+* Disconnect from Maglined
+*/
+message DisconnReq {
+
+}
+
+message DisconnRsp {
+
+}
+
+
+/**
+* Message from Agent on Maglined
+*/
+message NodeMsg{
+    optional uint32 AgentID = 1;
+    optional bytes payload = 2;
+}
+
+/**
+* Send Message to Agent on Maglined
+*/
+message KnotMsg{
+    optional uint32 AgentID = 1;
+    optional bytes payload = 2;
+}
+
+/** 
+* Agent Quit from Maglined
+*/
+message AgentQuit {
+    optional uint32 AgentID = 1;
+}
+
+/**
+* Discard a agent
+*/
+message DiscardAgent {
+    optional uint32 AgentID = 1;
+}
+
+
+

@@ -1,3 +1,0 @@
-[DEBUG][2015-09-12 00:56:59.400330][/Users/cz/Proj/golang/src/github.com/cz-it/magline/maglined/app/config.go:29]:Load Config file config/config.json Success
-[DEBUG][2015-09-12 00:56:59.400464][/Users/cz/Proj/golang/src/github.com/cz-it/magline/maglined/server.go:36]:ListenAndServe with addr tcp://127.0.0.1:8082
-[DEBUG][2015-09-12 00:56:59.400472][/Users/cz/Proj/golang/src/github.com/cz-it/magline/maglined/server.go:41]:net is tcp and ipport 127.0.0.1:8082
