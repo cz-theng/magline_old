@@ -8,11 +8,10 @@ import (
 
 //ConfigJSONWrapper ConfigJsonWrapper
 type ConfigJSONWrapper struct {
-	OuterAddr string
-	Addr      string
-	MaxConns  int
-	Crypto    string
-	Channel   string
+	Addr     string
+	MaxConns int
+	Crypto   string
+	Channel  string
 }
 
 var config ConfigJSONWrapper

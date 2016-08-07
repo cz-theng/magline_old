@@ -1,5 +1,4 @@
 {
-	"OuterAddr":"tcp://127.0.0.1:8083",
-	"Addr":"unix:///tmp/echosvr",
+	"Addr":"unix:///tmp/chatroom",
     "MaxConns" :1024
 }

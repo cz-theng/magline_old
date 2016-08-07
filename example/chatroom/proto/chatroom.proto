@@ -7,7 +7,7 @@ message EnterRoomReq {
 };
 
 message EnterRoomRsp {
-    optional int32 errno = 1;
+    optional int32 error= 1;
     optional uint32 ID = 2;
 };
 
@@ -33,7 +33,7 @@ message ExitRoomReq {
 } 
 
 message ExitRoomRsp {
-    optional int32 errno = 1;
+    optional int32 error= 1;
 }
 
 message Message {

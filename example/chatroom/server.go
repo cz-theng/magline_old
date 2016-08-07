@@ -5,6 +5,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/cz-it/magline/example/chatroom/proto"
 	"github.com/cz-it/magline/magknot"
@@ -14,8 +15,9 @@ import (
 )
 
 type server struct {
-	knot *magknot.MagKnot
-	addr string
+	knot    *magknot.MagKnot
+	addr    string
+	roommgr *roommgr
 }
 
 var chatroomServer server
@@ -37,11 +39,90 @@ func (s *server) init() (err error) {
 	if err != nil {
 		print("Init knot error :", err.Error())
 	}
+	s.roommgr, err = newRoomMgr(s.knot)
+	if err != nil {
+		print("Init RoomMgr error:", err.Error())
+	}
 	return
 }
 
-func (s *server) dealEnterRoom(req *proto.EnterRoomReq) {
+func (s *server) dealEnterRoom(agent *magknot.Agent, req *proto.EnterRoomReq) {
+	fmt.Printf("Enter with room %s  and nick name %s\n", req.GetRoomName(), req.GetNickName())
+	rom, err := s.roommgr.GetRoom(req.GetRoomName())
+	if err != nil {
+		fmt.Printf("Get Room error:%s", err.Error())
+		return
+	}
+	fmt.Println("after get room")
+	err = s.roommgr.AddAgent(agent, rom)
+	if err != nil {
+		fmt.Printf("Add Agent error %s", err.Error())
+		return
+	}
+	fmt.Println("after add agetn")
+	_, err = rom.AddMember(req.GetNickName(), agent)
+	if err != nil {
+		fmt.Printf("Add Member error %s", err.Error())
+		return
+	}
+	fmt.Println("after add member")
+	fmt.Println("tick")
+	var errno int32
+	rsp := &proto.EnterRoomRsp{
+		Error: &errno,
+	}
+	mtype := proto.Message_ENTER_ROOM_RSP
+	msg := &proto.Message{
+		Type:         &mtype,
+		EnterRoomRsp: rsp,
+	}
+	d, err := protobuf.Marshal(msg)
+	if err != nil {
+		fmt.Printf("Marshal error :%s", err.Error())
+		return
+	}
+	err = s.knot.SendMessage(agent, bytes.NewBuffer(d), 5*time.Second)
+	if err != nil {
+		fmt.Errorf("Send Message error")
+		return
+	}
+	fmt.Println("send back enter rsp")
+}
 
+func (s *server) dealUpMessage(agent *magknot.Agent, msg *proto.UpMessage) {
+	var rom *room
+	var ok bool
+	if rom, ok = s.roommgr.agents[agent]; !ok {
+		fmt.Errorf("No Room for the agent!")
+		return
+	}
+
+	err := rom.BroadcastMessage(agent, msg.Message)
+	if err != nil {
+		fmt.Errorf("Broadcast Message error %s", err.Error())
+		return
+	}
+}
+
+func (s *server) dealExitRoom(agent *magknot.Agent, req *proto.ExitRoomReq) {
+	var errno int32
+	rsp := &proto.ExitRoomRsp{
+		Error: &errno,
+	}
+	mtype := proto.Message_EXIT_ROOM_RSP
+	msg := &proto.Message{
+		Type:        &mtype,
+		ExitRoomRsp: rsp,
+	}
+	d, err := protobuf.Marshal(msg)
+	if err != nil {
+		fmt.Errorf("Marshal error :%s", err.Error())
+		return
+	}
+	err = s.knot.SendMessage(agent, bytes.NewBuffer(d), 5*time.Second)
+	if err != nil {
+		fmt.Errorf("Send Message error")
+	}
 }
 
 func (s *server) dealMessage(message *magknot.Message) {
@@ -52,11 +133,14 @@ func (s *server) dealMessage(message *magknot.Message) {
 	}
 	switch msg.GetType() {
 	case proto.Message_ENTER_ROOM_REQ:
-		s.dealEnterRoom(msg.GetEnterRoomReq())
+		s.dealEnterRoom(message.Agent, msg.GetEnterRoomReq())
+	case proto.Message_UP_MESSAGE:
+		s.dealUpMessage(message.Agent, msg.GetUpMessage())
+	case proto.Message_EXIT_ROOM_REQ:
+		s.dealExitRoom(message.Agent, msg.GetExitRoomReq())
 	default:
 		fmt.Errorf("Unknown Message Type:%v", msg.Type)
 	}
-	//err := s.knot.SendMessage(msg.Agent, msg.Data, 5*time.Second)
 }
 
 func (s *server) start() {
